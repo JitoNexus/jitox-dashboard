@@ -1,6 +1,7 @@
 // Chart.js configuration with cyberpunk theme
 Chart.defaults.color = '#00ffff';
 Chart.defaults.borderColor = 'rgba(0, 255, 255, 0.1)';
+Chart.defaults.font.family = "'Courier New', monospace";
 
 // Utility function for random data
 function getRandomData(min, max) {
@@ -8,17 +9,35 @@ function getRandomData(min, max) {
 }
 
 // Animated value counter
-function animateValue(element, start, end, duration) {
+function animateValue(obj, start, end, duration) {
     let startTimestamp = null;
     const step = (timestamp) => {
         if (!startTimestamp) startTimestamp = timestamp;
         const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-        element.innerHTML = Math.floor(progress * (end - start) + start).toLocaleString();
+        obj.innerHTML = Math.floor(progress * (end - start) + start).toLocaleString();
         if (progress < 1) {
             window.requestAnimationFrame(step);
         }
     };
     window.requestAnimationFrame(step);
+}
+
+// Update stats
+function updateStats() {
+    const stats = {
+        'Active Searchers': getRandomData(5900, 6000),
+        'Active MEV Operations': getRandomData(750, 800),
+        'Ongoing Arbitrage': getRandomData(15, 25),
+        'Ongoing Sandwich': getRandomData(50, 60)
+    };
+
+    Object.entries(stats).forEach(([key, value]) => {
+        const element = document.querySelector(`.cyber-card:has(h2:contains('${key}')) .stat-value`);
+        if (element) {
+            const currentValue = parseInt(element.innerHTML.replace(/,/g, ''));
+            animateValue(element, currentValue, value, 1000);
+        }
+    });
 }
 
 // Initialize charts
@@ -43,30 +62,12 @@ function initCharts() {
             responsive: true,
             maintainAspectRatio: false,
             animation: {
-                duration: 1000,
+                duration: 750,
                 easing: 'easeInOutQuart'
-            },
-            plugins: {
-                title: {
-                    display: true,
-                    text: 'SOL Gained (24h)',
-                    color: '#00ffff',
-                    font: {
-                        size: 16,
-                        family: "'Courier New', monospace"
-                    }
-                },
-                legend: {
-                    display: false
-                }
             },
             scales: {
                 y: {
-                    grid: {
-                        color: 'rgba(0, 255, 255, 0.1)'
-                    }
-                },
-                x: {
+                    beginAtZero: true,
                     grid: {
                         color: 'rgba(0, 255, 255, 0.1)'
                     }
@@ -102,19 +103,8 @@ function initCharts() {
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            plugins: {
-                title: {
-                    display: true,
-                    text: 'Active MEV Operations',
-                    color: '#00ffff',
-                    font: {
-                        size: 16,
-                        family: "'Courier New', monospace"
-                    }
-                },
-                legend: {
-                    display: false
-                }
+            animation: {
+                duration: 750
             }
         }
     });
@@ -139,29 +129,19 @@ function initCharts() {
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            plugins: {
-                title: {
-                    display: true,
-                    text: 'Sandwich Opportunities',
-                    color: '#00ffff',
-                    font: {
-                        size: 16,
-                        family: "'Courier New', monospace"
-                    }
-                }
+            animation: {
+                duration: 750
             }
         }
     });
 
-    // Update charts periodically
+    // Update charts and stats periodically
     setInterval(() => {
         // Update SOL Gained Chart
-        solGainedChart.data.datasets[0].data = solGainedChart.data.datasets[0].data.map(() => 
-            getRandomData(100, 500)
-        );
+        solGainedChart.data.datasets[0].data = Array(24).fill(0).map(() => getRandomData(100, 500));
         solGainedChart.update('none');
 
-        // Update MEV Operations
+        // Update MEV Operations Chart
         mevOpsChart.data.datasets[0].data = [
             getRandomData(15, 25),
             getRandomData(50, 60),
@@ -170,7 +150,7 @@ function initCharts() {
         ];
         mevOpsChart.update('none');
 
-        // Update Sandwich Opportunities
+        // Update Sandwich Chart
         sandwichChart.data.datasets[0].data = [
             getRandomData(10, 20),
             getRandomData(20, 30),
@@ -178,36 +158,13 @@ function initCharts() {
         ];
         sandwichChart.update('none');
 
-        // Animate stat values
-        document.querySelectorAll('.stat-value').forEach(el => {
-            animateValue(el, parseInt(el.innerHTML) - 10, parseInt(el.innerHTML) + getRandomData(-5, 5), 1000);
-        });
-    }, 3000);
+        // Update stats
+        updateStats();
+    }, 2000);
 }
 
 // Initialize everything when the page loads
 document.addEventListener('DOMContentLoaded', () => {
     initCharts();
-
-    // Add hover effects to cyber-cards
-    document.querySelectorAll('.cyber-card').forEach(card => {
-        card.addEventListener('mouseover', () => {
-            card.style.transform = 'scale(1.02) translateY(-5px)';
-            card.style.boxShadow = '0 10px 30px rgba(0, 255, 255, 0.3)';
-        });
-        
-        card.addEventListener('mouseout', () => {
-            card.style.transform = 'scale(1) translateY(0)';
-            card.style.boxShadow = '0 5px 20px rgba(0, 255, 255, 0.2)';
-        });
-    });
-
-    // Add click effects to cyber-buttons
-    document.querySelectorAll('.cyber-button').forEach(button => {
-        button.addEventListener('click', (e) => {
-            const buttons = document.querySelectorAll('.cyber-button');
-            buttons.forEach(b => b.classList.remove('active'));
-            e.target.classList.add('active');
-        });
-    });
+    updateStats(); // Initial stats update
 });
