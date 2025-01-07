@@ -24,7 +24,7 @@ function startContinuousUpdates() {
 }
 
 function updateAllStats() {
-    // Update statistics section stats
+    // Update statistics section stats with fixed selector
     const statsUpdates = {
         'Active Searchers': getRandomData(5900, 6000),
         'Active MEV Operations': getRandomData(750, 800),
@@ -33,9 +33,20 @@ function updateAllStats() {
     };
 
     Object.entries(statsUpdates).forEach(([key, value]) => {
-        const element = document.querySelector(`h2.cyber-text:contains('${key}')`).nextElementSibling;
-        if (element) {
-            animateValue(element, parseInt(element.textContent.replace(/,/g, '')), value, 1000);
+        // Fixed selector to find the correct stat value element
+        const statTitle = document.evaluate(
+            `//h2[contains(text(), '${key}')]`,
+            document,
+            null,
+            XPathResult.FIRST_ORDERED_NODE_TYPE,
+            null
+        ).singleNodeValue;
+        
+        if (statTitle) {
+            const statValue = statTitle.nextElementSibling;
+            if (statValue && statValue.classList.contains('stat-value')) {
+                animateValue(statValue, parseInt(statValue.textContent.replace(/,/g, '')), value, 1000);
+            }
         }
     });
 
@@ -71,34 +82,37 @@ function updateAlertTimes() {
 }
 
 function updateAllCharts() {
-    // Update SOL Gained Chart
+    // Update SOL Gained Chart with smoother transitions
     if (solChart) {
-        solChart.data.datasets[0].data = Array(24).fill(0).map(() => getRandomData(100, 500));
+        const newSolData = Array(24).fill(0).map(() => getRandomData(100, 500));
+        solChart.data.datasets[0].data = newSolData;
         solChart.update('none');
     }
 
-    // Update MEV Operations Chart
+    // Update MEV Operations Chart with smoother transitions
     if (mevChart) {
-        mevChart.data.datasets[0].data = [
+        const newMevData = [
             getRandomData(15, 25),
             getRandomData(50, 60),
             getRandomData(10, 20),
             getRandomData(5, 10)
         ];
+        mevChart.data.datasets[0].data = newMevData;
         mevChart.update('none');
     }
 
-    // Update Sandwich Chart
+    // Update Sandwich Chart with smoother transitions
     if (sandwichChart) {
-        sandwichChart.data.datasets[0].data = [
+        const newSandwichData = [
             getRandomData(10, 20),
             getRandomData(20, 30),
             getRandomData(10, 20)
         ];
+        sandwichChart.data.datasets[0].data = newSandwichData;
         sandwichChart.update('none');
     }
 
-    // Update AI Performance Chart
+    // Update AI Performance Chart with smoother transitions
     if (aiPerformanceChart) {
         const newData = [...aiPerformanceChart.data.datasets[0].data.slice(1), getRandomData(70, 100)];
         aiPerformanceChart.data.datasets[0].data = newData;
