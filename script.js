@@ -1,5 +1,21 @@
-// Global variables for charts
+// Global variables for charts and previous values
 let solChart, mevChart, sandwichChart, aiPerformanceChart;
+let previousStats = {
+    'Active Searchers': 5000,
+    'Active MEV Operations': 500,
+    'Ongoing Arbitrage': 100,
+    'Ongoing Sandwich': 200
+};
+
+// Maximum allowed change per update (as percentage of range)
+const MAX_CHANGE_PERCENT = 0.05;
+
+function getSmoothedValue(currentValue, targetValue, maxChangePercent) {
+    const difference = targetValue - currentValue;
+    const maxChange = Math.abs(currentValue * maxChangePercent);
+    if (Math.abs(difference) <= maxChange) return targetValue;
+    return currentValue + (Math.sign(difference) * maxChange);
+}
 
 document.addEventListener('DOMContentLoaded', () => {
     if (typeof Chart === 'undefined') {
@@ -24,16 +40,19 @@ function startContinuousUpdates() {
 }
 
 function updateAllStats() {
-    // Update statistics section stats with fixed selector and new ranges
-    const statsUpdates = {
+    // Generate target values
+    const targetStats = {
         'Active Searchers': getRandomData(2500, 10000),
         'Active MEV Operations': getRandomData(100, 1232),
         'Ongoing Arbitrage': getRandomData(10, 523),
         'Ongoing Sandwich': getRandomData(24, 721)
     };
 
-    Object.entries(statsUpdates).forEach(([key, value]) => {
-        // Fixed selector to find the correct stat value element
+    // Smooth the transitions
+    Object.entries(targetStats).forEach(([key, targetValue]) => {
+        const smoothedValue = getSmoothedValue(previousStats[key], targetValue, MAX_CHANGE_PERCENT);
+        previousStats[key] = smoothedValue;
+
         const statTitle = document.evaluate(
             `//h2[contains(text(), '${key}')]`,
             document,
@@ -46,16 +65,28 @@ function updateAllStats() {
             const statValue = statTitle.nextElementSibling;
             if (statValue && statValue.classList.contains('stat-value')) {
                 const currentValue = parseInt(statValue.textContent.replace(/,/g, ''));
-                animateValue(statValue, currentValue, value, 1000);
+                animateValue(statValue, currentValue, smoothedValue, 1000);
             }
         }
     });
 
-    // Update AI dashboard stats with matching ranges
+    // Update AI dashboard stats with smoother changes
     const aiStats = {
-        'detected-opportunities': getRandomData(100, 1232), // Match MEV Operations
-        'successful-predictions': getRandomData(80, 100),
-        'active-strategies': getRandomData(10, 50),
+        'detected-opportunities': getSmoothedValue(
+            parseInt(document.getElementById('detected-opportunities')?.textContent || '400'),
+            getRandomData(100, 1232),
+            MAX_CHANGE_PERCENT
+        ),
+        'successful-predictions': getSmoothedValue(
+            parseInt(document.getElementById('successful-predictions')?.textContent || '90'),
+            getRandomData(80, 100),
+            0.02
+        ),
+        'active-strategies': getSmoothedValue(
+            parseInt(document.getElementById('active-strategies')?.textContent || '25'),
+            getRandomData(10, 50),
+            0.1
+        ),
         'avg-response-time': (Math.random() * 0.1 + 0.1).toFixed(3)
     };
 
@@ -71,7 +102,6 @@ function updateAllStats() {
         }
     });
 
-    // Update alert times
     updateAlertTimes();
 }
 
@@ -83,41 +113,63 @@ function updateAlertTimes() {
     });
 }
 
+// Previous chart data storage
+let previousChartData = {
+    sol: Array(24).fill(500),
+    mev: [100, 200, 100, 50],
+    sandwich: [30, 25, 20]
+};
+
 function updateAllCharts() {
-    // Update SOL Gained Chart with matching ranges
+    // Update SOL Gained Chart with smooth transitions
     if (solChart) {
-        const newSolData = Array(24).fill(0).map(() => getRandomData(100, 1000));
-        solChart.data.datasets[0].data = newSolData;
+        const targetData = Array(24).fill(0).map(() => getRandomData(100, 1000));
+        const smoothedData = targetData.map((target, i) => 
+            getSmoothedValue(previousChartData.sol[i], target, 0.1)
+        );
+        previousChartData.sol = smoothedData;
+        solChart.data.datasets[0].data = smoothedData;
         solChart.update('none');
     }
 
-    // Update MEV Operations Chart with matching ranges
+    // Update MEV Operations Chart with smooth transitions
     if (mevChart) {
-        const newMevData = [
-            getRandomData(10, 523),  // Arbitrage range
-            getRandomData(24, 721),  // Sandwich range
-            getRandomData(10, 300),  // Liquidation
-            getRandomData(5, 200)    // Other
+        const targetData = [
+            getRandomData(10, 523),
+            getRandomData(24, 721),
+            getRandomData(10, 300),
+            getRandomData(5, 200)
         ];
-        mevChart.data.datasets[0].data = newMevData;
+        const smoothedData = targetData.map((target, i) => 
+            getSmoothedValue(previousChartData.mev[i], target, 0.1)
+        );
+        previousChartData.mev = smoothedData;
+        mevChart.data.datasets[0].data = smoothedData;
         mevChart.update('none');
     }
 
-    // Update Sandwich Chart with matching ranges
+    // Update Sandwich Chart with smooth transitions
     if (sandwichChart) {
-        const total = getRandomData(24, 721); // Match Sandwich range
-        const high = Math.floor(total * 0.4);
-        const medium = Math.floor(total * 0.35);
-        const low = total - high - medium;
-        
-        const newSandwichData = [high, medium, low];
-        sandwichChart.data.datasets[0].data = newSandwichData;
+        const total = getRandomData(24, 721);
+        const targetData = [
+            Math.floor(total * 0.4),
+            Math.floor(total * 0.35),
+            Math.floor(total * 0.25)
+        ];
+        const smoothedData = targetData.map((target, i) => 
+            getSmoothedValue(previousChartData.sandwich[i], target, 0.1)
+        );
+        previousChartData.sandwich = smoothedData;
+        sandwichChart.data.datasets[0].data = smoothedData;
         sandwichChart.update('none');
     }
 
-    // Update AI Performance Chart
+    // Update AI Performance Chart with smooth transitions
     if (aiPerformanceChart) {
-        const newData = [...aiPerformanceChart.data.datasets[0].data.slice(1), getRandomData(70, 100)];
+        const lastValue = aiPerformanceChart.data.datasets[0].data[23] || 85;
+        const targetValue = getRandomData(70, 100);
+        const smoothedValue = getSmoothedValue(lastValue, targetValue, 0.05);
+        const newData = [...aiPerformanceChart.data.datasets[0].data.slice(1), smoothedValue];
         aiPerformanceChart.data.datasets[0].data = newData;
         aiPerformanceChart.update('none');
     }
