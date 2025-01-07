@@ -8,6 +8,8 @@ body {
 
 .app-container {
     padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
 .header {
@@ -24,6 +26,7 @@ body {
 h1 {
     margin: 0;
     font-size: 24px;
+    color: #00ffff;
 }
 
 .header-stats {
@@ -37,6 +40,7 @@ h1 {
     display: flex;
     gap: 10px;
     margin-bottom: 30px;
+    flex-wrap: wrap;
 }
 
 .nav-buttons button {
@@ -46,6 +50,7 @@ h1 {
     padding: 8px 16px;
     cursor: pointer;
     border-radius: 4px;
+    font-size: 14px;
 }
 
 .nav-buttons button.active {
