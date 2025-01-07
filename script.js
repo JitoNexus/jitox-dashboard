@@ -17,6 +17,9 @@ function initializeTabs() {
     const tabs = document.querySelectorAll('.cyber-button');
     const sections = document.querySelectorAll('.content-section');
 
+    console.log('Found tabs:', tabs.length);
+    console.log('Found sections:', sections.length);
+
     // Hide all sections except statistics initially
     sections.forEach(section => {
         if (!section.classList.contains('statistics-section')) {
@@ -26,28 +29,35 @@ function initializeTabs() {
 
     tabs.forEach(tab => {
         tab.addEventListener('click', () => {
+            const targetTab = tab.dataset.tab;
+            console.log('Clicked tab:', targetTab);
+
             // Remove active class from all tabs
             tabs.forEach(t => t.classList.remove('active'));
+            
             // Add active class to clicked tab
             tab.classList.add('active');
 
             // Hide all sections
             sections.forEach(section => {
                 section.style.display = 'none';
+                console.log('Section:', section.className);
             });
 
             // Show selected section
-            const targetSection = document.querySelector(`.${tab.dataset.tab}-section`);
+            const targetSection = document.querySelector(`.${targetTab}-section`);
             if (targetSection) {
+                console.log('Showing section:', targetTab);
                 targetSection.style.display = 'block';
-                // Reinitialize charts if switching to statistics
-                if (tab.dataset.tab === 'statistics') {
+                
+                // Initialize appropriate charts
+                if (targetTab === 'statistics') {
                     initializeCharts();
-                }
-                // Initialize AI dashboard if switching to AI
-                if (tab.dataset.tab === 'ai') {
+                } else if (targetTab === 'ai') {
                     initializeAIDashboard();
                 }
+            } else {
+                console.error('Section not found:', targetTab);
             }
         });
     });
