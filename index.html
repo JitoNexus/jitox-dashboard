@@ -5,52 +5,101 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JitoX</title>
     <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
 </head>
 <body>
     <div class="app-container">
-        <header>
-            <img src="images/jitox-logo.png" alt="JitoX" class="logo">
-            <h1>JitoX</h1>
-            <div class="header-stats">
-                <div>24h Volume $2.4M</div>
-                <div>Total MEV $147.2M</div>
+        <div class="cyber-frame">
+            <header>
+                <div class="logo-container">
+                    <img src="images/jitox-logo.png" alt="JitoX" class="logo pulse">
+                    <h1 class="cyber-text">JitoX</h1>
+                </div>
+                <div class="header-stats">
+                    <div class="stat-box">
+                        <span class="label">24h Volume</span>
+                        <span class="value glow">$2.4M</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="label">Total MEV</span>
+                        <span class="value glow">$147.2M</span>
+                    </div>
+                </div>
+            </header>
+
+            <nav class="cyber-nav">
+                <button class="cyber-button active" data-tab="statistics">
+                    <i class="fas fa-chart-line"></i> Statistics
+                </button>
+                <button class="cyber-button" data-tab="ai">
+                    <i class="fas fa-robot"></i> AI Dashboard
+                </button>
+                <button class="cyber-button" data-tab="wallet">
+                    <i class="fas fa-wallet"></i> My Wallet
+                </button>
+                <button class="cyber-button" data-tab="gains">
+                    <i class="fas fa-coins"></i> My Gains
+                </button>
+                <button class="cyber-button" data-tab="transactions">
+                    <i class="fas fa-exchange-alt"></i> Transactions
+                </button>
+                <button class="cyber-button" data-tab="help">
+                    <i class="fas fa-question-circle"></i> Help
+                </button>
+            </nav>
+
+            <div class="stats-grid">
+                <div class="cyber-card">
+                    <div class="card-content">
+                        <h2 class="cyber-text">Active Searchers</h2>
+                        <div class="stat-value cyber-glow">5958</div>
+                        <div class="stat-description">Active MEV searchers using JitoX AI</div>
+                    </div>
+                    <div class="card-bg"></div>
+                </div>
+
+                <div class="cyber-card">
+                    <div class="card-content">
+                        <h2 class="cyber-text">Active MEV Operations</h2>
+                        <div class="stat-value cyber-glow">767</div>
+                        <div class="stat-description">AI-detected MEV opportunities</div>
+                    </div>
+                    <div class="card-bg"></div>
+                </div>
+
+                <div class="cyber-card">
+                    <div class="card-content">
+                        <h2 class="cyber-text">Ongoing Arbitrage</h2>
+                        <div class="stat-value cyber-glow">20</div>
+                        <div class="stat-description">Active arbitrage operations</div>
+                    </div>
+                    <div class="card-bg"></div>
+                </div>
+
+                <div class="cyber-card">
+                    <div class="card-content">
+                        <h2 class="cyber-text">Ongoing Sandwich</h2>
+                        <div class="stat-value cyber-glow">56</div>
+                        <div class="stat-description">Active sandwich attacks</div>
+                    </div>
+                    <div class="card-bg"></div>
+                </div>
             </div>
-        </header>
 
-        <nav>
-            <button class="active">📊 Statistics</button>
-            <button>🤖 AI Dashboard</button>
-            <button>💼 My Wallet</button>
-            <button>💰 My Gains</button>
-            <button>🔄 Transactions</button>
-            <button>❓ Help</button>
-        </nav>
-
-        <div class="stats">
-            <div class="stat-group">
-                <h2>Active Searchers</h2>
-                <div class="stat-value">5958</div>
-                <div class="stat-description">Active MEV searchers using JitoX AI</div>
-            </div>
-
-            <div class="stat-group">
-                <h2>Active MEV Operations</h2>
-                <div class="stat-value">767</div>
-                <div class="stat-description">AI-detected MEV opportunities</div>
-            </div>
-
-            <div class="stat-group">
-                <h2>Ongoing Arbitrage</h2>
-                <div class="stat-value">20</div>
-                <div class="stat-description">Active arbitrage operations</div>
-            </div>
-
-            <div class="stat-group">
-                <h2>Ongoing Sandwich</h2>
-                <div class="stat-value">56</div>
-                <div class="stat-description">Active sandwich attacks</div>
+            <div class="charts-grid">
+                <div class="cyber-card chart-card">
+                    <canvas id="solGainedChart"></canvas>
+                </div>
+                <div class="cyber-card chart-card">
+                    <canvas id="mevOpsChart"></canvas>
+                </div>
+                <div class="cyber-card chart-card">
+                    <canvas id="sandwichChart"></canvas>
+                </div>
             </div>
         </div>
     </div>
+    <script src="script.js"></script>
 </body>
 </html>
