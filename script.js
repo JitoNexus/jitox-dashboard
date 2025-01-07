@@ -7,8 +7,125 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Initialize charts
     initializeCharts();
+    
+    // Initialize tab switching
+    initializeTabs();
 });
 
+// Tab switching functionality
+function initializeTabs() {
+    const tabs = document.querySelectorAll('.cyber-button');
+    const sections = document.querySelectorAll('.content-section');
+
+    // Hide all sections except statistics initially
+    sections.forEach(section => {
+        if (!section.classList.contains('statistics-section')) {
+            section.style.display = 'none';
+        }
+    });
+
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            // Remove active class from all tabs
+            tabs.forEach(t => t.classList.remove('active'));
+            // Add active class to clicked tab
+            tab.classList.add('active');
+
+            // Hide all sections
+            sections.forEach(section => {
+                section.style.display = 'none';
+            });
+
+            // Show selected section
+            const targetSection = document.querySelector(`.${tab.dataset.tab}-section`);
+            if (targetSection) {
+                targetSection.style.display = 'block';
+                // Reinitialize charts if switching to statistics
+                if (tab.dataset.tab === 'statistics') {
+                    initializeCharts();
+                }
+                // Initialize AI dashboard if switching to AI
+                if (tab.dataset.tab === 'ai') {
+                    initializeAIDashboard();
+                }
+            }
+        });
+    });
+}
+
+function initializeAIDashboard() {
+    // AI Performance Chart
+    const aiPerformanceCtx = document.getElementById('aiPerformanceChart');
+    if (aiPerformanceCtx) {
+        new Chart(aiPerformanceCtx, {
+            type: 'line',
+            data: {
+                labels: Array(24).fill('').map((_, i) => `${23-i}h`),
+                datasets: [{
+                    label: 'Success Rate',
+                    data: Array(24).fill(0).map(() => Math.random() * 30 + 70), // 70-100% success rate
+                    borderColor: '#ff00ff',
+                    backgroundColor: 'rgba(255, 0, 255, 0.1)',
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: true,
+                        labels: { color: '#00ffff' }
+                    },
+                    title: {
+                        display: true,
+                        text: 'AI Performance (24h)',
+                        color: '#00ffff'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        min: 60,
+                        max: 100,
+                        grid: { color: 'rgba(0, 255, 255, 0.1)' },
+                        ticks: { color: '#00ffff' }
+                    },
+                    x: {
+                        grid: { color: 'rgba(0, 255, 255, 0.1)' },
+                        ticks: { color: '#00ffff' }
+                    }
+                }
+            }
+        });
+    }
+
+    // Update AI stats periodically
+    setInterval(updateAIStats, 2000);
+}
+
+function updateAIStats() {
+    const stats = {
+        'detected-opportunities': Math.floor(Math.random() * 100 + 400),
+        'successful-predictions': Math.floor(Math.random() * 20 + 80),
+        'active-strategies': Math.floor(Math.random() * 10 + 20),
+        'avg-response-time': (Math.random() * 0.1 + 0.1).toFixed(3)
+    };
+
+    Object.entries(stats).forEach(([id, value]) => {
+        const element = document.getElementById(id);
+        if (element) {
+            if (id === 'avg-response-time') {
+                element.textContent = `${value}s`;
+            } else {
+                element.textContent = value.toString();
+            }
+        }
+    });
+}
+
+// Original chart initialization function
 function initializeCharts() {
     try {
         // SOL Gained Chart

@@ -215,3 +215,98 @@ canvas {
         font-size: 36px;
     }
 }
+
+/* AI Dashboard Styles */
+.ai-section {
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+.ai-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin: 20px 0;
+}
+
+.ai-analysis-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.full-width {
+    grid-column: 1 / -1;
+}
+
+.ai-strategy-list, .ai-alerts {
+    padding: 15px;
+}
+
+.strategy-item, .alert-item {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid rgba(0, 255, 255, 0.2);
+    border-radius: 5px;
+    background: rgba(0, 0, 51, 0.3);
+    transition: all 0.3s ease;
+}
+
+.strategy-item:hover, .alert-item:hover {
+    background: rgba(0, 255, 255, 0.1);
+    transform: translateX(5px);
+}
+
+.strategy-item i, .alert-item i {
+    margin-right: 10px;
+    color: var(--neon-cyan);
+}
+
+.status {
+    margin-left: auto;
+    padding: 3px 8px;
+    border-radius: 3px;
+    font-size: 0.8em;
+}
+
+.status.active {
+    background: rgba(0, 255, 0, 0.2);
+    color: #00ff00;
+}
+
+.time {
+    margin-left: auto;
+    font-size: 0.8em;
+    color: rgba(0, 255, 255, 0.7);
+}
+
+.alert-item i.fa-exclamation-triangle {
+    color: #ffff00;
+}
+
+.alert-item i.fa-check-circle {
+    color: #00ff00;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Content Sections */
+.content-section {
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+/* Make sure all sections are initially hidden except statistics */
+.content-section:not(.statistics-section) {
+    display: none;
+}

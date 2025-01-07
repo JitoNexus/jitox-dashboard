@@ -48,63 +48,150 @@
                 </button>
             </nav>
 
-            <div class="stats-grid">
-                <div class="cyber-card">
-                    <div class="card-content">
-                        <h2 class="cyber-text">Active Searchers</h2>
-                        <div class="stat-value cyber-glow">5958</div>
-                        <div class="stat-description">Active MEV searchers using JitoX AI</div>
+            <!-- Statistics Section -->
+            <div class="content-section statistics-section">
+                <div class="stats-grid">
+                    <div class="cyber-card">
+                        <div class="card-content">
+                            <h2 class="cyber-text">Active Searchers</h2>
+                            <div class="stat-value cyber-glow">5958</div>
+                            <div class="stat-description">Active MEV searchers using JitoX AI</div>
+                        </div>
+                        <div class="card-bg"></div>
                     </div>
-                    <div class="card-bg"></div>
+
+                    <div class="cyber-card">
+                        <div class="card-content">
+                            <h2 class="cyber-text">Active MEV Operations</h2>
+                            <div class="stat-value cyber-glow">767</div>
+                            <div class="stat-description">AI-detected MEV opportunities</div>
+                        </div>
+                        <div class="card-bg"></div>
+                    </div>
+
+                    <div class="cyber-card">
+                        <div class="card-content">
+                            <h2 class="cyber-text">Ongoing Arbitrage</h2>
+                            <div class="stat-value cyber-glow">20</div>
+                            <div class="stat-description">Active arbitrage operations</div>
+                        </div>
+                        <div class="card-bg"></div>
+                    </div>
+
+                    <div class="cyber-card">
+                        <div class="card-content">
+                            <h2 class="cyber-text">Ongoing Sandwich</h2>
+                            <div class="stat-value cyber-glow">56</div>
+                            <div class="stat-description">Active sandwich attacks</div>
+                        </div>
+                        <div class="card-bg"></div>
+                    </div>
                 </div>
 
-                <div class="cyber-card">
-                    <div class="card-content">
-                        <h2 class="cyber-text">Active MEV Operations</h2>
-                        <div class="stat-value cyber-glow">767</div>
-                        <div class="stat-description">AI-detected MEV opportunities</div>
+                <div class="charts-grid">
+                    <div class="cyber-card chart-card">
+                        <h3 class="chart-title">SOL Gained (24h)</h3>
+                        <canvas id="solGainedChart" height="300"></canvas>
                     </div>
-                    <div class="card-bg"></div>
-                </div>
-
-                <div class="cyber-card">
-                    <div class="card-content">
-                        <h2 class="cyber-text">Ongoing Arbitrage</h2>
-                        <div class="stat-value cyber-glow">20</div>
-                        <div class="stat-description">Active arbitrage operations</div>
+                    <div class="cyber-card chart-card">
+                        <h3 class="chart-title">MEV Operations</h3>
+                        <canvas id="mevOpsChart" height="300"></canvas>
                     </div>
-                    <div class="card-bg"></div>
-                </div>
-
-                <div class="cyber-card">
-                    <div class="card-content">
-                        <h2 class="cyber-text">Ongoing Sandwich</h2>
-                        <div class="stat-value cyber-glow">56</div>
-                        <div class="stat-description">Active sandwich attacks</div>
+                    <div class="cyber-card chart-card">
+                        <h3 class="chart-title">Sandwich Opportunities</h3>
+                        <canvas id="sandwichChart" height="300"></canvas>
                     </div>
-                    <div class="card-bg"></div>
                 </div>
             </div>
 
-            <div class="charts-grid">
-                <div class="cyber-card chart-card">
-                    <h3 class="chart-title">SOL Gained (24h)</h3>
-                    <canvas id="solGainedChart" height="300"></canvas>
+            <!-- AI Dashboard Section -->
+            <div class="content-section ai-section">
+                <div class="ai-stats-grid">
+                    <div class="cyber-card">
+                        <div class="card-content">
+                            <h2 class="cyber-text">Detected Opportunities</h2>
+                            <div class="stat-value cyber-glow" id="detected-opportunities">487</div>
+                            <div class="stat-description">MEV opportunities detected by AI</div>
+                        </div>
+                    </div>
+
+                    <div class="cyber-card">
+                        <div class="card-content">
+                            <h2 class="cyber-text">Prediction Accuracy</h2>
+                            <div class="stat-value cyber-glow" id="successful-predictions">92</div>
+                            <div class="stat-description">Successful predictions (%)</div>
+                        </div>
+                    </div>
+
+                    <div class="cyber-card">
+                        <div class="card-content">
+                            <h2 class="cyber-text">Active Strategies</h2>
+                            <div class="stat-value cyber-glow" id="active-strategies">24</div>
+                            <div class="stat-description">AI strategies in operation</div>
+                        </div>
+                    </div>
+
+                    <div class="cyber-card">
+                        <div class="card-content">
+                            <h2 class="cyber-text">Response Time</h2>
+                            <div class="stat-value cyber-glow" id="avg-response-time">0.15s</div>
+                            <div class="stat-description">Average AI response time</div>
+                        </div>
+                    </div>
                 </div>
-                <div class="cyber-card chart-card">
-                    <h3 class="chart-title">MEV Operations</h3>
-                    <canvas id="mevOpsChart" height="300"></canvas>
-                </div>
-                <div class="cyber-card chart-card">
-                    <h3 class="chart-title">Sandwich Opportunities</h3>
-                    <canvas id="sandwichChart" height="300"></canvas>
+
+                <div class="ai-analysis-grid">
+                    <div class="cyber-card full-width">
+                        <h3 class="chart-title">AI Performance Metrics</h3>
+                        <canvas id="aiPerformanceChart" height="300"></canvas>
+                    </div>
+                    
+                    <div class="cyber-card">
+                        <div class="ai-strategy-list">
+                            <h3 class="cyber-text">Active AI Strategies</h3>
+                            <div class="strategy-item">
+                                <i class="fas fa-robot"></i>
+                                <span>Sandwich Detection v2.1</span>
+                                <span class="status active">Active</span>
+                            </div>
+                            <div class="strategy-item">
+                                <i class="fas fa-chart-line"></i>
+                                <span>Arbitrage Finder Pro</span>
+                                <span class="status active">Active</span>
+                            </div>
+                            <div class="strategy-item">
+                                <i class="fas fa-search-dollar"></i>
+                                <span>MEV Opportunity Scanner</span>
+                                <span class="status active">Active</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="cyber-card">
+                        <div class="ai-alerts">
+                            <h3 class="cyber-text">Recent AI Alerts</h3>
+                            <div class="alert-item">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                <span>High profit opportunity detected</span>
+                                <span class="time">2m ago</span>
+                            </div>
+                            <div class="alert-item">
+                                <i class="fas fa-check-circle"></i>
+                                <span>Strategy optimization complete</span>
+                                <span class="time">5m ago</span>
+                            </div>
+                            <div class="alert-item">
+                                <i class="fas fa-info-circle"></i>
+                                <span>New pattern identified</span>
+                                <span class="time">12m ago</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-    <!-- Load Chart.js first -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-    <!-- Then load our script -->
     <script src="script.js"></script>
 </body>
 </html>
