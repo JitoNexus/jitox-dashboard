@@ -3,85 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JitoX - AI-Powered Solana MEV Platform</title>
+    <title>JitoX</title>
     <link rel="stylesheet" href="styles.css">
-    <!-- Add Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <!-- Add Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
 </head>
 <body>
     <div class="app-container">
-        <div class="header">
-            <img src="images/jitox-logo.png" alt="JitoX" class="logo">
+        <header>
+            <img src="images/jitox-logo.png" alt="JitoX">
             <h1>JitoX</h1>
+            
             <div class="header-stats">
-                <div class="stat">
-                    <span class="label">24h Volume</span>
-                    <span class="value">$2.4M</span>
-                </div>
-                <div class="stat">
-                    <span class="label">Total MEV</span>
-                    <span class="value">$147.2M</span>
-                </div>
+                <div>24h Volume $2.4M</div>
+                <div>Total MEV $147.2M</div>
             </div>
-        </div>
+        </header>
 
-        <nav class="nav-buttons">
-            <button class="active"><i class="fas fa-chart-line"></i> Statistics</button>
-            <button><i class="fas fa-robot"></i> AI Dashboard</button>
-            <button><i class="fas fa-wallet"></i> My Wallet</button>
-            <button><i class="fas fa-coins"></i> My Gains</button>
-            <button><i class="fas fa-exchange-alt"></i> Transactions</button>
-            <button><i class="fas fa-question-circle"></i> Help</button>
+        <nav>
+            <button class="active">📊 Statistics</button>
+            <button>🤖 AI Dashboard</button>
+            <button>💼 My Wallet</button>
+            <button>💰 My Gains</button>
+            <button>🔄 Transactions</button>
+            <button>❓ Help</button>
         </nav>
 
-        <div class="stats-section">
-            <div class="stat-group">
-                <div class="stat-icon"><i class="fas fa-users"></i></div>
-                <h2>Active Searchers</h2>
-                <div class="stat-value">5958</div>
-                <div class="stat-description">Active MEV searchers using JitoX AI</div>
-            </div>
+        <main>
+            <section class="stats">
+                <div class="stat-group">
+                    <h2>Active Searchers</h2>
+                    <div class="stat-value">5958</div>
+                    <div class="stat-description">Active MEV searchers using JitoX AI</div>
+                    <div class="stat-description">Active MEV searchers using JitoX AI</div>
+                </div>
 
-            <div class="stat-group">
-                <div class="stat-icon"><i class="fas fa-robot"></i></div>
-                <h2>Active MEV Operations</h2>
-                <div class="stat-value">767</div>
-                <div class="stat-description">AI-detected MEV opportunities</div>
-            </div>
+                <div class="stat-group">
+                    <h2>Active MEV Operations</h2>
+                    <div class="stat-value">767</div>
+                    <div class="stat-description">AI-detected MEV opportunities</div>
+                    <div class="stat-description">AI-detected MEV opportunities</div>
+                </div>
 
-            <div class="stat-group">
-                <div class="stat-icon"><i class="fas fa-sync-alt"></i></div>
-                <h2>Ongoing Arbitrage</h2>
-                <div class="stat-value">20</div>
-                <div class="stat-description">Active arbitrage operations</div>
-            </div>
+                <div class="stat-group">
+                    <h2>Ongoing Arbitrage</h2>
+                    <div class="stat-value">20</div>
+                    <div class="stat-description">Active arbitrage operations</div>
+                </div>
 
-            <div class="stat-group">
-                <div class="stat-icon"><i class="fas fa-layer-group"></i></div>
-                <h2>Ongoing Sandwich</h2>
-                <div class="stat-value">56</div>
-                <div class="stat-description">Active sandwich attacks</div>
-            </div>
-        </div>
+                <div class="stat-group">
+                    <h2>Ongoing Sandwich</h2>
+                    <div class="stat-value">56</div>
+                    <div class="stat-description">Active sandwich attacks</div>
+                </div>
+            </section>
 
-        <div class="charts-container">
-            <div class="chart-wrapper">
-                <h3>SOL Gained</h3>
+            <section class="charts">
+                <h2>SOL Gained</h2>
                 <canvas id="sol-gained-chart"></canvas>
-            </div>
-            <div class="chart-wrapper">
-                <h3>SOL Pooled</h3>
-                <canvas id="sol-pooled-chart"></canvas>
-            </div>
-            <div class="chart-wrapper">
-                <h3>Sandwich Attacks</h3>
-                <canvas id="sandwich-attacks-chart"></canvas>
-            </div>
-        </div>
+            </section>
+        </main>
     </div>
-    <script src="script.js"></script>
 </body>
 </html>
