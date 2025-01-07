@@ -24,12 +24,12 @@ function startContinuousUpdates() {
 }
 
 function updateAllStats() {
-    // Update statistics section stats with fixed selector
+    // Update statistics section stats with fixed selector and new ranges
     const statsUpdates = {
-        'Active Searchers': getRandomData(5900, 6000),
-        'Active MEV Operations': getRandomData(750, 800),
-        'Ongoing Arbitrage': getRandomData(15, 25),
-        'Ongoing Sandwich': getRandomData(50, 60)
+        'Active Searchers': getRandomData(2500, 10000),
+        'Active MEV Operations': getRandomData(100, 1232),
+        'Ongoing Arbitrage': getRandomData(10, 523),
+        'Ongoing Sandwich': getRandomData(24, 721)
     };
 
     Object.entries(statsUpdates).forEach(([key, value]) => {
@@ -45,16 +45,17 @@ function updateAllStats() {
         if (statTitle) {
             const statValue = statTitle.nextElementSibling;
             if (statValue && statValue.classList.contains('stat-value')) {
-                animateValue(statValue, parseInt(statValue.textContent.replace(/,/g, '')), value, 1000);
+                const currentValue = parseInt(statValue.textContent.replace(/,/g, ''));
+                animateValue(statValue, currentValue, value, 1000);
             }
         }
     });
 
-    // Update AI dashboard stats
+    // Update AI dashboard stats with matching ranges
     const aiStats = {
-        'detected-opportunities': getRandomData(400, 500),
+        'detected-opportunities': getRandomData(100, 1232), // Match MEV Operations
         'successful-predictions': getRandomData(80, 100),
-        'active-strategies': getRandomData(20, 30),
+        'active-strategies': getRandomData(10, 50),
         'avg-response-time': (Math.random() * 0.1 + 0.1).toFixed(3)
     };
 
@@ -64,7 +65,8 @@ function updateAllStats() {
             if (id === 'avg-response-time') {
                 element.textContent = `${value}s`;
             } else {
-                animateValue(element, parseInt(element.textContent), value, 1000);
+                const currentValue = parseInt(element.textContent.replace(/,/g, ''));
+                animateValue(element, currentValue, value, 1000);
             }
         }
     });
@@ -82,37 +84,38 @@ function updateAlertTimes() {
 }
 
 function updateAllCharts() {
-    // Update SOL Gained Chart with smoother transitions
+    // Update SOL Gained Chart with matching ranges
     if (solChart) {
-        const newSolData = Array(24).fill(0).map(() => getRandomData(100, 500));
+        const newSolData = Array(24).fill(0).map(() => getRandomData(100, 1000));
         solChart.data.datasets[0].data = newSolData;
         solChart.update('none');
     }
 
-    // Update MEV Operations Chart with smoother transitions
+    // Update MEV Operations Chart with matching ranges
     if (mevChart) {
         const newMevData = [
-            getRandomData(15, 25),
-            getRandomData(50, 60),
-            getRandomData(10, 20),
-            getRandomData(5, 10)
+            getRandomData(10, 523),  // Arbitrage range
+            getRandomData(24, 721),  // Sandwich range
+            getRandomData(10, 300),  // Liquidation
+            getRandomData(5, 200)    // Other
         ];
         mevChart.data.datasets[0].data = newMevData;
         mevChart.update('none');
     }
 
-    // Update Sandwich Chart with smoother transitions
+    // Update Sandwich Chart with matching ranges
     if (sandwichChart) {
-        const newSandwichData = [
-            getRandomData(10, 20),
-            getRandomData(20, 30),
-            getRandomData(10, 20)
-        ];
+        const total = getRandomData(24, 721); // Match Sandwich range
+        const high = Math.floor(total * 0.4);
+        const medium = Math.floor(total * 0.35);
+        const low = total - high - medium;
+        
+        const newSandwichData = [high, medium, low];
         sandwichChart.data.datasets[0].data = newSandwichData;
         sandwichChart.update('none');
     }
 
-    // Update AI Performance Chart with smoother transitions
+    // Update AI Performance Chart
     if (aiPerformanceChart) {
         const newData = [...aiPerformanceChart.data.datasets[0].data.slice(1), getRandomData(70, 100)];
         aiPerformanceChart.data.datasets[0].data = newData;
@@ -131,7 +134,7 @@ function initializeCharts() {
                     labels: Array(24).fill('').map((_, i) => `${23-i}h`),
                     datasets: [{
                         label: 'SOL Gained',
-                        data: Array(24).fill(0).map(() => getRandomData(100, 500)),
+                        data: Array(24).fill(0).map(() => getRandomData(100, 1000)),
                         borderColor: '#ff00ff',
                         backgroundColor: 'rgba(255, 0, 255, 0.1)',
                         fill: true,
@@ -153,6 +156,7 @@ function initializeCharts() {
                     },
                     scales: {
                         y: {
+                            beginAtZero: true,
                             grid: { color: 'rgba(0, 255, 255, 0.1)' },
                             ticks: { color: '#00ffff' }
                         },
@@ -165,7 +169,7 @@ function initializeCharts() {
             }
         );
 
-        // MEV Operations Chart
+        // MEV Operations Chart with matching ranges
         mevChart = new Chart(
             document.getElementById('mevOpsChart'),
             {
@@ -174,7 +178,12 @@ function initializeCharts() {
                     labels: ['Arbitrage', 'Sandwich', 'Liquidation', 'Other'],
                     datasets: [{
                         label: 'Active Operations',
-                        data: [20, 56, 15, 8],
+                        data: [
+                            getRandomData(10, 523),  // Arbitrage range
+                            getRandomData(24, 721),  // Sandwich range
+                            getRandomData(10, 300),  // Liquidation
+                            getRandomData(5, 200)    // Other
+                        ],
                         backgroundColor: [
                             'rgba(0, 255, 255, 0.5)',
                             'rgba(255, 0, 255, 0.5)',
@@ -202,6 +211,7 @@ function initializeCharts() {
                     },
                     scales: {
                         y: {
+                            beginAtZero: true,
                             grid: { color: 'rgba(0, 255, 255, 0.1)' },
                             ticks: { color: '#00ffff' }
                         },
