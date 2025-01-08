@@ -842,7 +842,7 @@ setInterval(updateLiveMEVActivity, 5000);
 updateLiveMEVActivity();
 
 // Telegram Authentication Handler
-function onTelegramAuth(user) {
+async function onTelegramAuth(user) {
     // Save user data
     localStorage.setItem('telegramUser', JSON.stringify(user));
     
@@ -850,8 +850,8 @@ function onTelegramAuth(user) {
     document.body.classList.remove('not-logged');
     document.body.classList.add('loading');
     
-    // Initialize dashboard
-    initializeDashboard(user);
+    // Initialize dashboard with user data
+    await initializeDashboard(user);
 }
 
 // Check if user is already logged in
@@ -865,24 +865,55 @@ function checkLoginStatus() {
 }
 
 // Initialize dashboard with user data
-function initializeDashboard(user) {
+async function initializeDashboard(user) {
     // Update header with user info
-    const header = document.querySelector('.dashboard-header');
-    if (header) {
-        const userInfo = document.createElement('div');
-        userInfo.className = 'user-info';
-        userInfo.innerHTML = `
-            <span class="user-name">${user.first_name} ${user.last_name || ''}</span>
-            <button class="logout-btn" onclick="logout()">
-                <i class="fas fa-sign-out-alt"></i>
-            </button>
-        `;
-        header.appendChild(userInfo);
-    }
-
+    updateUserProfile(user);
+    
     // Initialize the rest of the dashboard
     initializeLoadingSequence();
 }
+
+// Update user profile information
+function updateUserProfile(user) {
+    // Update profile photo
+    const userPhoto = document.getElementById('userPhoto');
+    if (userPhoto && user.photo_url) {
+        userPhoto.src = user.photo_url;
+    }
+
+    // Update user information
+    document.getElementById('userName').textContent = `${user.first_name} ${user.last_name || ''}`;
+    document.getElementById('userId').textContent = user.id;
+
+    // Simulate fetching wallet information (replace with actual API call)
+    fetchUserWallet(user.id);
+}
+
+// Fetch user's wallet information
+async function fetchUserWallet(userId) {
+    try {
+        // Replace this with actual API call to your backend
+        const response = await fetch(`YOUR_API_ENDPOINT/get_wallet?user_id=${userId}`);
+        const data = await response.json();
+        
+        if (data.wallet) {
+            document.getElementById('userWallet').textContent = data.wallet;
+        }
+    } catch (error) {
+        console.error('Error fetching wallet:', error);
+    }
+}
+
+// Update user statistics
+function updateUserStats() {
+    // Simulate updating user statistics (replace with actual data)
+    document.getElementById('totalProfit').textContent = `${(Math.random() * 10).toFixed(2)} SOL`;
+    document.getElementById('totalOperations').textContent = Math.floor(Math.random() * 100);
+    document.getElementById('successRate').textContent = `${(Math.random() * 20 + 80).toFixed(1)}%`;
+}
+
+// Update user stats every 30 seconds
+setInterval(updateUserStats, 30000);
 
 // Logout function
 function logout() {

@@ -26,7 +26,9 @@
                             data-size="large" 
                             data-radius="10"
                             data-onauth="onTelegramAuth(user)"
-                            data-request-access="write"></script>
+                            data-request-access="write"
+                            data-userpic="true"
+                            data-auth-url="https://jitonexus.github.io/jitox-dashboard"></script>
                 </div>
             </div>
         </div>
@@ -75,6 +77,7 @@
                 <button class="cyber-button active" data-tab="statistics">Statistics</button>
                 <button class="cyber-button" data-tab="ai">AI Dashboard</button>
                 <button class="cyber-button" data-tab="alerts">Live Alerts</button>
+                <button class="cyber-button" data-tab="user">Profile</button>
             </nav>
 
             <!-- Statistics Section -->
@@ -221,6 +224,52 @@
                 <div class="chart-card">
                     <h3 class="chart-title">AI Performance Metrics</h3>
                     <canvas id="aiPerformanceChart"></canvas>
+                </div>
+            </section>
+
+            <!-- Add User Profile Section -->
+            <section class="content-section user-section" style="display: none;">
+                <div class="user-profile-container">
+                    <div class="cyber-card user-info-card">
+                        <h3 class="profile-title">User Profile</h3>
+                        <div class="user-details">
+                            <div class="profile-avatar">
+                                <img src="" alt="Profile Photo" id="userPhoto">
+                            </div>
+                            <div class="profile-info">
+                                <div class="info-item">
+                                    <span class="label">Username:</span>
+                                    <span class="value" id="userName"></span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="label">Telegram ID:</span>
+                                    <span class="value" id="userId"></span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="label">Wallet Address:</span>
+                                    <span class="value" id="userWallet">Not connected</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="cyber-card stats-card">
+                        <h3>Your Statistics</h3>
+                        <div class="user-stats-grid">
+                            <div class="stat-item">
+                                <span class="stat-label">Total Profit</span>
+                                <span class="stat-value" id="totalProfit">0 SOL</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Operations</span>
+                                <span class="stat-value" id="totalOperations">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Success Rate</span>
+                                <span class="stat-value" id="successRate">0%</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </section>
         </div>
