@@ -25,6 +25,22 @@ body {
     min-height: 100vh;
 }
 
+/* Enhanced Background Animation */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        linear-gradient(125deg, rgba(0, 255, 255, 0.05), transparent 70%),
+        linear-gradient(45deg, transparent, rgba(255, 0, 255, 0.05) 70%);
+    animation: backgroundPulse 8s ease-in-out infinite alternate;
+    pointer-events: none;
+    z-index: -1;
+}
+
 /* Enhanced Cyber Frame */
 .cyber-frame {
     max-width: 1400px;
@@ -61,7 +77,10 @@ header {
 /* Enhanced Cards */
 .cyber-card {
     position: relative;
-    background: linear-gradient(135deg, rgba(0, 0, 51, 0.95), rgba(0, 0, 51, 0.98));
+    background: linear-gradient(135deg, 
+        rgba(0, 0, 51, 0.95), 
+        rgba(0, 0, 51, 0.98)
+    );
     border: 1px solid var(--neon-cyan);
     border-radius: 15px;
     padding: 25px;
@@ -69,7 +88,24 @@ header {
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     box-shadow: 
         0 5px 15px rgba(0, 0, 0, 0.3),
-        inset 0 0 20px rgba(0, 255, 255, 0.1);
+        inset 0 0 30px rgba(0, 255, 255, 0.1);
+}
+
+.cyber-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 200%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(0, 255, 255, 0.2),
+        transparent
+    );
+    transform: skewX(-15deg);
+    animation: cardShine 6s ease-in-out infinite;
 }
 
 .cyber-card:hover {
@@ -140,17 +176,40 @@ header {
 
 /* Enhanced Stats */
 .stat-value {
+    position: relative;
     font-size: 42px;
     font-weight: bold;
-    color: var(--neon-pink);
-    margin: 20px 0;
-    text-shadow: 
-        0 0 10px var(--neon-pink),
-        0 0 20px var(--neon-pink);
-    animation: pulse 2s ease-in-out infinite;
-    background: linear-gradient(45deg, #ff00ff, #ff66ff);
+    background: linear-gradient(
+        45deg,
+        var(--neon-pink),
+        var(--neon-cyan),
+        var(--neon-pink)
+    );
+    background-size: 200% 200%;
+    background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
+    animation: gradientShift 3s ease-in-out infinite;
+    text-shadow: 
+        0 0 10px var(--neon-pink),
+        0 0 20px var(--neon-pink),
+        0 0 30px var(--neon-pink);
+}
+
+.stat-value::before {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    right: -10px;
+    bottom: -10px;
+    background: radial-gradient(
+        circle at center,
+        rgba(255, 0, 255, 0.1) 0%,
+        transparent 70%
+    );
+    animation: valuePulse 2s ease-in-out infinite;
+    z-index: -1;
 }
 
 .stat-description {
@@ -161,11 +220,29 @@ header {
 
 /* Enhanced Charts */
 .chart-card {
-    background: linear-gradient(135deg, rgba(0, 0, 51, 0.98), rgba(0, 0, 51, 0.95));
-    border: 1px solid var(--neon-cyan);
-    box-shadow: 
-        0 5px 15px rgba(0, 0, 0, 0.3),
-        inset 0 0 20px rgba(0, 255, 255, 0.1);
+    position: relative;
+    overflow: hidden;
+}
+
+.chart-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(
+        circle at var(--mouse-x, center) var(--mouse-y, center),
+        rgba(0, 255, 255, 0.1) 0%,
+        transparent 60%
+    );
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+.chart-card:hover::before {
+    opacity: 1;
 }
 
 .chart-title {
@@ -663,40 +740,80 @@ header {
     left: 0;
     width: 100%;
     height: 100%;
-    background: var(--deep-blue);
+    background: rgba(0, 0, 51, 0.95);
     display: flex;
-    flex-direction: column;
     justify-content: center;
     align-items: center;
     z-index: 9999;
-    opacity: 1;
-    transition: opacity 0.5s ease-out;
+    transition: opacity 0.5s ease;
 }
 
-.loading-overlay.hidden {
-    opacity: 0;
-    pointer-events: none;
+.loading-spinner {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 
-.cyber-spinner {
-    width: 50px;
-    height: 50px;
-    border: 3px solid transparent;
+.spinner-ring {
+    width: 80px;
+    height: 80px;
+    border: 4px solid transparent;
     border-top-color: var(--neon-cyan);
     border-right-color: var(--neon-pink);
     border-radius: 50%;
-    animation: spin 1s linear infinite;
-    box-shadow: 
-        0 0 10px var(--neon-cyan),
-        inset 0 0 10px var(--neon-pink);
+    animation: spinnerRotate 1s linear infinite;
 }
 
-.loading-text {
+.spinner-ring::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 60px;
+    height: 60px;
+    border: 4px solid transparent;
+    border-top-color: var(--neon-pink);
+    border-right-color: var(--neon-cyan);
+    border-radius: 50%;
+    animation: spinnerRotate 0.8s linear infinite reverse;
+}
+
+.spinner-text {
     margin-top: 20px;
     color: var(--neon-cyan);
-    font-size: 1.2em;
+    font-size: 18px;
+    text-transform: uppercase;
     letter-spacing: 2px;
-    animation: pulse 1.5s ease-in-out infinite;
+    animation: textPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes spinnerRotate {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes textPulse {
+    0% {
+        opacity: 0.5;
+        transform: scale(0.95);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1.05);
+    }
+    100% {
+        opacity: 0.5;
+        transform: scale(0.95);
+    }
 }
 
 /* Enhanced Card Glow */
@@ -893,4 +1010,78 @@ header {
     35% { transform: translate(-5px, 0) }
     36% { transform: translate(0) }
     100% { transform: translate(0) }
+}
+
+/* New Animations */
+@keyframes backgroundPulse {
+    0% {
+        opacity: 0.5;
+        transform: scale(1);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1.1);
+    }
+}
+
+@keyframes cardShine {
+    0% {
+        left: -100%;
+        opacity: 0;
+    }
+    10% {
+        opacity: 0.5;
+    }
+    20% {
+        opacity: 0;
+    }
+    100% {
+        left: 100%;
+        opacity: 0;
+    }
+}
+
+@keyframes gradientShift {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+@keyframes valuePulse {
+    0% {
+        transform: scale(1);
+        opacity: 0.5;
+    }
+    50% {
+        transform: scale(1.1);
+        opacity: 0.8;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 0.5;
+    }
+}
+
+@keyframes borderGlow {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+/* Add mouse tracking for chart cards */
+.chart-card {
+    --mouse-x: center;
+    --mouse-y: center;
 }
