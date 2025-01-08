@@ -220,13 +220,7 @@ function updateAllCharts() {
 
 function initializeCharts() {
     try {
-        // Show loading state
-        document.querySelectorAll('.chart-loading').forEach(loader => {
-            loader.classList.add('active');
-        });
-
-        // Initialize charts with enhanced styling
-        const chartOptions = {
+        const commonOptions = {
             responsive: true,
             maintainAspectRatio: false,
             animation: {
@@ -236,12 +230,29 @@ function initializeCharts() {
             plugins: {
                 legend: {
                     display: true,
+                    position: 'top',
                     labels: { 
                         color: '#00ffff',
                         font: {
                             family: 'Courier New',
-                            size: 12
-                        }
+                            size: 14
+                        },
+                        padding: 20
+                    }
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(0, 0, 51, 0.9)',
+                    titleColor: '#00ffff',
+                    bodyColor: '#ffffff',
+                    borderColor: '#ff00ff',
+                    borderWidth: 1,
+                    padding: 15,
+                    displayColors: false,
+                    titleFont: {
+                        size: 16
+                    },
+                    bodyFont: {
+                        size: 14
                     }
                 }
             },
@@ -256,8 +267,9 @@ function initializeCharts() {
                         color: '#00ffff',
                         font: {
                             family: 'Courier New',
-                            size: 12
-                        }
+                            size: 14
+                        },
+                        padding: 10
                     }
                 },
                 x: {
@@ -269,14 +281,15 @@ function initializeCharts() {
                         color: '#00ffff',
                         font: {
                             family: 'Courier New',
-                            size: 12
-                        }
+                            size: 14
+                        },
+                        padding: 10
                     }
                 }
             }
         };
 
-        // Initialize charts with enhanced options
+        // SOL Gained Chart
         solChart = new Chart(
             document.getElementById('solGainedChart'),
             {
@@ -290,32 +303,16 @@ function initializeCharts() {
                         backgroundColor: 'rgba(255, 0, 255, 0.1)',
                         fill: true,
                         tension: 0.4,
-                        borderWidth: 2,
-                        pointBackgroundColor: '#ff00ff',
-                        pointBorderColor: '#ffffff',
-                        pointRadius: 4,
-                        pointHoverRadius: 6
+                        borderWidth: 3,
+                        pointRadius: 5,
+                        pointHoverRadius: 8
                     }]
                 },
-                options: {
-                    ...chartOptions,
-                    plugins: {
-                        ...chartOptions.plugins,
-                        tooltip: {
-                            backgroundColor: 'rgba(0, 0, 51, 0.9)',
-                            titleColor: '#00ffff',
-                            bodyColor: '#ffffff',
-                            borderColor: '#ff00ff',
-                            borderWidth: 1,
-                            padding: 10,
-                            displayColors: false
-                        }
-                    }
-                }
+                options: commonOptions
             }
         );
 
-        // MEV Operations Chart with matching ranges
+        // MEV Operations Chart
         mevChart = new Chart(
             document.getElementById('mevOpsChart'),
             {
@@ -325,16 +322,16 @@ function initializeCharts() {
                     datasets: [{
                         label: 'Active Operations',
                         data: [
-                            getRandomData(10, 523),  // Arbitrage range
-                            getRandomData(24, 721),  // Sandwich range
-                            getRandomData(10, 300),  // Liquidation
-                            getRandomData(5, 200)    // Other
+                            getRandomData(10, 523),
+                            getRandomData(24, 721),
+                            getRandomData(10, 300),
+                            getRandomData(5, 200)
                         ],
                         backgroundColor: [
-                            'rgba(0, 255, 255, 0.5)',
-                            'rgba(255, 0, 255, 0.5)',
-                            'rgba(255, 255, 0, 0.5)',
-                            'rgba(0, 255, 0, 0.5)'
+                            'rgba(0, 255, 255, 0.7)',
+                            'rgba(255, 0, 255, 0.7)',
+                            'rgba(255, 255, 0, 0.7)',
+                            'rgba(0, 255, 0, 0.7)'
                         ],
                         borderColor: [
                             '#00ffff',
@@ -342,28 +339,26 @@ function initializeCharts() {
                             '#ffff00',
                             '#00ff00'
                         ],
-                        borderWidth: 2
+                        borderWidth: 2,
+                        borderRadius: 5
                     }]
                 },
                 options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    animation: {
-                        duration: 2000,  // Slower animation
-                        easing: 'easeInOutQuart'
-                    },
+                    ...commonOptions,
                     plugins: {
-                        legend: { display: false }
+                        ...commonOptions.plugins,
+                        legend: {
+                            display: false
+                        }
                     },
                     scales: {
+                        ...commonOptions.scales,
                         y: {
-                            beginAtZero: true,
-                            grid: { color: 'rgba(0, 255, 255, 0.1)' },
-                            ticks: { color: '#00ffff' }
-                        },
-                        x: {
-                            grid: { color: 'rgba(0, 255, 255, 0.1)' },
-                            ticks: { color: '#00ffff' }
+                            ...commonOptions.scales.y,
+                            grid: {
+                                display: true,
+                                color: 'rgba(0, 255, 255, 0.1)'
+                            }
                         }
                     }
                 }
@@ -378,45 +373,40 @@ function initializeCharts() {
                 data: {
                     labels: ['High Profit', 'Medium Profit', 'Low Profit'],
                     datasets: [{
-                        data: [15, 25, 16],
+                        data: [35, 45, 20],
                         backgroundColor: [
                             'rgba(255, 0, 255, 0.8)',
                             'rgba(0, 255, 255, 0.8)',
                             'rgba(255, 255, 0, 0.8)'
                         ],
                         borderColor: '#000033',
-                        borderWidth: 2
+                        borderWidth: 2,
+                        hoverOffset: 15
                     }]
                 },
                 options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    animation: {
-                        duration: 2000,  // Slower animation
-                        easing: 'easeInOutQuart'
-                    },
+                    ...commonOptions,
+                    cutout: '60%',
+                    radius: '90%',
                     plugins: {
+                        ...commonOptions.plugins,
                         legend: {
-                            display: true,
                             position: 'bottom',
-                            labels: { color: '#00ffff' }
+                            labels: {
+                                padding: 20,
+                                font: {
+                                    size: 14
+                                }
+                            }
                         }
                     }
                 }
             }
         );
 
-        // Hide loading state after initialization
-        setTimeout(() => {
-            document.querySelectorAll('.chart-loading').forEach(loader => {
-                loader.classList.remove('active');
-            });
-        }, 1500);
-
         console.log('Charts initialized successfully');
     } catch (error) {
         console.error('Error initializing charts:', error);
-        // Show error state in UI
         document.querySelectorAll('.chart-card').forEach(card => {
             card.classList.add('error-state');
         });
