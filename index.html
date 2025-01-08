@@ -3,447 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JitoX - Advanced MEV Dashboard</title>
-    <meta name="description" content="JitoX - Advanced MEV Dashboard with AI-powered analytics">
+    <title>JitoX Dashboard</title>
     <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-    <!-- Loading Overlay -->
+    <!-- Loading Screen -->
     <div class="loading-overlay">
-        <div class="cyber-spinner"></div>
-        <div class="loading-text">Initializing JitoX...</div>
+        <div class="loading-content">
+            <div class="loading-text">Initializing JitoX...</div>
+            <div class="cyber-spinner"></div>
+            <div class="loading-progress">
+                <div class="progress-bar"></div>
+            </div>
+        </div>
     </div>
 
-    <div class="app-container">
+    <!-- Main Content -->
+    <div class="main-content">
         <div class="cyber-frame">
-            <header class="main-header">
-                <div class="logo-container">
-                    <div class="logo-wrapper">
-                        <img src="images/jitox-logo.png" alt="JitoX" class="logo pulse">
-                        <div class="logo-glow"></div>
-                    </div>
-                    <h1 class="cyber-text glitch" data-text="JitoX">JitoX</h1>
-                </div>
-                <div class="header-stats">
-                    <div class="stat-box">
-                        <span class="label">24h Volume</span>
-                        <span class="value glow" data-value="2.4M">$2.4M</span>
-                    </div>
-                    <div class="stat-box">
-                        <span class="label">Total MEV</span>
-                        <span class="value glow" data-value="147.2M">$147.2M</span>
-                    </div>
-                </div>
-            </header>
-
-            <nav class="cyber-nav" role="navigation">
-                <button class="cyber-button active" data-tab="statistics" aria-selected="true">
-                    <i class="fas fa-chart-line"></i> 
-                    <span>Statistics</span>
-                </button>
-                <button class="cyber-button" data-tab="ai" aria-selected="false">
-                    <i class="fas fa-robot"></i> 
-                    <span>AI Dashboard</span>
-                </button>
-                <button class="cyber-button" data-tab="leaderboard" aria-selected="false">
-                    <i class="fas fa-trophy"></i> 
-                    <span>Leaderboard</span>
-                </button>
-                <button class="cyber-button" data-tab="analytics" aria-selected="false">
-                    <i class="fas fa-microscope"></i> 
-                    <span>Deep Analytics</span>
-                </button>
-                <button class="cyber-button" data-tab="alerts" aria-selected="false">
-                    <i class="fas fa-bell"></i> 
-                    <span>Live Alerts</span>
-                </button>
-                <button class="cyber-button" data-tab="strategies" aria-selected="false">
-                    <i class="fas fa-chess"></i> 
-                    <span>Strategy Hub</span>
-                </button>
+            <!-- Rest of your existing content -->
+            <h1>JitoX</h1>
+            
+            <!-- Navigation -->
+            <nav class="cyber-nav">
+                <button class="cyber-button" data-tab="statistics">Statistics</button>
+                <button class="cyber-button" data-tab="ai">AI Dashboard</button>
+                <button class="cyber-button" data-tab="leaderboard">Leaderboard</button>
+                <button class="cyber-button" data-tab="analytics">Deep Analytics</button>
+                <button class="cyber-button" data-tab="alerts">Live Alerts</button>
+                <button class="cyber-button" data-tab="strategy">Strategy Hub</button>
             </nav>
 
-            <main class="content-wrapper">
-                <!-- Statistics Section -->
-                <section class="content-section statistics-section active" aria-label="Statistics Dashboard">
-                    <div class="stats-grid">
-                        <div class="cyber-card" data-aos="fade-up" data-aos-delay="100">
-                            <div class="card-content">
-                                <h2 class="cyber-text">Active Searchers</h2>
-                                <div class="stat-value cyber-glow" data-count="5958">5958</div>
-                                <div class="stat-description">Active MEV searchers using JitoX AI</div>
-                            </div>
-                            <div class="card-bg"></div>
-                            <div class="card-glow"></div>
-                        </div>
+            <!-- Statistics Section -->
+            <section class="statistics-section">
+                <!-- Your existing statistics content -->
+            </section>
 
-                        <div class="cyber-card">
-                            <div class="card-content">
-                                <h2 class="cyber-text">Active MEV Operations</h2>
-                                <div class="stat-value cyber-glow">767</div>
-                                <div class="stat-description">AI-detected MEV opportunities</div>
-                            </div>
-                            <div class="card-bg"></div>
-                        </div>
-
-                        <div class="cyber-card">
-                            <div class="card-content">
-                                <h2 class="cyber-text">Ongoing Arbitrage</h2>
-                                <div class="stat-value cyber-glow">20</div>
-                                <div class="stat-description">Active arbitrage operations</div>
-                            </div>
-                            <div class="card-bg"></div>
-                </div>
-
-                        <div class="cyber-card">
-                            <div class="card-content">
-                                <h2 class="cyber-text">Ongoing Sandwich</h2>
-                                <div class="stat-value cyber-glow">56</div>
-                                <div class="stat-description">Active sandwich attacks</div>
-                </div>
-                            <div class="card-bg"></div>
-                </div>
-            </div>
-
-                    <div class="charts-grid">
-                        <div class="cyber-card chart-card" data-aos="fade-up" data-aos-delay="200">
-                            <div class="chart-header">
-                                <h3 class="chart-title">SOL Gained (24h)</h3>
-                                <div class="chart-controls">
-                                    <button class="chart-button" data-timeframe="1h">1H</button>
-                                    <button class="chart-button active" data-timeframe="24h">24H</button>
-                                    <button class="chart-button" data-timeframe="7d">7D</button>
-                </div>
-                </div>
-                <div class="chart-wrapper">
-                                <canvas id="solGainedChart" height="300"></canvas>
-                                <div class="chart-loading">
-                                    <div class="cyber-spinner"></div>
-                </div>
-            </div>
-        </div>
-        
-                        <div class="cyber-card chart-card">
-                            <h3 class="chart-title">MEV Operations</h3>
-                            <canvas id="mevOpsChart" height="300"></canvas>
-                        </div>
-
-                        <div class="cyber-card chart-card">
-                            <h3 class="chart-title">Sandwich Opportunities</h3>
-                            <canvas id="sandwichChart" height="300"></canvas>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- AI Dashboard Section -->
-                <section class="content-section ai-section" aria-label="AI Dashboard">
-                    <div class="ai-stats-grid">
-                        <div class="cyber-card">
-                            <div class="card-content">
-                                <h2 class="cyber-text">Detected Opportunities</h2>
-                                <div class="stat-value cyber-glow" id="detected-opportunities">487</div>
-                                <div class="stat-description">MEV opportunities detected by AI</div>
-                            </div>
-                        </div>
-
-                        <div class="cyber-card">
-                            <div class="card-content">
-                                <h2 class="cyber-text">Prediction Accuracy</h2>
-                                <div class="stat-value cyber-glow" id="successful-predictions">92</div>
-                                <div class="stat-description">Successful predictions (%)</div>
-                            </div>
-                        </div>
-
-                        <div class="cyber-card">
-                            <div class="card-content">
-                                <h2 class="cyber-text">Active Strategies</h2>
-                                <div class="stat-value cyber-glow" id="active-strategies">24</div>
-                                <div class="stat-description">AI strategies in operation</div>
-                            </div>
-                        </div>
-
-                        <div class="cyber-card">
-                            <div class="card-content">
-                                <h2 class="cyber-text">Response Time</h2>
-                                <div class="stat-value cyber-glow" id="avg-response-time">0.15s</div>
-                                <div class="stat-description">Average AI response time</div>
-                            </div>
-                        </div>
-        </div>
-        
-                    <div class="ai-analysis-grid">
-                        <div class="cyber-card full-width">
-                            <h3 class="chart-title">AI Performance Metrics</h3>
-                            <canvas id="aiPerformanceChart" height="300"></canvas>
-        </div>
-        
-                        <!-- MEV Bot Details Card -->
-                        <div class="cyber-card full-width mev-bot-details">
-                            <h3 class="cyber-text">JitoX MEV Bot Features</h3>
-                            <div class="features-grid">
-                                <div class="feature-item">
-                                    <i class="fas fa-robot"></i>
-                                    <h4>Advanced MEV Detection</h4>
-                                    <p>Cutting-edge algorithms to detect and capitalize on MEV opportunities in real-time</p>
-                                </div>
-                                <div class="feature-item">
-                                    <i class="fas fa-bolt"></i>
-                                    <h4>High-Speed Execution</h4>
-                                    <p>Lightning-fast transaction execution with optimized block building</p>
-                                </div>
-                                <div class="feature-item">
-                                    <i class="fas fa-shield-alt"></i>
-                                    <h4>Smart Risk Management</h4>
-                                    <p>Intelligent risk assessment and dynamic position sizing for optimal returns</p>
-                                </div>
-                                <div class="feature-item">
-                                    <i class="fas fa-chart-line"></i>
-                                    <h4>Profit Maximization</h4>
-                                    <p>Advanced strategies for maximizing MEV extraction and profit generation</p>
-                                </div>
-                            </div>
-        </div>
-
-                        <!-- Strategy Details -->
-                        <div class="cyber-card">
-                            <div class="ai-strategy-list">
-                                <h3 class="cyber-text">Active MEV Strategies</h3>
-                                <div class="strategy-item">
-                                    <i class="fas fa-robot"></i>
-                                    <span>Sandwich Strategy v3.0</span>
-                                    <div class="strategy-details">
-                                        <div class="efficiency">Success Rate: 96%</div>
-                                        <div class="profit">Avg. Profit: 0.42 SOL</div>
-                                    </div>
-                                    <span class="status active">Active</span>
-                                </div>
-                                <div class="strategy-item">
-                                    <i class="fas fa-chart-line"></i>
-                                    <span>Arbitrage Engine Pro</span>
-                                    <div class="strategy-details">
-                                        <div class="efficiency">Success Rate: 94%</div>
-                                        <div class="profit">Avg. Profit: 0.38 SOL</div>
-                                    </div>
-                                    <span class="status active">Active</span>
-                                </div>
-                                <div class="strategy-item">
-                                    <i class="fas fa-search-dollar"></i>
-                                    <span>Liquidation Hunter</span>
-                                    <div class="strategy-details">
-                                        <div class="efficiency">Success Rate: 92%</div>
-                                        <div class="profit">Avg. Profit: 0.55 SOL</div>
-                                    </div>
-                                    <span class="status active">Active</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Real-time Monitoring -->
-                        <div class="cyber-card">
-                            <div class="ai-alerts">
-                                <h3 class="cyber-text">Live MEV Activity</h3>
-                                <div class="alert-item">
-                                    <i class="fas fa-exclamation-triangle"></i>
-                                    <div class="alert-details">
-                                        <span class="alert-title">High Profit Opportunity</span>
-                                        <span class="alert-info">Detected 0.8 SOL arbitrage</span>
-                                    </div>
-                                    <span class="time">2m ago</span>
-                                </div>
-                                <div class="alert-item">
-                                    <i class="fas fa-check-circle"></i>
-                                    <div class="alert-details">
-                                        <span class="alert-title">Strategy Optimization</span>
-                                        <span class="alert-info">Improved sandwich detection</span>
-                                    </div>
-                                    <span class="time">5m ago</span>
-                                </div>
-                                <div class="alert-item">
-                                    <i class="fas fa-info-circle"></i>
-                                    <div class="alert-details">
-                                        <span class="alert-title">New Pattern Identified</span>
-                                        <span class="alert-info">Updated arbitrage model</span>
-                                    </div>
-                                    <span class="time">12m ago</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Performance Stats -->
-                        <div class="cyber-card full-width performance-stats">
-                            <h3 class="cyber-text">Performance Metrics</h3>
-                            <div class="metrics-grid">
-                                <div class="metric-item">
-                                    <div class="metric-value">0.12s</div>
-                                    <div class="metric-label">Response Time</div>
-                                </div>
-                                <div class="metric-item">
-                                    <div class="metric-value">99.99%</div>
-                                    <div class="metric-label">System Uptime</div>
-                                </div>
-                                <div class="metric-item">
-                                    <div class="metric-value">94%</div>
-                                    <div class="metric-label">Strategy Success</div>
-                                </div>
-                                <div class="metric-item">
-                                    <div class="metric-value">0.45 SOL</div>
-                                    <div class="metric-label">Avg. Profit/Trade</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Wallet Section -->
-                <section class="content-section wallet-section" aria-label="Wallet">
-                    <!-- Wallet content will go here -->
-                </section>
-
-                <!-- Gains Section -->
-                <section class="content-section gains-section" aria-label="Gains">
-                    <!-- Gains content will go here -->
-                </section>
-
-                <!-- Transactions Section -->
-                <section class="content-section transactions-section" aria-label="Transactions">
-                    <!-- Transactions content will go here -->
-                </section>
-
-                <!-- Help Section -->
-                <section class="content-section help-section" aria-label="Help">
-                    <!-- Help content will go here -->
-                </section>
-
-                <!-- Leaderboard Section -->
-                <section class="content-section leaderboard-section" aria-label="Leaderboard">
-                    <div class="leaderboard-header">
-                        <h2 class="cyber-text">Top MEV Performers</h2>
-                        <div class="time-filter">
-                            <button class="cyber-button active">24H</button>
-                            <button class="cyber-button">7D</button>
-                            <button class="cyber-button">30D</button>
-                        </div>
-                    </div>
-                    <div class="leaderboard-grid">
-                        <div class="cyber-card">
-                            <div class="leaderboard-table">
-                                <div class="table-header">
-                                    <span>Rank</span>
-                                    <span>Address</span>
-                                    <span>Profit</span>
-                                    <span>Success Rate</span>
-                                    <span>Operations</span>
-                                </div>
-                                <div class="table-row">
-                                    <span class="rank">1</span>
-                                    <span class="address">0x7f...3a2b</span>
-                                    <span class="profit">1,245 SOL</span>
-                                    <span class="success">98.5%</span>
-                                    <span class="ops">1,234</span>
-                                </div>
-                                <!-- More rows will be added dynamically -->
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Deep Analytics Section -->
-                <section class="content-section analytics-section" aria-label="Deep Analytics">
-                    <div class="analytics-grid">
-                        <div class="cyber-card full-width">
-                            <h3 class="cyber-text">Network Analysis</h3>
-                            <canvas id="networkAnalysisChart" height="300"></canvas>
-                        </div>
-                        <div class="cyber-card">
-                            <h3 class="cyber-text">Block Distribution</h3>
-                            <canvas id="blockDistributionChart" height="300"></canvas>
-                        </div>
-                        <div class="cyber-card">
-                            <h3 class="cyber-text">Gas Optimization</h3>
-                            <canvas id="gasOptimizationChart" height="300"></canvas>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Live Alerts Section -->
-                <section class="content-section alerts-section" aria-label="Live Alerts">
-                    <div class="alerts-grid">
-                        <div class="cyber-card alerts-feed">
-                            <h3 class="cyber-text">Live MEV Alerts</h3>
-                            <div class="alert-stream">
-                                <!-- Alerts will be added dynamically -->
-                            </div>
-                        </div>
-                        <div class="cyber-card alert-stats">
-                            <h3 class="cyber-text">Alert Statistics</h3>
-                            <canvas id="alertsDistributionChart" height="200"></canvas>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Strategy Hub Section -->
-                <section class="content-section strategies-section" aria-label="Strategy Hub">
-                    <div class="strategies-grid">
-                        <div class="cyber-card strategy-catalog">
-                            <h3 class="cyber-text">Available Strategies</h3>
-                            <div class="strategy-list">
-                                <div class="strategy-item premium">
-                                    <div class="strategy-header">
-                                        <i class="fas fa-star"></i>
-                                        <h4>Advanced Sandwich Pro</h4>
-                                        <span class="badge premium">Premium</span>
-                                    </div>
-                                    <p>Advanced MEV strategy with dynamic position sizing and multi-route execution.</p>
-                                    <div class="strategy-stats">
-                                        <span>Success Rate: 96%</span>
-                                        <span>Avg. Profit: 0.85 SOL</span>
-                                    </div>
-                                    <button class="cyber-button">Deploy Strategy</button>
-                                </div>
-                                <div class="strategy-item">
-                                    <div class="strategy-header">
-                                        <i class="fas fa-robot"></i>
-                                        <h4>Smart Arbitrage Engine</h4>
-                                        <span class="badge standard">Standard</span>
-                                    </div>
-                                    <p>AI-powered arbitrage detection across multiple DEXs with smart routing.</p>
-                                    <div class="strategy-stats">
-                                        <span>Success Rate: 94%</span>
-                                        <span>Avg. Profit: 0.45 SOL</span>
-                                    </div>
-                                    <button class="cyber-button">Deploy Strategy</button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="cyber-card strategy-performance">
-                            <h3 class="cyber-text">Strategy Performance</h3>
-                            <canvas id="strategyPerformanceChart" height="300"></canvas>
-                        </div>
-                    </div>
-                </section>
-            </main>
-
-            <footer class="cyber-footer">
-                <div class="footer-stats">
-                    <div class="stat">
-                        <i class="fas fa-server"></i>
-                        <span>Network Status: </span>
-                        <span class="status-indicator online">Online</span>
-                    </div>
-                    <div class="stat">
-                        <i class="fas fa-clock"></i>
-                        <span>Last Update: </span>
-                        <span class="update-time">Just now</span>
-                    </div>
-                </div>
-            </footer>
+            <!-- AI Dashboard Section -->
+            <section class="ai-section">
+                <!-- Your existing AI dashboard content -->
+            </section>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

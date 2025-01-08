@@ -686,3 +686,44 @@ function updateFooterTimestamp() {
         }, 1000);
     }
 }
+
+// Loading Screen Handler
+document.addEventListener('DOMContentLoaded', () => {
+    const loadingOverlay = document.querySelector('.loading-overlay');
+    const mainContent = document.querySelector('.main-content');
+    const spinnerCube = document.createElement('div');
+    spinnerCube.className = 'spinner-cube';
+    document.querySelector('.cyber-spinner').appendChild(spinnerCube);
+
+    // Add cyber grid
+    const cyberGrid = document.createElement('div');
+    cyberGrid.className = 'cyber-grid';
+    loadingOverlay.appendChild(cyberGrid);
+
+    // Initialize loading screen
+    document.body.classList.add('loading');
+
+    // Simulate loading progress
+    setTimeout(() => {
+        loadingOverlay.classList.add('fade-out');
+        document.body.classList.remove('loading');
+        mainContent.classList.add('visible');
+        
+        // Remove loading overlay after animation
+        setTimeout(() => {
+            loadingOverlay.style.display = 'none';
+        }, 500);
+
+        // Initialize charts and start updates
+        initializeCharts();
+        startUpdates();
+    }, 2000);
+});
+
+function startUpdates() {
+    // Update stats and charts every 2 seconds
+    setInterval(() => {
+        updateAllStats();
+        updateAllCharts();
+    }, 2000);
+}
