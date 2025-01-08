@@ -186,7 +186,7 @@ body {
     margin-bottom: 8px;
 }
 
-/* Loading Overlay Refinements */
+/* Advanced Loading Screen */
 .loading-overlay {
     position: fixed;
     top: 0;
@@ -195,73 +195,97 @@ body {
     height: 100vh;
     background: var(--deep-blue);
     display: flex;
-    flex-direction: column;
     justify-content: center;
     align-items: center;
     z-index: 9999;
-    opacity: 1;
-    transition: opacity 0.5s ease-out;
+    transition: transform 0.5s ease-out, opacity 0.5s ease-out;
 }
 
-.loading-overlay.hidden {
+.loading-overlay.fade-out {
+    transform: translateY(-100%);
     opacity: 0;
-    pointer-events: none;
 }
 
 .loading-content {
-    position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 30px;
+    gap: 40px;
 }
 
 .loading-text {
     color: var(--neon-cyan);
-    font-size: 32px;
-    font-family: 'Courier New', monospace;
+    font-size: 48px;
+    font-weight: bold;
     text-transform: uppercase;
-    letter-spacing: 3px;
-    text-shadow: 0 0 10px var(--neon-cyan);
-    animation: pulse 2s infinite;
-    white-space: nowrap;
+    letter-spacing: 4px;
+    position: relative;
+    text-shadow: 0 0 20px var(--neon-cyan);
+    animation: glitch 3s infinite;
+}
+
+.loading-text::before,
+.loading-text::after {
+    content: 'Initializing JitoX...';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.loading-text::before {
+    color: var(--neon-pink);
+    animation: glitch-1 4s infinite;
+    clip-path: polygon(0 0, 100% 0, 100% 45%, 0 45%);
+}
+
+.loading-text::after {
+    color: var(--neon-cyan);
+    animation: glitch-2 4s infinite;
+    clip-path: polygon(0 60%, 100% 60%, 100% 100%, 0 100%);
 }
 
 .cyber-spinner {
-    width: 80px;
-    height: 80px;
+    width: 120px;
+    height: 120px;
     position: relative;
-    margin: 20px;
+    transform-style: preserve-3d;
+    animation: float 6s ease-in-out infinite;
 }
 
-.spinner-ring {
+.spinner-cube {
     position: absolute;
     width: 100%;
     height: 100%;
-    border-radius: 50%;
-    border: 4px solid transparent;
-    mix-blend-mode: screen;
+    border: 2px solid var(--neon-cyan);
+    transform-style: preserve-3d;
+    animation: cube-spin 8s linear infinite;
 }
 
-.spinner-ring:nth-child(1) {
-    border-top-color: var(--neon-cyan);
-    animation: spin 1s linear infinite;
+.spinner-cube::before,
+.spinner-cube::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border: 2px solid var(--neon-pink);
+    animation: pulse-border 2s ease-in-out infinite alternate;
 }
 
-.spinner-ring:nth-child(2) {
-    border-right-color: var(--neon-pink);
-    animation: spin 1.5s linear infinite reverse;
+.spinner-cube::before {
+    transform: rotateY(90deg);
+    transform-origin: right;
 }
 
-.spinner-ring:nth-child(3) {
-    border-bottom-color: var(--neon-cyan);
-    animation: spin 2s linear infinite;
-    scale: 0.8;
+.spinner-cube::after {
+    transform: rotateX(90deg);
+    transform-origin: bottom;
 }
 
 .loading-progress {
-    width: 200px;
-    height: 2px;
+    width: 300px;
+    height: 4px;
     background: rgba(0, 255, 255, 0.1);
     border-radius: 4px;
     overflow: hidden;
@@ -270,62 +294,117 @@ body {
 
 .progress-bar {
     position: absolute;
-    left: 0;
+    left: -100%;
     top: 0;
     height: 100%;
-    background: var(--neon-cyan);
-    animation: progress 2s ease-in-out infinite;
-    box-shadow: 0 0 10px var(--neon-cyan);
+    width: 100%;
+    background: linear-gradient(90deg, transparent, var(--neon-cyan), transparent);
+    animation: progress-slide 2s ease-in-out infinite;
+    box-shadow: 0 0 20px var(--neon-cyan);
 }
 
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+.cyber-grid {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        linear-gradient(90deg, var(--grid-line) 1px, transparent 1px) 0 0,
+        linear-gradient(0deg, var(--grid-line) 1px, transparent 1px) 0 0;
+    background-size: 50px 50px;
+    animation: grid-move 20s linear infinite;
+    opacity: 0.3;
 }
 
-@keyframes pulse {
-    0%, 100% { opacity: 1; text-shadow: 0 0 10px var(--neon-cyan); }
-    50% { opacity: 0.5; text-shadow: 0 0 20px var(--neon-cyan); }
+@keyframes glitch {
+    0%, 100% { transform: none; opacity: 1; }
+    7% { transform: skew(-0.5deg, -0.9deg); }
+    10% { transform: none; }
+    27% { transform: none; }
+    30% { transform: skew(0.8deg, -0.1deg); }
+    35% { transform: none; }
+    52% { transform: none; }
+    55% { transform: skew(-1deg, 0.2deg); }
+    50% { transform: none; }
+    72% { transform: none; }
+    75% { transform: skew(0.4deg, 1deg); }
+    80% { transform: none; }
+    100% { transform: none; }
 }
 
-@keyframes progress {
-    0% { width: 0%; }
-    50% { width: 100%; }
-    100% { width: 0%; }
+@keyframes glitch-1 {
+    0%, 100% { transform: none; opacity: 1; }
+    50% { transform: translate(-2px, 2px); opacity: 0.75; }
+}
+
+@keyframes glitch-2 {
+    0%, 100% { transform: none; opacity: 1; }
+    50% { transform: translate(2px, -2px); opacity: 0.75; }
+}
+
+@keyframes cube-spin {
+    0% { transform: rotateX(0) rotateY(0) rotateZ(0); }
+    100% { transform: rotateX(360deg) rotateY(360deg) rotateZ(360deg); }
+}
+
+@keyframes pulse-border {
+    0% { border-color: var(--neon-cyan); }
+    100% { border-color: var(--neon-pink); }
+}
+
+@keyframes progress-slide {
+    0% { left: -100%; }
+    50% { left: 100%; }
+    100% { left: -100%; }
+}
+
+@keyframes grid-move {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(50px); }
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-20px) scale(1.1); }
+}
+
+/* Main Content Fix */
+.main-content {
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.5s ease-out;
+}
+
+.main-content.visible {
+    visibility: visible;
+    opacity: 1;
 }
 
 /* Mobile Optimization */
 @media (max-width: 768px) {
     .loading-text {
-        font-size: 24px;
+        font-size: 32px;
         letter-spacing: 2px;
     }
 
     .cyber-spinner {
-        width: 60px;
-        height: 60px;
+        width: 80px;
+        height: 80px;
     }
 
     .loading-progress {
-        width: 150px;
+        width: 200px;
     }
 }
 
-/* Main Content Positioning Fix */
-.main-content {
-    position: relative;
-    z-index: 1;
-    min-height: 100vh;
-    padding-top: 20px;
+/* Prevent Body Scroll During Loading */
+body {
+    overflow: auto !important;
 }
 
-/* Ensure content is hidden during load */
 body.loading {
-    overflow: hidden;
-}
-
-body.loading .main-content {
-    display: none;
+    overflow: hidden !important;
 }
 
 /* Responsive Design */
