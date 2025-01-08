@@ -277,7 +277,7 @@ function initializeCharts() {
                         color: 'rgba(0, 255, 255, 0.1)',
                         borderColor: 'rgba(0, 255, 255, 0.5)'
                     },
-                    ticks: { 
+                    ticks: {
                         color: '#00ffff',
                         font: {
                             family: 'Courier New',
@@ -355,7 +355,7 @@ function initializeCharts() {
                         ...commonOptions.scales,
                         y: {
                             ...commonOptions.scales.y,
-                            grid: {
+                    grid: {
                                 display: true,
                                 color: 'rgba(0, 255, 255, 0.1)'
                             }
@@ -388,11 +388,11 @@ function initializeCharts() {
                     ...commonOptions,
                     cutout: '60%',
                     radius: '90%',
-                    plugins: {
+            plugins: {
                         ...commonOptions.plugins,
-                        legend: {
+                legend: {
                             position: 'bottom',
-                            labels: {
+                    labels: {
                                 padding: 20,
                                 font: {
                                     size: 14
