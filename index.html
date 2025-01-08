@@ -8,6 +8,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://telegram.org/js/telegram-widget.js?22"></script>
+    <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.min.js"></script>
 </head>
 <body class="not-logged">
     <!-- Telegram Login Overlay -->
@@ -228,7 +229,7 @@
                 </div>
             </section>
 
-            <!-- Add User Profile Section -->
+            <!-- User Profile Section -->
             <section class="content-section user-section" style="display: none;">
                 <div class="user-profile-container">
                     <div class="cyber-card user-info-card">
@@ -247,27 +248,13 @@
                                     <span class="value" id="userId"></span>
                                 </div>
                                 <div class="info-item">
-                                    <span class="label">Wallet Address:</span>
+                                    <span class="label">Wallet:</span>
                                     <span class="value" id="userWallet">Not connected</span>
                                 </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="cyber-card stats-card">
-                        <h3>Your Statistics</h3>
-                        <div class="user-stats-grid">
-                            <div class="stat-item">
-                                <span class="stat-label">Total Profit</span>
-                                <span class="stat-value" id="totalProfit">0 SOL</span>
-                            </div>
-                            <div class="stat-item">
-                                <span class="stat-label">Operations</span>
-                                <span class="stat-value" id="totalOperations">0</span>
-                            </div>
-                            <div class="stat-item">
-                                <span class="stat-label">Success Rate</span>
-                                <span class="stat-value" id="successRate">0%</span>
+                                <div class="info-item">
+                                    <span class="label">Balance:</span>
+                                    <span class="value" id="walletBalance">0 SOL</span>
+                                </div>
                             </div>
                         </div>
                     </div>

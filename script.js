@@ -887,31 +887,40 @@ function updateUserProfile(user) {
 // Fetch user's wallet information
 async function fetchUserWallet(userId) {
     try {
-        // For testing, use a placeholder wallet address
         const walletElement = document.getElementById('userWallet');
+        const balanceElement = document.getElementById('walletBalance');
+        
         if (walletElement) {
             walletElement.textContent = 'Fetching wallet...';
+            balanceElement.textContent = '...';
             
-            // Simulate API call delay
-            await new Promise(resolve => setTimeout(resolve, 1000));
+            // Replace with your actual API endpoint
+            const response = await fetch(`https://api.jitox.ai/get_wallet?user_id=${userId}`);
+            const data = await response.json();
             
-            // Replace this with actual API call to your backend
-            // const response = await fetch(`YOUR_API_ENDPOINT/get_wallet?user_id=${userId}`);
-            // const data = await response.json();
-            
-            // For now, use placeholder data
-            walletElement.textContent = 'Connect Wallet';
-            walletElement.style.cursor = 'pointer';
-            walletElement.onclick = () => {
-                // Add wallet connection logic here
-                alert('Wallet connection feature coming soon!');
-            };
+            if (data.wallet) {
+                walletElement.textContent = data.wallet;
+                
+                // Fetch wallet balance
+                try {
+                    const connection = new solanaWeb3.Connection('https://api.mainnet-beta.solana.com');
+                    const publicKey = new solanaWeb3.PublicKey(data.wallet);
+                    const balance = await connection.getBalance(publicKey);
+                    balanceElement.textContent = `${(balance / solanaWeb3.LAMPORTS_PER_SOL).toFixed(4)} SOL`;
+                } catch (error) {
+                    console.error('Error fetching balance:', error);
+                    balanceElement.textContent = 'Error fetching balance';
+                }
+            } else {
+                walletElement.textContent = 'No wallet assigned';
+                balanceElement.textContent = '0 SOL';
+            }
         }
     } catch (error) {
         console.error('Error fetching wallet:', error);
-        const walletElement = document.getElementById('userWallet');
         if (walletElement) {
             walletElement.textContent = 'Error fetching wallet';
+            balanceElement.textContent = 'Error';
         }
     }
 }
