@@ -360,6 +360,177 @@ function initializeAIDashboard() {
     }
 }
 
+function initializeLeaderboard() {
+    const leaderboardData = [
+        { rank: 1, address: '0x7f...3a2b', profit: 1245, success: 98.5, ops: 1234 },
+        { rank: 2, address: '0x3d...9f4c', profit: 987, success: 97.8, ops: 1089 },
+        { rank: 3, address: '0x5e...2d1a', profit: 856, success: 96.5, ops: 945 },
+        { rank: 4, address: '0x1a...8c4d', profit: 743, success: 95.9, ops: 867 },
+        { rank: 5, address: '0x9b...4e2f', profit: 621, success: 95.2, ops: 756 }
+    ];
+
+    const tableBody = document.querySelector('.leaderboard-table');
+    if (!tableBody) return;
+
+    leaderboardData.forEach(entry => {
+        const row = document.createElement('div');
+        row.className = 'table-row';
+        row.innerHTML = `
+            <span class="rank">#${entry.rank}</span>
+            <span class="address">${entry.address}</span>
+            <span class="profit">${entry.profit.toLocaleString()} SOL</span>
+            <span class="success">${entry.success}%</span>
+            <span class="ops">${entry.ops.toLocaleString()}</span>
+        `;
+        tableBody.appendChild(row);
+    });
+}
+
+function initializeAnalytics() {
+    // Network Analysis Chart
+    const networkCtx = document.getElementById('networkAnalysisChart');
+    if (networkCtx) {
+        new Chart(networkCtx, {
+            type: 'line',
+            data: {
+                labels: Array(24).fill('').map((_, i) => `${23-i}h`),
+                datasets: [{
+                    label: 'Network Load',
+                    data: Array(24).fill(0).map(() => getRandomData(50, 100)),
+                    borderColor: '#ff00ff',
+                    backgroundColor: 'rgba(255, 0, 255, 0.1)',
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: {
+                    duration: 2000,
+                    easing: 'easeInOutQuart'
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: 'rgba(0, 255, 255, 0.1)' },
+                        ticks: { color: '#00ffff' }
+                    }
+                }
+            }
+        });
+    }
+
+    // Block Distribution Chart
+    const blockCtx = document.getElementById('blockDistributionChart');
+    if (blockCtx) {
+        new Chart(blockCtx, {
+            type: 'bar',
+            data: {
+                labels: ['0-2s', '2-4s', '4-6s', '6-8s', '8-10s'],
+                datasets: [{
+                    label: 'Block Time Distribution',
+                    data: [45, 30, 15, 7, 3],
+                    backgroundColor: 'rgba(0, 255, 255, 0.5)',
+                    borderColor: '#00ffff',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: {
+                    duration: 2000,
+                    easing: 'easeInOutQuart'
+                }
+            }
+        });
+    }
+}
+
+function initializeAlerts() {
+    const alertStream = document.querySelector('.alert-stream');
+    if (!alertStream) return;
+
+    const alerts = [
+        { type: 'success', title: 'High Profit Opportunity', message: 'Detected 1.2 SOL arbitrage', time: '2m ago' },
+        { type: 'info', title: 'New Strategy Deployed', message: 'Sandwich Pro v3.1 activated', time: '5m ago' },
+        { type: 'warning', title: 'Network Congestion', message: 'Increased gas prices detected', time: '8m ago' }
+    ];
+
+    alerts.forEach(alert => {
+        const alertEl = document.createElement('div');
+        alertEl.className = `alert-item ${alert.type}`;
+        alertEl.innerHTML = `
+            <i class="fas fa-${alert.type === 'success' ? 'check-circle' : alert.type === 'info' ? 'info-circle' : 'exclamation-triangle'}"></i>
+            <div class="alert-details">
+                <span class="alert-title">${alert.title}</span>
+                <span class="alert-info">${alert.message}</span>
+            </div>
+            <span class="time">${alert.time}</span>
+        `;
+        alertStream.appendChild(alertEl);
+    });
+
+    // Alert Distribution Chart
+    const alertCtx = document.getElementById('alertsDistributionChart');
+    if (alertCtx) {
+        new Chart(alertCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['High Priority', 'Medium Priority', 'Low Priority'],
+                datasets: [{
+                    data: [35, 45, 20],
+                    backgroundColor: [
+                        'rgba(255, 0, 255, 0.8)',
+                        'rgba(0, 255, 255, 0.8)',
+                        'rgba(255, 255, 0, 0.8)'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: {
+                    duration: 2000,
+                    easing: 'easeInOutQuart'
+                }
+            }
+        });
+    }
+}
+
+function initializeStrategies() {
+    const strategyCtx = document.getElementById('strategyPerformanceChart');
+    if (strategyCtx) {
+        new Chart(strategyCtx, {
+            type: 'line',
+            data: {
+                labels: Array(24).fill('').map((_, i) => `${23-i}h`),
+                datasets: [{
+                    label: 'Sandwich Pro',
+                    data: Array(24).fill(0).map(() => getRandomData(80, 100)),
+                    borderColor: '#ff00ff',
+                    tension: 0.4
+                }, {
+                    label: 'Arbitrage Engine',
+                    data: Array(24).fill(0).map(() => getRandomData(70, 90)),
+                    borderColor: '#00ffff',
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: {
+                    duration: 2000,
+                    easing: 'easeInOutQuart'
+                }
+            }
+        });
+    }
+}
+
 function initializeTabs() {
     const tabs = document.querySelectorAll('.cyber-button');
     const sections = document.querySelectorAll('.content-section');
@@ -399,11 +570,26 @@ function initializeTabs() {
                     }, 50);
                 }, 300);
                 
-                // Initialize appropriate charts
-                if (targetTab === 'statistics') {
-                    initializeCharts();
-                } else if (targetTab === 'ai') {
-                    initializeAIDashboard();
+                // Initialize appropriate section
+                switch(targetTab) {
+                    case 'statistics':
+                        initializeCharts();
+                        break;
+                    case 'ai':
+                        initializeAIDashboard();
+                        break;
+                    case 'leaderboard':
+                        initializeLeaderboard();
+                        break;
+                    case 'analytics':
+                        initializeAnalytics();
+                        break;
+                    case 'alerts':
+                        initializeAlerts();
+                        break;
+                    case 'strategies':
+                        initializeStrategies();
+                        break;
                 }
             }
         });
