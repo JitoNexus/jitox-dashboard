@@ -726,3 +726,35 @@ function startUpdates() {
         updateAllCharts();
     }, 2000);
 }
+
+function updateLiveMEVActivity() {
+    const activityFeed = document.querySelector('.mev-activity-feed');
+    if (activityFeed) {
+        // Add more frequent and varied activities
+        const activities = [
+            { time: 'Just now', description: 'New high-profit arbitrage detected', details: 'Profit: 1.5 SOL | Gas: 10 GWEI' },
+            { time: '1m ago', description: 'Sandwich attack executed', details: 'Profit: 0.9 SOL | Risk: Low' },
+            { time: '2m ago', description: 'Liquidity movement in SOL/USDC pool', details: 'Volume: 30K SOL' },
+            { time: '3m ago', description: 'AI Strategy optimization completed', details: 'Performance +2.3% | New patterns added: 3' },
+            { time: '4m ago', description: 'Gas optimization engine adjusted parameters', details: 'Saved: 0.05 SOL | Efficiency: 99.5%' },
+            { time: '5m ago', description: 'Multi-DEX arbitrage route discovered', details: 'Path: JUP → Orca → Raydium | Expected profit: 0.95 SOL' }
+        ];
+        activityFeed.innerHTML = '';
+        activities.forEach(activity => {
+            const item = document.createElement('div');
+            item.className = 'activity-item';
+            item.innerHTML = `
+                <div class="activity-time">${activity.time}</div>
+                <div class="activity-description">
+                    <i class="fas fa-arrow-trend-up"></i>
+                    ${activity.description}
+                    <div class="activity-details">${activity.details}</div>
+                </div>
+            `;
+            activityFeed.appendChild(item);
+        });
+    }
+}
+
+// Call this function to update the Live MEV Activity
+updateLiveMEVActivity();
