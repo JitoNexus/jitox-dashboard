@@ -727,26 +727,105 @@ function startUpdates() {
     }, 2000);
 }
 
+// Generate random SOL profit between 0.05 and 14.92
+function getRandomProfit() {
+    return (Math.random() * (14.92 - 0.05) + 0.05).toFixed(2);
+}
+
+// Get random time within last 5 minutes
+function getRandomTime() {
+    const minutes = Math.floor(Math.random() * 5);
+    return minutes === 0 ? 'Just now' : `${minutes}m ago`;
+}
+
+// Generate random volume
+function getRandomVolume() {
+    return Math.floor(Math.random() * (50000 - 1000) + 1000);
+}
+
+// Random DEX selection
+function getRandomDEX() {
+    const dexes = ['Raydium', 'Orca', 'Jupiter', 'Mango', 'Serum'];
+    return dexes[Math.floor(Math.random() * dexes.length)];
+}
+
+// Random token pairs
+function getRandomPair() {
+    const tokens = ['SOL', 'USDC', 'BONK', 'JUP', 'RAY', 'ORCA'];
+    const token1 = tokens[Math.floor(Math.random() * tokens.length)];
+    let token2;
+    do {
+        token2 = tokens[Math.floor(Math.random() * tokens.length)];
+    } while (token2 === token1);
+    return `${token1}/${token2}`;
+}
+
 function updateLiveMEVActivity() {
     const activityFeed = document.querySelector('.mev-activity-feed');
     if (activityFeed) {
-        // Add more frequent and varied activities
-        const activities = [
-            { time: 'Just now', description: 'New high-profit arbitrage detected', details: 'Profit: 1.5 SOL | Gas: 10 GWEI' },
-            { time: '1m ago', description: 'Sandwich attack executed', details: 'Profit: 0.9 SOL | Risk: Low' },
-            { time: '2m ago', description: 'Liquidity movement in SOL/USDC pool', details: 'Volume: 30K SOL' },
-            { time: '3m ago', description: 'AI Strategy optimization completed', details: 'Performance +2.3% | New patterns added: 3' },
-            { time: '4m ago', description: 'Gas optimization engine adjusted parameters', details: 'Saved: 0.05 SOL | Efficiency: 99.5%' },
-            { time: '5m ago', description: 'Multi-DEX arbitrage route discovered', details: 'Path: JUP → Orca → Raydium | Expected profit: 0.95 SOL' }
+        const activityTypes = [
+            {
+                type: 'arbitrage',
+                icon: 'fa-arrow-trend-up',
+                template: () => ({
+                    description: `High-profit arbitrage opportunity on ${getRandomDEX()}`,
+                    details: `Profit: ${getRandomProfit()} SOL | Gas: ${Math.floor(Math.random() * 20 + 5)} GWEI`
+                })
+            },
+            {
+                type: 'sandwich',
+                icon: 'fa-layer-group',
+                template: () => ({
+                    description: `Sandwich attack executed on ${getRandomPair()}`,
+                    details: `Profit: ${getRandomProfit()} SOL | Risk: ${Math.random() > 0.5 ? 'Low' : 'Medium'}`
+                })
+            },
+            {
+                type: 'liquidity',
+                icon: 'fa-water',
+                template: () => ({
+                    description: `Large liquidity movement detected in ${getRandomPair()} pool`,
+                    details: `Volume: ${getRandomVolume()} SOL | DEX: ${getRandomDEX()}`
+                })
+            },
+            {
+                type: 'optimization',
+                icon: 'fa-microchip',
+                template: () => ({
+                    description: 'AI Strategy optimization completed',
+                    details: `Performance +${(Math.random() * 5).toFixed(1)}% | New patterns: ${Math.floor(Math.random() * 5 + 1)}`
+                })
+            }
         ];
+
+        // Generate 10 random activities
+        const activities = Array(10).fill(null).map(() => {
+            const activityType = activityTypes[Math.floor(Math.random() * activityTypes.length)];
+            const { description, details } = activityType.template();
+            return {
+                time: getRandomTime(),
+                icon: activityType.icon,
+                description,
+                details,
+                priority: Math.random() > 0.7 ? 'high-priority' : Math.random() > 0.5 ? 'medium-priority' : ''
+            };
+        });
+
+        // Sort by time (Just now first, then by minutes)
+        activities.sort((a, b) => {
+            if (a.time === 'Just now') return -1;
+            if (b.time === 'Just now') return 1;
+            return parseInt(a.time) - parseInt(b.time);
+        });
+
         activityFeed.innerHTML = '';
         activities.forEach(activity => {
             const item = document.createElement('div');
-            item.className = 'activity-item';
+            item.className = `activity-item ${activity.priority}`;
             item.innerHTML = `
                 <div class="activity-time">${activity.time}</div>
                 <div class="activity-description">
-                    <i class="fas fa-arrow-trend-up"></i>
+                    <i class="fas ${activity.icon}"></i>
                     ${activity.description}
                     <div class="activity-details">${activity.details}</div>
                 </div>
@@ -756,5 +835,8 @@ function updateLiveMEVActivity() {
     }
 }
 
-// Call this function to update the Live MEV Activity
+// Update activity feed every 5 seconds
+setInterval(updateLiveMEVActivity, 5000);
+
+// Initial call
 updateLiveMEVActivity();
