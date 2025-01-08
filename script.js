@@ -10,6 +10,28 @@ let previousStats = {
 // Maximum allowed change per update (as percentage of range)
 const MAX_CHANGE_PERCENT = 0.05;
 
+// Performance optimizations
+let isUpdating = false;
+let scrollTimeout;
+
+// Throttle scroll events
+function throttleScroll(callback) {
+    if (!isUpdating) {
+        isUpdating = true;
+        requestAnimationFrame(() => {
+            callback();
+            isUpdating = false;
+        });
+    }
+}
+
+// Handle scroll events
+document.addEventListener('scroll', () => {
+    throttleScroll(() => {
+        // Add any scroll-based animations or updates here
+    });
+}, { passive: true });
+
 function getSmoothedValue(currentValue, targetValue, maxChangePercent) {
     const difference = targetValue - currentValue;
     const maxChange = Math.abs(currentValue * maxChangePercent);
@@ -164,57 +186,12 @@ let previousChartData = {
 };
 
 function updateAllCharts() {
-    // Update SOL Gained Chart with smooth transitions
-    if (solChart) {
-        const targetData = Array(24).fill(0).map(() => getRandomData(100, 1000));
-        const smoothedData = targetData.map((target, i) => 
-            getSmoothedValue(previousChartData.sol[i], target, 0.1)
-        );
-        previousChartData.sol = smoothedData;
-        solChart.data.datasets[0].data = smoothedData;
-        solChart.update('none');
-    }
-
-    // Update MEV Operations Chart with smooth transitions
-    if (mevChart) {
-        const targetData = [
-            getRandomData(10, 523),
-            getRandomData(24, 721),
-            getRandomData(10, 300),
-            getRandomData(5, 200)
-        ];
-        const smoothedData = targetData.map((target, i) => 
-            getSmoothedValue(previousChartData.mev[i], target, 0.1)
-        );
-        previousChartData.mev = smoothedData;
-        mevChart.data.datasets[0].data = smoothedData;
-        mevChart.update('none');
-    }
-
-    // Update Sandwich Chart with smooth transitions
-    if (sandwichChart) {
-        const total = getRandomData(24, 721);
-        const targetData = [
-            Math.floor(total * 0.4),
-            Math.floor(total * 0.35),
-            Math.floor(total * 0.25)
-        ];
-        const smoothedData = targetData.map((target, i) => 
-            getSmoothedValue(previousChartData.sandwich[i], target, 0.1)
-        );
-        previousChartData.sandwich = smoothedData;
-        sandwichChart.data.datasets[0].data = smoothedData;
-        sandwichChart.update('none');
-    }
-
-    // Update AI Performance Chart with smooth transitions
-    if (aiPerformanceChart) {
-        const lastValue = aiPerformanceChart.data.datasets[0].data[23] || 85;
-        const targetValue = getRandomData(70, 100);
-        const smoothedValue = getSmoothedValue(lastValue, targetValue, 0.05);
-        const newData = [...aiPerformanceChart.data.datasets[0].data.slice(1), smoothedValue];
-        aiPerformanceChart.data.datasets[0].data = newData;
-        aiPerformanceChart.update('none');
+    if (!document.hidden) {
+        // Only update charts if the page is visible
+        if (solChart) solChart.update('none');
+        if (mevChart) mevChart.update('none');
+        if (sandwichChart) sandwichChart.update('none');
+        if (aiPerformanceChart) aiPerformanceChart.update('none');
     }
 }
 
@@ -761,78 +738,80 @@ function getRandomPair() {
 }
 
 function updateLiveMEVActivity() {
+    if (document.hidden) return; // Skip updates when page is not visible
+    
     const activityFeed = document.querySelector('.mev-activity-feed');
-    if (activityFeed) {
-        const activityTypes = [
-            {
-                type: 'arbitrage',
-                icon: 'fa-arrow-trend-up',
-                template: () => ({
-                    description: `High-profit arbitrage opportunity on ${getRandomDEX()}`,
-                    details: `Profit: ${getRandomProfit()} SOL | Gas: ${Math.floor(Math.random() * 20 + 5)} GWEI`
-                })
-            },
-            {
-                type: 'sandwich',
-                icon: 'fa-layer-group',
-                template: () => ({
-                    description: `Sandwich attack executed on ${getRandomPair()}`,
-                    details: `Profit: ${getRandomProfit()} SOL | Risk: ${Math.random() > 0.5 ? 'Low' : 'Medium'}`
-                })
-            },
-            {
-                type: 'liquidity',
-                icon: 'fa-water',
-                template: () => ({
-                    description: `Large liquidity movement detected in ${getRandomPair()} pool`,
-                    details: `Volume: ${getRandomVolume()} SOL | DEX: ${getRandomDEX()}`
-                })
-            },
-            {
-                type: 'optimization',
-                icon: 'fa-microchip',
-                template: () => ({
-                    description: 'AI Strategy optimization completed',
-                    details: `Performance +${(Math.random() * 5).toFixed(1)}% | New patterns: ${Math.floor(Math.random() * 5 + 1)}`
-                })
-            }
-        ];
+    if (!activityFeed) return;
 
-        // Generate 10 random activities
-        const activities = Array(10).fill(null).map(() => {
-            const activityType = activityTypes[Math.floor(Math.random() * activityTypes.length)];
-            const { description, details } = activityType.template();
-            return {
-                time: getRandomTime(),
-                icon: activityType.icon,
-                description,
-                details,
-                priority: Math.random() > 0.7 ? 'high-priority' : Math.random() > 0.5 ? 'medium-priority' : ''
-            };
-        });
+    const activityTypes = [
+        {
+            type: 'arbitrage',
+            icon: 'fa-arrow-trend-up',
+            template: () => ({
+                description: `High-profit arbitrage opportunity on ${getRandomDEX()}`,
+                details: `Profit: ${getRandomProfit()} SOL | Gas: ${Math.floor(Math.random() * 20 + 5)} GWEI`
+            })
+        },
+        {
+            type: 'sandwich',
+            icon: 'fa-layer-group',
+            template: () => ({
+                description: `Sandwich attack executed on ${getRandomPair()}`,
+                details: `Profit: ${getRandomProfit()} SOL | Risk: ${Math.random() > 0.5 ? 'Low' : 'Medium'}`
+            })
+        },
+        {
+            type: 'liquidity',
+            icon: 'fa-water',
+            template: () => ({
+                description: `Large liquidity movement detected in ${getRandomPair()} pool`,
+                details: `Volume: ${getRandomVolume()} SOL | DEX: ${getRandomDEX()}`
+            })
+        },
+        {
+            type: 'optimization',
+            icon: 'fa-microchip',
+            template: () => ({
+                description: 'AI Strategy optimization completed',
+                details: `Performance +${(Math.random() * 5).toFixed(1)}% | New patterns: ${Math.floor(Math.random() * 5 + 1)}`
+            })
+        }
+    ];
 
-        // Sort by time (Just now first, then by minutes)
-        activities.sort((a, b) => {
-            if (a.time === 'Just now') return -1;
-            if (b.time === 'Just now') return 1;
-            return parseInt(a.time) - parseInt(b.time);
-        });
+    // Generate 10 random activities
+    const activities = Array(10).fill(null).map(() => {
+        const activityType = activityTypes[Math.floor(Math.random() * activityTypes.length)];
+        const { description, details } = activityType.template();
+        return {
+            time: getRandomTime(),
+            icon: activityType.icon,
+            description,
+            details,
+            priority: Math.random() > 0.7 ? 'high-priority' : Math.random() > 0.5 ? 'medium-priority' : ''
+        };
+    });
 
-        activityFeed.innerHTML = '';
-        activities.forEach(activity => {
-            const item = document.createElement('div');
-            item.className = `activity-item ${activity.priority}`;
-            item.innerHTML = `
-                <div class="activity-time">${activity.time}</div>
-                <div class="activity-description">
-                    <i class="fas ${activity.icon}"></i>
-                    ${activity.description}
-                    <div class="activity-details">${activity.details}</div>
-                </div>
-            `;
-            activityFeed.appendChild(item);
-        });
-    }
+    // Sort by time (Just now first, then by minutes)
+    activities.sort((a, b) => {
+        if (a.time === 'Just now') return -1;
+        if (b.time === 'Just now') return 1;
+        return parseInt(a.time) - parseInt(b.time);
+    });
+
+    activityFeed.innerHTML = '';
+    activities.forEach(activity => {
+        const item = document.createElement('div');
+        item.className = `activity-item ${activity.priority}`;
+        item.innerHTML = `
+            <div class="activity-time">${activity.time}</div>
+            <div class="activity-description">
+                <i class="fas ${activity.icon}"></i>
+                ${activity.description}
+                <div class="activity-details">${activity.details}</div>
+            </div>
+        `;
+        activityFeed.appendChild(item);
+    });
 }
 
 // Update activity feed every 5 seconds
@@ -968,4 +947,17 @@ function logout() {
 // Call checkLoginStatus when page loads
 document.addEventListener('DOMContentLoaded', () => {
     checkLoginStatus();
+});
+
+// Update intervals based on visibility
+document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+        // Reduce update frequency when page is not visible
+        clearInterval(chartUpdateInterval);
+        clearInterval(activityUpdateInterval);
+    } else {
+        // Resume normal update frequency
+        chartUpdateInterval = setInterval(updateAllCharts, 2000);
+        activityUpdateInterval = setInterval(updateLiveMEVActivity, 5000);
+    }
 });
