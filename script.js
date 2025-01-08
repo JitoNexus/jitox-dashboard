@@ -18,6 +18,13 @@ function getSmoothedValue(currentValue, targetValue, maxChangePercent) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Initialize AOS
+    AOS.init({
+        duration: 1000,
+        once: true,
+        mirror: false
+    });
+
     if (typeof Chart === 'undefined') {
         console.error('Chart.js not loaded');
         return;
@@ -26,16 +33,39 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize charts
     initializeCharts();
     initializeTabs();
+    initializeLoadingStates();
 
     // Start continuous updates
     startContinuousUpdates();
 });
 
+function initializeLoadingStates() {
+    // Hide loading overlay after initialization
+    setTimeout(() => {
+        const loadingOverlay = document.querySelector('.loading-overlay');
+        if (loadingOverlay) {
+            loadingOverlay.classList.add('hidden');
+        }
+    }, 2000);
+
+    // Add loading state to charts
+    document.querySelectorAll('.chart-loading').forEach(loader => {
+        loader.classList.add('active');
+    });
+
+    // Remove loading state after charts are initialized
+    setTimeout(() => {
+        document.querySelectorAll('.chart-loading').forEach(loader => {
+            loader.classList.remove('active');
+        });
+    }, 1500);
+}
+
 function startContinuousUpdates() {
-    // Update everything every second
     setInterval(() => {
         updateAllCharts();
         updateAllStats();
+        updateFooterTimestamp();
     }, 1000);
 }
 
@@ -73,16 +103,16 @@ function animateValue(element, start, end, duration) {
     const range = end - start;
     const startTime = performance.now();
     
+    function easeOutQuart(x) {
+        return 1 - Math.pow(1 - x, 4);
+    }
+    
     function updateNumber(currentTime) {
         const elapsed = currentTime - startTime;
         const progress = Math.min(elapsed / duration, 1);
         
-        // Use easeInOutQuart for even smoother animation
-        const easing = progress < 0.5
-            ? 8 * progress * progress * progress * progress
-            : 1 - Math.pow(-2 * progress + 2, 4) / 2;
-        
-        const current = Math.floor(start + (range * easing));
+        const easedProgress = easeOutQuart(progress);
+        const current = Math.floor(start + (range * easedProgress));
         element.textContent = current.toLocaleString();
         
         if (progress < 1) {
@@ -171,7 +201,63 @@ function updateAllCharts() {
 
 function initializeCharts() {
     try {
-        // SOL Gained Chart
+        // Show loading state
+        document.querySelectorAll('.chart-loading').forEach(loader => {
+            loader.classList.add('active');
+        });
+
+        // Initialize charts with enhanced styling
+        const chartOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            animation: {
+                duration: 2000,
+                easing: 'easeInOutQuart'
+            },
+            plugins: {
+                legend: {
+                    display: true,
+                    labels: { 
+                        color: '#00ffff',
+                        font: {
+                            family: 'Courier New',
+                            size: 12
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: { 
+                        color: 'rgba(0, 255, 255, 0.1)',
+                        borderColor: 'rgba(0, 255, 255, 0.5)'
+                    },
+                    ticks: { 
+                        color: '#00ffff',
+                        font: {
+                            family: 'Courier New',
+                            size: 12
+                        }
+                    }
+                },
+                x: {
+                    grid: { 
+                        color: 'rgba(0, 255, 255, 0.1)',
+                        borderColor: 'rgba(0, 255, 255, 0.5)'
+                    },
+                    ticks: { 
+                        color: '#00ffff',
+                        font: {
+                            family: 'Courier New',
+                            size: 12
+                        }
+                    }
+                }
+            }
+        };
+
+        // Initialize charts with enhanced options
         solChart = new Chart(
             document.getElementById('solGainedChart'),
             {
@@ -184,31 +270,26 @@ function initializeCharts() {
                         borderColor: '#ff00ff',
                         backgroundColor: 'rgba(255, 0, 255, 0.1)',
                         fill: true,
-                        tension: 0.4
+                        tension: 0.4,
+                        borderWidth: 2,
+                        pointBackgroundColor: '#ff00ff',
+                        pointBorderColor: '#ffffff',
+                        pointRadius: 4,
+                        pointHoverRadius: 6
                     }]
                 },
                 options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    animation: {
-                        duration: 2000,  // Slower animation
-                        easing: 'easeInOutQuart'
-                    },
+                    ...chartOptions,
                     plugins: {
-                        legend: {
-                            display: true,
-                            labels: { color: '#00ffff' }
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            grid: { color: 'rgba(0, 255, 255, 0.1)' },
-                            ticks: { color: '#00ffff' }
-                        },
-                        x: {
-                            grid: { color: 'rgba(0, 255, 255, 0.1)' },
-                            ticks: { color: '#00ffff' }
+                        ...chartOptions.plugins,
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 51, 0.9)',
+                            titleColor: '#00ffff',
+                            bodyColor: '#ffffff',
+                            borderColor: '#ff00ff',
+                            borderWidth: 1,
+                            padding: 10,
+                            displayColors: false
                         }
                     }
                 }
@@ -306,9 +387,20 @@ function initializeCharts() {
             }
         );
 
+        // Hide loading state after initialization
+        setTimeout(() => {
+            document.querySelectorAll('.chart-loading').forEach(loader => {
+                loader.classList.remove('active');
+            });
+        }, 1500);
+
         console.log('Charts initialized successfully');
     } catch (error) {
         console.error('Error initializing charts:', error);
+        // Show error state in UI
+        document.querySelectorAll('.chart-card').forEach(card => {
+            card.classList.add('error-state');
+        });
     }
 }
 
@@ -539,6 +631,7 @@ function initializeTabs() {
     sections.forEach(section => {
         if (!section.classList.contains('statistics-section')) {
             section.style.display = 'none';
+            section.style.opacity = '0';
         }
     });
 
@@ -546,13 +639,15 @@ function initializeTabs() {
         tab.addEventListener('click', () => {
             const targetTab = tab.dataset.tab;
 
-            // Remove active class from all tabs
-            tabs.forEach(t => t.classList.remove('active'));
-            
-            // Add active class to clicked tab
+            // Update aria-selected states
+            tabs.forEach(t => {
+                t.setAttribute('aria-selected', 'false');
+                t.classList.remove('active');
+            });
+            tab.setAttribute('aria-selected', 'true');
             tab.classList.add('active');
 
-            // Hide all sections with fade out
+            // Fade out all sections
             sections.forEach(section => {
                 section.style.opacity = '0';
                 setTimeout(() => {
@@ -560,37 +655,17 @@ function initializeTabs() {
                 }, 300);
             });
 
-            // Show selected section with fade in
+            // Show and fade in target section
             const targetSection = document.querySelector(`.${targetTab}-section`);
             if (targetSection) {
                 setTimeout(() => {
                     targetSection.style.display = 'block';
+                    // Trigger AOS animations
+                    AOS.refresh();
                     setTimeout(() => {
                         targetSection.style.opacity = '1';
                     }, 50);
                 }, 300);
-                
-                // Initialize appropriate section
-                switch(targetTab) {
-                    case 'statistics':
-                        initializeCharts();
-                        break;
-                    case 'ai':
-                        initializeAIDashboard();
-                        break;
-                    case 'leaderboard':
-                        initializeLeaderboard();
-                        break;
-                    case 'analytics':
-                        initializeAnalytics();
-                        break;
-                    case 'alerts':
-                        initializeAlerts();
-                        break;
-                    case 'strategies':
-                        initializeStrategies();
-                        break;
-                }
             }
         });
     });
@@ -599,4 +674,15 @@ function initializeTabs() {
 // Utility functions
 function getRandomData(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+// Update footer timestamp
+function updateFooterTimestamp() {
+    const updateTime = document.querySelector('.update-time');
+    if (updateTime) {
+        updateTime.textContent = 'Just now';
+        setTimeout(() => {
+            updateTime.textContent = '1s ago';
+        }, 1000);
+    }
 }
