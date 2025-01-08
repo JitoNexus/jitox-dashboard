@@ -875,41 +875,85 @@ async function initializeDashboard(user) {
 
 // Update user profile information
 function updateUserProfile(user) {
+    console.log('Updating user profile with data:', user);
+    
     // Update profile photo
     const userPhoto = document.getElementById('userPhoto');
-    if (userPhoto && user.photo_url) {
-        userPhoto.src = user.photo_url;
+    if (userPhoto) {
+        if (user.photo_url) {
+            userPhoto.src = user.photo_url;
+            userPhoto.style.display = 'block';
+        } else {
+            userPhoto.src = 'https://via.placeholder.com/120x120.png?text=No+Photo';
+        }
     }
 
     // Update user information
-    document.getElementById('userName').textContent = `${user.first_name} ${user.last_name || ''}`;
-    document.getElementById('userId').textContent = user.id;
+    const userName = document.getElementById('userName');
+    const userId = document.getElementById('userId');
+    
+    if (userName) {
+        const fullName = `${user.first_name || ''} ${user.last_name || ''}`.trim();
+        userName.textContent = fullName || 'Anonymous';
+    }
+    
+    if (userId) {
+        userId.textContent = user.id || 'Not available';
+    }
 
-    // Simulate fetching wallet information (replace with actual API call)
+    // Fetch wallet information
     fetchUserWallet(user.id);
 }
 
 // Fetch user's wallet information
 async function fetchUserWallet(userId) {
     try {
-        // Replace this with actual API call to your backend
-        const response = await fetch(`YOUR_API_ENDPOINT/get_wallet?user_id=${userId}`);
-        const data = await response.json();
-        
-        if (data.wallet) {
-            document.getElementById('userWallet').textContent = data.wallet;
+        // For testing, use a placeholder wallet address
+        const walletElement = document.getElementById('userWallet');
+        if (walletElement) {
+            walletElement.textContent = 'Fetching wallet...';
+            
+            // Simulate API call delay
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            // Replace this with actual API call to your backend
+            // const response = await fetch(`YOUR_API_ENDPOINT/get_wallet?user_id=${userId}`);
+            // const data = await response.json();
+            
+            // For now, use placeholder data
+            walletElement.textContent = 'Connect Wallet';
+            walletElement.style.cursor = 'pointer';
+            walletElement.onclick = () => {
+                // Add wallet connection logic here
+                alert('Wallet connection feature coming soon!');
+            };
         }
     } catch (error) {
         console.error('Error fetching wallet:', error);
+        const walletElement = document.getElementById('userWallet');
+        if (walletElement) {
+            walletElement.textContent = 'Error fetching wallet';
+        }
     }
 }
 
-// Update user statistics
+// Update user statistics with more realistic data
 function updateUserStats() {
-    // Simulate updating user statistics (replace with actual data)
-    document.getElementById('totalProfit').textContent = `${(Math.random() * 10).toFixed(2)} SOL`;
-    document.getElementById('totalOperations').textContent = Math.floor(Math.random() * 100);
-    document.getElementById('successRate').textContent = `${(Math.random() * 20 + 80).toFixed(1)}%`;
+    const stats = {
+        totalProfit: (Math.random() * 10).toFixed(2),
+        totalOperations: Math.floor(Math.random() * 100),
+        successRate: (Math.random() * 20 + 80).toFixed(1)
+    };
+
+    const elements = {
+        totalProfit: document.getElementById('totalProfit'),
+        totalOperations: document.getElementById('totalOperations'),
+        successRate: document.getElementById('successRate')
+    };
+
+    if (elements.totalProfit) elements.totalProfit.textContent = `${stats.totalProfit} SOL`;
+    if (elements.totalOperations) elements.totalOperations.textContent = stats.totalOperations;
+    if (elements.successRate) elements.successRate.textContent = `${stats.successRate}%`;
 }
 
 // Update user stats every 30 seconds
