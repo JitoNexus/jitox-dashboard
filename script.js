@@ -40,70 +40,59 @@ function startContinuousUpdates() {
 }
 
 function updateAllStats() {
-    // Generate target values
-    const targetStats = {
-        'Active Searchers': getRandomData(2500, 10000),
-        'Active MEV Operations': getRandomData(100, 1232),
-        'Ongoing Arbitrage': getRandomData(10, 523),
-        'Ongoing Sandwich': getRandomData(24, 721)
+    // Statistics tab ranges
+    const ranges = {
+        'Active Searchers': { min: 2500, max: 10000 },
+        'Active MEV Operations': { min: 100, max: 1232 },
+        'Ongoing Arbitrage': { min: 10, max: 523 },
+        'Ongoing Sandwich': { min: 24, max: 721 }
     };
 
-    // Smooth the transitions
-    Object.entries(targetStats).forEach(([key, targetValue]) => {
-        const smoothedValue = getSmoothedValue(previousStats[key], targetValue, MAX_CHANGE_PERCENT);
-        previousStats[key] = smoothedValue;
-
-        const statTitle = document.evaluate(
-            `//h2[contains(text(), '${key}')]`,
-            document,
-            null,
-            XPathResult.FIRST_ORDERED_NODE_TYPE,
-            null
-        ).singleNodeValue;
+    // Update each statistic with animation
+    document.querySelectorAll('.cyber-card .card-content').forEach(card => {
+        const title = card.querySelector('h2')?.textContent;
+        const valueElement = card.querySelector('.stat-value');
         
-        if (statTitle) {
-            const statValue = statTitle.nextElementSibling;
-            if (statValue && statValue.classList.contains('stat-value')) {
-                const currentValue = parseInt(statValue.textContent.replace(/,/g, ''));
-                animateValue(statValue, currentValue, smoothedValue, 1000);
-            }
+        if (title && valueElement && ranges[title]) {
+            const range = ranges[title];
+            const newValue = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
+            const currentValue = parseInt(valueElement.textContent.replace(/,/g, '')) || 0;
+            
+            // Animate the number change
+            animateValue(valueElement, currentValue, newValue, 2000); // 2 second animation
         }
     });
-
-    // Update AI dashboard stats with smoother changes
-    const aiStats = {
-        'detected-opportunities': getSmoothedValue(
-            parseInt(document.getElementById('detected-opportunities')?.textContent || '400'),
-            getRandomData(100, 1232),
-            MAX_CHANGE_PERCENT
-        ),
-        'successful-predictions': getSmoothedValue(
-            parseInt(document.getElementById('successful-predictions')?.textContent || '90'),
-            getRandomData(80, 100),
-            0.02
-        ),
-        'active-strategies': getSmoothedValue(
-            parseInt(document.getElementById('active-strategies')?.textContent || '25'),
-            getRandomData(10, 50),
-            0.1
-        ),
-        'avg-response-time': (Math.random() * 0.1 + 0.1).toFixed(3)
-    };
-
-    Object.entries(aiStats).forEach(([id, value]) => {
-        const element = document.getElementById(id);
-        if (element) {
-            if (id === 'avg-response-time') {
-                element.textContent = `${value}s`;
-            } else {
-                const currentValue = parseInt(element.textContent.replace(/,/g, ''));
-                animateValue(element, currentValue, value, 1000);
-            }
-        }
-    });
-
-    updateAlertTimes();
 }
+
+function animateValue(element, start, end, duration) {
+    const range = end - start;
+    const startTime = performance.now();
+    
+    function updateNumber(currentTime) {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        
+        // Use easeInOutCubic for smoother animation
+        const easing = progress < 0.5 
+            ? 4 * progress * progress * progress 
+            : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+        
+        const current = Math.floor(start + (range * easing));
+        element.textContent = current.toLocaleString();
+        
+        if (progress < 1) {
+            requestAnimationFrame(updateNumber);
+        }
+    }
+    
+    requestAnimationFrame(updateNumber);
+}
+
+// Update stats every 5 seconds instead of every second
+setInterval(updateAllStats, 5000);
+
+// Update charts every 3 seconds
+setInterval(updateAllCharts, 3000);
 
 function updateAlertTimes() {
     const alerts = document.querySelectorAll('.alert-item .time');
@@ -419,19 +408,4 @@ function initializeTabs() {
 // Utility functions
 function getRandomData(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-
-function animateValue(obj, start, end, duration) {
-    if (start === end) return;
-    const range = end - start;
-    let current = start;
-    const increment = end > start ? 1 : -1;
-    const stepTime = Math.abs(Math.floor(duration / range));
-    const timer = setInterval(() => {
-        current += increment;
-        obj.textContent = current.toLocaleString();
-        if (current === end) {
-            clearInterval(timer);
-        }
-    }, stepTime);
 }
