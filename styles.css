@@ -198,89 +198,88 @@ body {
     justify-content: center;
     align-items: center;
     z-index: 9999;
-    transition: transform 0.5s ease-out, opacity 0.5s ease-out;
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.5s ease-out, visibility 0.5s ease-out;
 }
 
-.loading-overlay.fade-out {
-    transform: translateY(-100%);
+.loading-overlay.hidden {
     opacity: 0;
+    visibility: hidden;
 }
 
 .loading-content {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 40px;
+    gap: 30px;
+    position: relative;
+    z-index: 2;
+}
+
+.loading-logo {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    margin-bottom: 20px;
+}
+
+.logo-hexagon {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(45deg, var(--neon-cyan), var(--neon-pink));
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    animation: rotate 4s linear infinite, pulse 2s ease-in-out infinite alternate;
+}
+
+.logo-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 24px;
+    font-weight: bold;
+    color: var(--deep-blue);
+    text-shadow: 0 0 10px var(--neon-cyan);
+    z-index: 1;
 }
 
 .loading-text {
-    color: var(--neon-cyan);
-    font-size: 48px;
+    font-size: 32px;
     font-weight: bold;
+    color: var(--neon-cyan);
     text-transform: uppercase;
-    letter-spacing: 4px;
-    position: relative;
-    text-shadow: 0 0 20px var(--neon-cyan);
+    letter-spacing: 3px;
+    text-shadow: 0 0 10px var(--neon-cyan);
     animation: glitch 3s infinite;
 }
 
-.loading-text::before,
-.loading-text::after {
-    content: 'Initializing JitoX...';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+.loading-status {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 300px;
 }
 
-.loading-text::before {
-    color: var(--neon-pink);
-    animation: glitch-1 4s infinite;
-    clip-path: polygon(0 0, 100% 0, 100% 45%, 0 45%);
-}
-
-.loading-text::after {
+.status-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
     color: var(--neon-cyan);
-    animation: glitch-2 4s infinite;
-    clip-path: polygon(0 60%, 100% 60%, 100% 100%, 0 100%);
+    font-size: 14px;
+    opacity: 0;
+    animation: fadeInUp 0.5s ease forwards;
 }
 
-.cyber-spinner {
-    width: 120px;
-    height: 120px;
-    position: relative;
-    transform-style: preserve-3d;
-    animation: float 6s ease-in-out infinite;
-}
+.status-item:nth-child(1) { animation-delay: 0.5s; }
+.status-item:nth-child(2) { animation-delay: 1s; }
+.status-item:nth-child(3) { animation-delay: 1.5s; }
 
-.spinner-cube {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    border: 2px solid var(--neon-cyan);
-    transform-style: preserve-3d;
-    animation: cube-spin 8s linear infinite;
-}
-
-.spinner-cube::before,
-.spinner-cube::after {
-    content: '';
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    border: 2px solid var(--neon-pink);
-    animation: pulse-border 2s ease-in-out infinite alternate;
-}
-
-.spinner-cube::before {
-    transform: rotateY(90deg);
-    transform-origin: right;
-}
-
-.spinner-cube::after {
-    transform: rotateX(90deg);
-    transform-origin: bottom;
+.status-item i {
+    font-size: 18px;
+    color: var(--neon-pink);
+    animation: pulse 1.5s ease-in-out infinite;
 }
 
 .loading-progress {
@@ -294,13 +293,23 @@ body {
 
 .progress-bar {
     position: absolute;
-    left: -100%;
+    left: 0;
     top: 0;
     height: 100%;
-    width: 100%;
-    background: linear-gradient(90deg, transparent, var(--neon-cyan), transparent);
-    animation: progress-slide 2s ease-in-out infinite;
+    width: 0%;
+    background: linear-gradient(90deg, var(--neon-cyan), var(--neon-pink));
     box-shadow: 0 0 20px var(--neon-cyan);
+    animation: progress 3s ease-in-out forwards;
+}
+
+.progress-percentage {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: var(--neon-cyan);
+    font-size: 12px;
+    animation: updatePercentage 3s linear forwards;
 }
 
 .cyber-grid {
@@ -314,71 +323,66 @@ body {
         linear-gradient(0deg, var(--grid-line) 1px, transparent 1px) 0 0;
     background-size: 50px 50px;
     animation: grid-move 20s linear infinite;
-    opacity: 0.3;
+    opacity: 0.2;
 }
 
-@keyframes glitch {
-    0%, 100% { transform: none; opacity: 1; }
-    7% { transform: skew(-0.5deg, -0.9deg); }
-    10% { transform: none; }
-    27% { transform: none; }
-    30% { transform: skew(0.8deg, -0.1deg); }
-    35% { transform: none; }
-    52% { transform: none; }
-    55% { transform: skew(-1deg, 0.2deg); }
-    50% { transform: none; }
-    72% { transform: none; }
-    75% { transform: skew(0.4deg, 1deg); }
-    80% { transform: none; }
-    100% { transform: none; }
-}
-
-@keyframes glitch-1 {
-    0%, 100% { transform: none; opacity: 1; }
-    50% { transform: translate(-2px, 2px); opacity: 0.75; }
-}
-
-@keyframes glitch-2 {
-    0%, 100% { transform: none; opacity: 1; }
-    50% { transform: translate(2px, -2px); opacity: 0.75; }
-}
-
-@keyframes cube-spin {
-    0% { transform: rotateX(0) rotateY(0) rotateZ(0); }
-    100% { transform: rotateX(360deg) rotateY(360deg) rotateZ(360deg); }
-}
-
-@keyframes pulse-border {
-    0% { border-color: var(--neon-cyan); }
-    100% { border-color: var(--neon-pink); }
-}
-
-@keyframes progress-slide {
-    0% { left: -100%; }
-    50% { left: 100%; }
-    100% { left: -100%; }
-}
-
-@keyframes grid-move {
-    0% { transform: translateY(0); }
-    100% { transform: translateY(50px); }
-}
-
-@keyframes float {
-    0%, 100% { transform: translateY(0) scale(1); }
-    50% { transform: translateY(-20px) scale(1.1); }
-}
-
-/* Main Content Fix */
+/* Main Content Visibility */
 .main-content {
-    visibility: hidden;
     opacity: 0;
-    transition: opacity 0.5s ease-out;
+    visibility: hidden;
+    transition: opacity 0.5s ease-out, visibility 0.5s ease-out;
 }
 
 .main-content.visible {
-    visibility: visible;
     opacity: 1;
+    visibility: visible;
+}
+
+/* Loading Animations */
+@keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+@keyframes pulse {
+    from { opacity: 0.5; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1.05); }
+}
+
+@keyframes fadeInUp {
+    from { 
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes progress {
+    from { width: 0%; }
+    to { width: 100%; }
+}
+
+@keyframes updatePercentage {
+    0% { content: "0%"; }
+    100% { content: "100%"; }
+}
+
+@keyframes grid-move {
+    from { transform: translateY(0); }
+    to { transform: translateY(50px); }
+}
+
+/* Loading State Control */
+body.loading {
+    overflow: hidden;
+}
+
+body:not(.loading) .loading-overlay {
+    opacity: 0;
+    visibility: hidden;
 }
 
 /* Mobile Optimization */

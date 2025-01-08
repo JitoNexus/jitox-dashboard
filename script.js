@@ -18,26 +18,42 @@ function getSmoothedValue(currentValue, targetValue, maxChangePercent) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Initialize AOS
-    AOS.init({
-        duration: 1000,
-        once: true,
-        mirror: false
-    });
-
-    if (typeof Chart === 'undefined') {
-        console.error('Chart.js not loaded');
-        return;
-    }
-
-    // Initialize charts
+    initializeLoadingSequence();
+    // Initialize other components
     initializeCharts();
     initializeTabs();
-    initializeLoadingStates();
-
-    // Start continuous updates
     startContinuousUpdates();
 });
+
+function initializeLoadingSequence() {
+    const loadingOverlay = document.querySelector('.loading-overlay');
+    const mainContent = document.querySelector('.main-content');
+    const progressBar = document.querySelector('.progress-bar');
+    const progressPercentage = document.querySelector('.progress-percentage');
+    const statusItems = document.querySelectorAll('.status-item');
+    
+    let progress = 0;
+    const progressInterval = setInterval(() => {
+        progress += 1;
+        if (progressPercentage) {
+            progressPercentage.textContent = `${progress}%`;
+        }
+        
+        // Update status items based on progress
+        if (progress >= 30) statusItems[0].classList.add('completed');
+        if (progress >= 60) statusItems[1].classList.add('completed');
+        if (progress >= 90) statusItems[2].classList.add('completed');
+        
+        if (progress >= 100) {
+            clearInterval(progressInterval);
+            setTimeout(() => {
+                document.body.classList.remove('loading');
+                loadingOverlay.classList.add('hidden');
+                mainContent.classList.add('visible');
+            }, 500);
+        }
+    }, 30); // Adjust timing as needed
+}
 
 function initializeLoadingStates() {
     // Hide loading overlay after initialization
