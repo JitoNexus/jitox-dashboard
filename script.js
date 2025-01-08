@@ -427,10 +427,10 @@ function initializeAIDashboard() {
                 animation: {
                     duration: 750,
                     easing: 'linear'
-                },
-                plugins: {
-                    legend: {
-                        display: true,
+            },
+            plugins: {
+                legend: {
+                    display: true,
                         labels: { color: '#00ffff' }
                     }
                 },
