@@ -22,6 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize other components
     initializeCharts();
     initializeTabs();
+    addHexagonalBackground();
     startContinuousUpdates();
 });
 
@@ -79,10 +80,12 @@ function initializeLoadingStates() {
 
 function startContinuousUpdates() {
     setInterval(() => {
-        updateAllCharts();
-        updateAllStats();
-        updateFooterTimestamp();
-    }, 1000);
+        const activeSection = document.querySelector('.content-section[style*="display: block"]');
+        if (activeSection) {
+            const sectionType = activeSection.classList[1].replace('-section', '');
+            initializeSectionContent(sectionType);
+        }
+    }, 2000);
 }
 
 function updateAllStats() {
@@ -643,27 +646,22 @@ function initializeTabs() {
     const tabs = document.querySelectorAll('.cyber-button');
     const sections = document.querySelectorAll('.content-section');
 
-    // Hide all sections except statistics initially
-    sections.forEach(section => {
-        if (!section.classList.contains('statistics-section')) {
-            section.style.display = 'none';
-            section.style.opacity = '0';
-        }
-    });
+    // Show statistics section by default
+    document.querySelector('.statistics-section').style.display = 'block';
 
     tabs.forEach(tab => {
         tab.addEventListener('click', () => {
-            const targetTab = tab.dataset.tab;
+            const targetSection = tab.getAttribute('data-tab');
 
-            // Update aria-selected states
+            // Update active state of tabs
             tabs.forEach(t => {
-                t.setAttribute('aria-selected', 'false');
                 t.classList.remove('active');
+                t.setAttribute('aria-selected', 'false');
             });
-            tab.setAttribute('aria-selected', 'true');
             tab.classList.add('active');
+            tab.setAttribute('aria-selected', 'true');
 
-            // Fade out all sections
+            // Hide all sections with fade effect
             sections.forEach(section => {
                 section.style.opacity = '0';
                 setTimeout(() => {
@@ -671,19 +669,63 @@ function initializeTabs() {
                 }, 300);
             });
 
-            // Show and fade in target section
-            const targetSection = document.querySelector(`.${targetTab}-section`);
-            if (targetSection) {
+            // Show target section with fade effect
+            const targetElement = document.querySelector(`.${targetSection}-section`);
+            if (targetElement) {
                 setTimeout(() => {
-                    targetSection.style.display = 'block';
-                    // Trigger AOS animations
-                    AOS.refresh();
+                    targetElement.style.display = 'block';
+                    // Initialize or refresh section-specific content
+                    initializeSectionContent(targetSection);
                     setTimeout(() => {
-                        targetSection.style.opacity = '1';
+                        targetElement.style.opacity = '1';
                     }, 50);
                 }, 300);
             }
         });
+    });
+}
+
+function initializeSectionContent(section) {
+    switch(section) {
+        case 'statistics':
+            updateAllStats();
+            updateAllCharts();
+            break;
+        case 'ai':
+            initializeAIDashboard();
+            break;
+        case 'leaderboard':
+            initializeLeaderboard();
+            break;
+        case 'analytics':
+            initializeAnalytics();
+            break;
+        case 'alerts':
+            initializeAlerts();
+            break;
+        case 'strategy':
+            initializeStrategies();
+            break;
+    }
+}
+
+// Add hexagonal background pattern to all sections
+function addHexagonalBackground() {
+    const sections = document.querySelectorAll('.content-section');
+    sections.forEach(section => {
+        const hexGrid = document.createElement('div');
+        hexGrid.className = 'hex-grid';
+        section.appendChild(hexGrid);
+
+        // Create hexagon elements
+        for (let i = 0; i < 20; i++) {
+            const hex = document.createElement('div');
+            hex.className = 'hex';
+            hex.style.left = `${Math.random() * 100}%`;
+            hex.style.top = `${Math.random() * 100}%`;
+            hex.style.animationDelay = `${Math.random() * 5}s`;
+            hexGrid.appendChild(hex);
+        }
     });
 }
 

@@ -608,3 +608,206 @@ html, body {
     background: rgba(0, 255, 255, 0.2);
     border-color: var(--neon-pink);
 }
+
+/* Advanced Section Styling */
+.content-section {
+    position: relative;
+    min-height: 500px;
+    padding: 20px;
+    overflow: hidden;
+    background: rgba(0, 0, 51, 0.95);
+    border: 1px solid var(--neon-cyan);
+    border-radius: 8px;
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.1);
+}
+
+/* Hexagonal Background */
+.hex-grid {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.hex {
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(45deg, var(--neon-cyan), var(--neon-pink));
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    opacity: 0.03;
+    animation: float 10s infinite ease-in-out;
+}
+
+/* Section Grid */
+.section-grid {
+    opacity: 0.05;
+    z-index: 0;
+    pointer-events: none;
+}
+
+/* Enhanced Card Styling */
+.cyber-card {
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+    background: rgba(0, 0, 51, 0.95);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--neon-cyan);
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.1);
+}
+
+.cyber-card::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(45deg, var(--neon-cyan), var(--neon-pink));
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.cyber-card:hover::before {
+    opacity: 1;
+}
+
+.cyber-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 51, 0.95);
+    z-index: -1;
+}
+
+/* Enhanced Chart Cards */
+.chart-card {
+    position: relative;
+    overflow: hidden;
+}
+
+.chart-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--neon-cyan), transparent);
+    animation: scan-line 2s linear infinite;
+}
+
+/* Advanced Button Styling */
+.cyber-button {
+    position: relative;
+    overflow: hidden;
+    background: transparent;
+    border: 1px solid var(--neon-cyan);
+    color: var(--neon-cyan);
+    padding: 8px 16px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    transition: all 0.3s ease;
+}
+
+.cyber-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.2), transparent);
+    transition: left 0.3s ease;
+}
+
+.cyber-button:hover::before {
+    left: 100%;
+}
+
+.cyber-button.active {
+    background: rgba(0, 255, 255, 0.1);
+    border-color: var(--neon-pink);
+    box-shadow: 0 0 15px rgba(255, 0, 255, 0.2);
+}
+
+/* Advanced Animations */
+@keyframes scan-line {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-20px) rotate(180deg); }
+}
+
+@keyframes pulse-border {
+    0%, 100% { border-color: var(--neon-cyan); }
+    50% { border-color: var(--neon-pink); }
+}
+
+/* Section-specific Enhancements */
+.ai-section .monitoring-feed {
+    position: relative;
+    padding: 15px;
+    background: rgba(0, 0, 51, 0.8);
+    border: 1px solid var(--neon-cyan);
+    border-radius: 8px;
+}
+
+.feed-item {
+    position: relative;
+    padding: 10px 15px;
+    margin-bottom: 10px;
+    background: rgba(0, 255, 255, 0.05);
+    border-left: 3px solid var(--neon-pink);
+    animation: fade-in 0.5s ease forwards;
+}
+
+.feed-item::before {
+    content: '>';
+    position: absolute;
+    left: -15px;
+    color: var(--neon-pink);
+    opacity: 0;
+    animation: blink 1s infinite;
+}
+
+/* Enhanced Stats Display */
+.stat-value {
+    position: relative;
+    display: inline-block;
+    padding: 5px 10px;
+    background: rgba(0, 0, 51, 0.8);
+    border-radius: 4px;
+    box-shadow: 0 0 10px rgba(255, 0, 255, 0.2);
+}
+
+.stat-value::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(45deg, var(--neon-cyan), var(--neon-pink));
+    opacity: 0.1;
+    z-index: -1;
+}
+
+/* Additional Animations */
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+}
+
+@keyframes fade-in {
+    from { opacity: 0; transform: translateX(-20px); }
+    to { opacity: 1; transform: translateX(0); }
+}
