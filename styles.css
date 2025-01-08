@@ -1090,3 +1090,114 @@ html, body {
         height: 350px !important;
     }
 }
+
+/* Telegram Login Styles */
+.login-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: var(--deep-blue);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.login-container {
+    background: rgba(0, 0, 51, 0.95);
+    padding: 40px;
+    border-radius: 15px;
+    text-align: center;
+    max-width: 400px;
+    width: 90%;
+    position: relative;
+    overflow: hidden;
+}
+
+.login-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--neon-cyan), var(--neon-pink), var(--neon-cyan));
+    animation: slide 2s linear infinite;
+}
+
+.login-logo {
+    margin-bottom: 30px;
+    position: relative;
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 30px;
+}
+
+.login-container h2 {
+    color: var(--neon-cyan);
+    font-size: 24px;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.login-container p {
+    color: #fff;
+    margin-bottom: 30px;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+#telegram-login {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+/* Hide login overlay when logged in */
+body:not(.not-logged) .login-overlay {
+    display: none;
+}
+
+/* Hide main content when not logged in */
+body.not-logged .main-content,
+body.not-logged .loading-overlay {
+    display: none;
+}
+
+/* User Info Styles */
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.user-name {
+    color: var(--neon-cyan);
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.logout-btn {
+    background: transparent;
+    border: 1px solid var(--neon-pink);
+    color: var(--neon-pink);
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.logout-btn:hover {
+    background: rgba(255, 0, 255, 0.1);
+    transform: translateY(-2px);
+}
+
+/* Update dashboard header to accommodate user info */
+.dashboard-header {
+    justify-content: space-between;
+    padding: 15px 20px;
+}

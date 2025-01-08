@@ -840,3 +840,57 @@ setInterval(updateLiveMEVActivity, 5000);
 
 // Initial call
 updateLiveMEVActivity();
+
+// Telegram Authentication Handler
+function onTelegramAuth(user) {
+    // Save user data
+    localStorage.setItem('telegramUser', JSON.stringify(user));
+    
+    // Remove not-logged class to show dashboard
+    document.body.classList.remove('not-logged');
+    document.body.classList.add('loading');
+    
+    // Initialize dashboard
+    initializeDashboard(user);
+}
+
+// Check if user is already logged in
+function checkLoginStatus() {
+    const user = localStorage.getItem('telegramUser');
+    if (user) {
+        document.body.classList.remove('not-logged');
+        document.body.classList.add('loading');
+        initializeDashboard(JSON.parse(user));
+    }
+}
+
+// Initialize dashboard with user data
+function initializeDashboard(user) {
+    // Update header with user info
+    const header = document.querySelector('.dashboard-header');
+    if (header) {
+        const userInfo = document.createElement('div');
+        userInfo.className = 'user-info';
+        userInfo.innerHTML = `
+            <span class="user-name">${user.first_name} ${user.last_name || ''}</span>
+            <button class="logout-btn" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i>
+            </button>
+        `;
+        header.appendChild(userInfo);
+    }
+
+    // Initialize the rest of the dashboard
+    initializeLoadingSequence();
+}
+
+// Logout function
+function logout() {
+    localStorage.removeItem('telegramUser');
+    window.location.reload();
+}
+
+// Call checkLoginStatus when page loads
+document.addEventListener('DOMContentLoaded', () => {
+    checkLoginStatus();
+});
