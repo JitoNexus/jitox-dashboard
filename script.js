@@ -55,11 +55,16 @@ function updateAllStats() {
         
         if (title && valueElement && ranges[title]) {
             const range = ranges[title];
-            const newValue = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
             const currentValue = parseInt(valueElement.textContent.replace(/,/g, '')) || 0;
             
+            // Calculate new value with smaller change
+            const maxChange = Math.floor((range.max - range.min) * 0.1); // Only allow 10% range change
+            const minNewValue = Math.max(currentValue - maxChange, range.min);
+            const maxNewValue = Math.min(currentValue + maxChange, range.max);
+            const newValue = Math.floor(Math.random() * (maxNewValue - minNewValue + 1)) + minNewValue;
+            
             // Animate the number change
-            animateValue(valueElement, currentValue, newValue, 2000); // 2 second animation
+            animateValue(valueElement, currentValue, newValue, 4000); // 4 second animation
         }
     });
 }
@@ -72,10 +77,10 @@ function animateValue(element, start, end, duration) {
         const elapsed = currentTime - startTime;
         const progress = Math.min(elapsed / duration, 1);
         
-        // Use easeInOutCubic for smoother animation
-        const easing = progress < 0.5 
-            ? 4 * progress * progress * progress 
-            : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+        // Use easeInOutQuart for even smoother animation
+        const easing = progress < 0.5
+            ? 8 * progress * progress * progress * progress
+            : 1 - Math.pow(-2 * progress + 2, 4) / 2;
         
         const current = Math.floor(start + (range * easing));
         element.textContent = current.toLocaleString();
@@ -88,11 +93,11 @@ function animateValue(element, start, end, duration) {
     requestAnimationFrame(updateNumber);
 }
 
-// Update stats every 5 seconds instead of every second
-setInterval(updateAllStats, 5000);
+// Update stats every 10 seconds
+setInterval(updateAllStats, 10000);
 
-// Update charts every 3 seconds
-setInterval(updateAllCharts, 3000);
+// Update charts every 8 seconds
+setInterval(updateAllCharts, 8000);
 
 function updateAlertTimes() {
     const alerts = document.querySelectorAll('.alert-item .time');
@@ -186,8 +191,8 @@ function initializeCharts() {
                     responsive: true,
                     maintainAspectRatio: false,
                     animation: {
-                        duration: 750,
-                        easing: 'linear'
+                        duration: 2000,  // Slower animation
+                        easing: 'easeInOutQuart'
                     },
                     plugins: {
                         legend: {
@@ -244,8 +249,8 @@ function initializeCharts() {
                     responsive: true,
                     maintainAspectRatio: false,
                     animation: {
-                        duration: 750,
-                        easing: 'linear'
+                        duration: 2000,  // Slower animation
+                        easing: 'easeInOutQuart'
                     },
                     plugins: {
                         legend: { display: false }
@@ -287,8 +292,8 @@ function initializeCharts() {
                     responsive: true,
                     maintainAspectRatio: false,
                     animation: {
-                        duration: 750,
-                        easing: 'linear'
+                        duration: 2000,  // Slower animation
+                        easing: 'easeInOutQuart'
                     },
                     plugins: {
                         legend: {
