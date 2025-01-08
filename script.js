@@ -424,50 +424,56 @@ function initializeCharts() {
 }
 
 function initializeAIDashboard() {
-    // AI Performance Chart
-    const aiPerformanceCtx = document.getElementById('aiPerformanceChart');
-    if (aiPerformanceCtx) {
-        aiPerformanceChart = new Chart(aiPerformanceCtx, {
-            type: 'line',
-            data: {
-                labels: Array(24).fill('').map((_, i) => `${23-i}h`),
-                datasets: [{
-                    label: 'Success Rate',
-                    data: Array(24).fill(0).map(() => getRandomData(70, 100)),
-                    borderColor: '#ff00ff',
-                    backgroundColor: 'rgba(255, 0, 255, 0.1)',
-                    fill: true,
-                    tension: 0.4
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                animation: {
-                    duration: 750,
-                    easing: 'linear'
-            },
-            plugins: {
-                legend: {
-                    display: true,
-                        labels: { color: '#00ffff' }
-                    }
+    // Update AI stats
+    const aiStats = {
+        'AI Success Rate': { value: '98.5%', min: 95, max: 99.9 },
+        'Active Strategies': { value: '12', min: 8, max: 15 },
+        'Patterns Identified': { value: '247', min: 200, max: 300 }
+    };
+
+    document.querySelectorAll('.ai-section .stat-value').forEach(stat => {
+        const title = stat.parentElement.querySelector('h2').textContent;
+        if (aiStats[title]) {
+            animateValue(stat, 
+                parseInt(stat.textContent) || 0,
+                parseInt(aiStats[title].value) || 0,
+                2000
+            );
+        }
+    });
+
+    // Initialize AI Performance Chart if not already initialized
+    if (!aiPerformanceChart) {
+        const ctx = document.getElementById('aiPerformanceChart');
+        if (ctx) {
+            aiPerformanceChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: Array(24).fill('').map((_, i) => `${23-i}h`),
+                    datasets: [{
+                        label: 'AI Performance',
+                        data: Array(24).fill(0).map(() => getRandomData(85, 99)),
+                        borderColor: '#ff00ff',
+                        backgroundColor: 'rgba(255, 0, 255, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }]
                 },
-                scales: {
-                    y: {
-                        beginAtZero: false,
-                        min: 60,
-                        max: 100,
-                        grid: { color: 'rgba(0, 255, 255, 0.1)' },
-                        ticks: { color: '#00ffff' }
-                    },
-                    x: {
-                        grid: { color: 'rgba(0, 255, 255, 0.1)' },
-                        ticks: { color: '#00ffff' }
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            min: 80,
+                            max: 100,
+                            grid: { color: 'rgba(0, 255, 255, 0.1)' },
+                            ticks: { color: '#00ffff' }
+                        }
                     }
                 }
-            }
-        });
+            });
+        }
     }
 }
 
@@ -480,165 +486,87 @@ function initializeLeaderboard() {
         { rank: 5, address: '0x9b...4e2f', profit: 621, success: 95.2, ops: 756 }
     ];
 
-    const tableBody = document.querySelector('.leaderboard-table');
-    if (!tableBody) return;
-
-    leaderboardData.forEach(entry => {
-        const row = document.createElement('div');
-        row.className = 'table-row';
-        row.innerHTML = `
-            <span class="rank">#${entry.rank}</span>
-            <span class="address">${entry.address}</span>
-            <span class="profit">${entry.profit.toLocaleString()} SOL</span>
-            <span class="success">${entry.success}%</span>
-            <span class="ops">${entry.ops.toLocaleString()}</span>
-        `;
-        tableBody.appendChild(row);
-    });
+    const leaderboardSection = document.querySelector('.leaderboard-section');
+    if (!leaderboardSection.querySelector('.leaderboard-table')) {
+        const table = document.createElement('div');
+        table.className = 'leaderboard-table cyber-card';
+        
+        leaderboardData.forEach(entry => {
+            const row = document.createElement('div');
+            row.className = 'leaderboard-row';
+            row.innerHTML = `
+                <span class="rank">#${entry.rank}</span>
+                <span class="address">${entry.address}</span>
+                <span class="profit">${entry.profit} SOL</span>
+                <span class="success">${entry.success}%</span>
+                <span class="ops">${entry.ops}</span>
+            `;
+            table.appendChild(row);
+        });
+        
+        leaderboardSection.appendChild(table);
+    }
 }
 
 function initializeAnalytics() {
-    // Network Analysis Chart
-    const networkCtx = document.getElementById('networkAnalysisChart');
-    if (networkCtx) {
-        new Chart(networkCtx, {
-            type: 'line',
-            data: {
-                labels: Array(24).fill('').map((_, i) => `${23-i}h`),
-                datasets: [{
-                    label: 'Network Load',
-                    data: Array(24).fill(0).map(() => getRandomData(50, 100)),
-                    borderColor: '#ff00ff',
-                    backgroundColor: 'rgba(255, 0, 255, 0.1)',
-                    fill: true,
-                    tension: 0.4
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                animation: {
-                    duration: 2000,
-                    easing: 'easeInOutQuart'
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        grid: { color: 'rgba(0, 255, 255, 0.1)' },
-                        ticks: { color: '#00ffff' }
-                    }
-                }
-            }
-        });
-    }
-
-    // Block Distribution Chart
-    const blockCtx = document.getElementById('blockDistributionChart');
-    if (blockCtx) {
-        new Chart(blockCtx, {
-            type: 'bar',
-            data: {
-                labels: ['0-2s', '2-4s', '4-6s', '6-8s', '8-10s'],
-                datasets: [{
-                    label: 'Block Time Distribution',
-                    data: [45, 30, 15, 7, 3],
-                    backgroundColor: 'rgba(0, 255, 255, 0.5)',
-                    borderColor: '#00ffff',
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                animation: {
-                    duration: 2000,
-                    easing: 'easeInOutQuart'
-                }
-            }
-        });
+    const analyticsSection = document.querySelector('.analytics-section');
+    if (!analyticsSection.querySelector('.analytics-grid')) {
+        const grid = document.createElement('div');
+        grid.className = 'analytics-grid';
+        grid.innerHTML = `
+            <div class="cyber-card">
+                <h3 class="chart-title">Network Analysis</h3>
+                <canvas id="networkAnalysisChart"></canvas>
+            </div>
+            <div class="cyber-card">
+                <h3 class="chart-title">Performance Metrics</h3>
+                <canvas id="performanceMetricsChart"></canvas>
+            </div>
+        `;
+        analyticsSection.appendChild(grid);
+        
+        // Initialize charts
+        initializeAnalyticsCharts();
     }
 }
 
 function initializeAlerts() {
-    const alertStream = document.querySelector('.alert-stream');
-    if (!alertStream) return;
-
-    const alerts = [
-        { type: 'success', title: 'High Profit Opportunity', message: 'Detected 1.2 SOL arbitrage', time: '2m ago' },
-        { type: 'info', title: 'New Strategy Deployed', message: 'Sandwich Pro v3.1 activated', time: '5m ago' },
-        { type: 'warning', title: 'Network Congestion', message: 'Increased gas prices detected', time: '8m ago' }
-    ];
-
-    alerts.forEach(alert => {
-        const alertEl = document.createElement('div');
-        alertEl.className = `alert-item ${alert.type}`;
-        alertEl.innerHTML = `
-            <i class="fas fa-${alert.type === 'success' ? 'check-circle' : alert.type === 'info' ? 'info-circle' : 'exclamation-triangle'}"></i>
-            <div class="alert-details">
-                <span class="alert-title">${alert.title}</span>
-                <span class="alert-info">${alert.message}</span>
+    const alertsSection = document.querySelector('.alerts-section');
+    if (!alertsSection.querySelector('.alerts-container')) {
+        const container = document.createElement('div');
+        container.className = 'alerts-container';
+        container.innerHTML = `
+            <div class="cyber-card">
+                <h3>Live MEV Alerts</h3>
+                <div class="alerts-feed"></div>
             </div>
-            <span class="time">${alert.time}</span>
         `;
-        alertStream.appendChild(alertEl);
-    });
-
-    // Alert Distribution Chart
-    const alertCtx = document.getElementById('alertsDistributionChart');
-    if (alertCtx) {
-        new Chart(alertCtx, {
-            type: 'doughnut',
-            data: {
-                labels: ['High Priority', 'Medium Priority', 'Low Priority'],
-                datasets: [{
-                    data: [35, 45, 20],
-                    backgroundColor: [
-                        'rgba(255, 0, 255, 0.8)',
-                        'rgba(0, 255, 255, 0.8)',
-                        'rgba(255, 255, 0, 0.8)'
-                    ]
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                animation: {
-                    duration: 2000,
-                    easing: 'easeInOutQuart'
-                }
-            }
-        });
+        alertsSection.appendChild(container);
+        
+        // Add some sample alerts
+        updateAlerts();
     }
 }
 
 function initializeStrategies() {
-    const strategyCtx = document.getElementById('strategyPerformanceChart');
-    if (strategyCtx) {
-        new Chart(strategyCtx, {
-            type: 'line',
-            data: {
-                labels: Array(24).fill('').map((_, i) => `${23-i}h`),
-                datasets: [{
-                    label: 'Sandwich Pro',
-                    data: Array(24).fill(0).map(() => getRandomData(80, 100)),
-                    borderColor: '#ff00ff',
-                    tension: 0.4
-                }, {
-                    label: 'Arbitrage Engine',
-                    data: Array(24).fill(0).map(() => getRandomData(70, 90)),
-                    borderColor: '#00ffff',
-                    tension: 0.4
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                animation: {
-                    duration: 2000,
-                    easing: 'easeInOutQuart'
-                }
-            }
-        });
+    const strategiesSection = document.querySelector('.strategy-section');
+    if (!strategiesSection.querySelector('.strategies-grid')) {
+        const grid = document.createElement('div');
+        grid.className = 'strategies-grid';
+        grid.innerHTML = `
+            <div class="cyber-card">
+                <h3>Active Strategies</h3>
+                <div class="strategy-list"></div>
+            </div>
+            <div class="cyber-card">
+                <h3>Strategy Performance</h3>
+                <canvas id="strategyPerformanceChart"></canvas>
+            </div>
+        `;
+        strategiesSection.appendChild(grid);
+        
+        // Initialize strategy data
+        updateStrategies();
     }
 }
 
@@ -646,8 +574,16 @@ function initializeTabs() {
     const tabs = document.querySelectorAll('.cyber-button');
     const sections = document.querySelectorAll('.content-section');
 
-    // Show statistics section by default
-    document.querySelector('.statistics-section').style.display = 'block';
+    // Initially hide all sections except statistics
+    sections.forEach(section => {
+        if (section.classList.contains('statistics-section')) {
+            section.style.display = 'block';
+            section.style.opacity = '1';
+        } else {
+            section.style.display = 'none';
+            section.style.opacity = '0';
+        }
+    });
 
     tabs.forEach(tab => {
         tab.addEventListener('click', () => {
@@ -656,30 +592,45 @@ function initializeTabs() {
             // Update active state of tabs
             tabs.forEach(t => {
                 t.classList.remove('active');
-                t.setAttribute('aria-selected', 'false');
             });
             tab.classList.add('active');
-            tab.setAttribute('aria-selected', 'true');
 
-            // Hide all sections with fade effect
+            // Hide all sections
             sections.forEach(section => {
-                section.style.opacity = '0';
-                setTimeout(() => {
-                    section.style.display = 'none';
-                }, 300);
+                if (section.classList.contains(`${targetSection}-section`)) {
+                    section.style.display = 'block';
+                    setTimeout(() => {
+                        section.style.opacity = '1';
+                    }, 50);
+                } else {
+                    section.style.opacity = '0';
+                    setTimeout(() => {
+                        section.style.display = 'none';
+                    }, 300);
+                }
             });
 
-            // Show target section with fade effect
-            const targetElement = document.querySelector(`.${targetSection}-section`);
-            if (targetElement) {
-                setTimeout(() => {
-                    targetElement.style.display = 'block';
-                    // Initialize or refresh section-specific content
-                    initializeSectionContent(targetSection);
-                    setTimeout(() => {
-                        targetElement.style.opacity = '1';
-                    }, 50);
-                }, 300);
+            // Initialize content for the selected section
+            switch(targetSection) {
+                case 'statistics':
+                    updateAllStats();
+                    updateAllCharts();
+                    break;
+                case 'ai':
+                    initializeAIDashboard();
+                    break;
+                case 'leaderboard':
+                    initializeLeaderboard();
+                    break;
+                case 'analytics':
+                    initializeAnalytics();
+                    break;
+                case 'alerts':
+                    initializeAlerts();
+                    break;
+                case 'strategy':
+                    initializeStrategies();
+                    break;
             }
         });
     });
