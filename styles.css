@@ -95,14 +95,14 @@ body {
 
 /* Refined Charts */
 .chart-card {
-    background: rgba(0, 0, 51, 0.98);
-    border: 1px solid var(--neon-cyan);
-    border-radius: 6px;
-    padding: 10px;
-    height: 250px;
-    margin-bottom: 15px;
     position: relative;
     overflow: hidden;
+    background: rgba(0, 0, 51, 0.95);
+    border: 1px solid var(--neon-cyan);
+    border-radius: 8px;
+    padding: 20px;
+    height: 400px;
+    margin-bottom: 30px;
 }
 
 .chart-title {
@@ -117,8 +117,7 @@ body {
 
 .chart-card canvas {
     width: 100% !important;
-    height: 200px !important;
-    object-fit: contain;
+    height: 350px !important;
 }
 
 /* Grid Layouts */
@@ -810,4 +809,137 @@ html, body {
 @keyframes fade-in {
     from { opacity: 0; transform: translateX(-20px); }
     to { opacity: 1; transform: translateX(0); }
+}
+
+/* MEV Bot Information Styles */
+.mev-bot-info {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    margin: 20px 0;
+}
+
+.mev-feature-card {
+    position: relative;
+    padding: 20px;
+    background: rgba(0, 0, 51, 0.95);
+    border: 1px solid var(--neon-cyan);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.mev-feature-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, var(--neon-cyan), var(--neon-pink), var(--neon-cyan));
+    animation: slide 2s linear infinite;
+}
+
+.mev-feature-title {
+    color: var(--neon-cyan);
+    font-size: 1.2em;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.mev-feature-title i {
+    color: var(--neon-pink);
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+.mev-feature-content {
+    color: #fff;
+    font-size: 0.9em;
+    line-height: 1.6;
+}
+
+.mev-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.mev-stat-item {
+    flex: 1;
+    min-width: 120px;
+    padding: 10px;
+    background: rgba(0, 255, 255, 0.05);
+    border-radius: 4px;
+    text-align: center;
+}
+
+.mev-stat-value {
+    color: var(--neon-pink);
+    font-size: 1.2em;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.mev-stat-label {
+    color: var(--neon-cyan);
+    font-size: 0.8em;
+}
+
+.performance-indicator {
+    position: relative;
+    height: 4px;
+    background: rgba(0, 255, 255, 0.1);
+    border-radius: 2px;
+    margin-top: 10px;
+    overflow: hidden;
+}
+
+.performance-bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    background: linear-gradient(90deg, var(--neon-cyan), var(--neon-pink));
+    animation: progress-slide 2s ease-in-out infinite;
+}
+
+.mev-activity-feed {
+    margin-top: 20px;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.activity-item {
+    padding: 10px;
+    margin-bottom: 10px;
+    background: rgba(0, 255, 255, 0.05);
+    border-left: 3px solid var(--neon-pink);
+    animation: fade-in 0.5s ease forwards;
+}
+
+.activity-item:last-child {
+    margin-bottom: 0;
+}
+
+.activity-time {
+    color: var(--neon-cyan);
+    font-size: 0.8em;
+    margin-bottom: 5px;
+}
+
+.activity-description {
+    color: #fff;
+}
+
+@keyframes slide {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+@keyframes progress-slide {
+    0% { width: 0%; }
+    50% { width: 100%; }
+    100% { width: 0%; }
 }
