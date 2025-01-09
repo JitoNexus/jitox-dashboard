@@ -1321,7 +1321,7 @@ body.not-logged .loading-overlay {
     max-width: 600px;
     margin: 10px auto;
     padding: 15px;
-    background: var(--card-bg);
+    background: var(--deep-blue);
     border-radius: 8px;
     border: 1px solid var(--neon-cyan);
     box-sizing: border-box;
@@ -1329,28 +1329,39 @@ body.not-logged .loading-overlay {
 
 .user-info-card {
     width: 100%;
-    padding: 15px;
-    margin-bottom: 15px;
+    padding: 20px;
     background: rgba(0, 0, 51, 0.98);
     border-radius: 8px;
     box-shadow: var(--shadow-neon);
+}
+
+.profile-title {
+    color: var(--neon-cyan);
+    font-size: 24px;
+    margin-bottom: 20px;
+    text-align: center;
 }
 
 .user-details {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 15px;
-    padding: 10px;
+    gap: 20px;
+    width: 100%;
 }
 
 .profile-avatar {
-    width: 80px;
-    height: 80px;
+    width: 100px;
+    height: 100px;
     border-radius: 50%;
     border: 2px solid var(--neon-cyan);
     box-shadow: var(--shadow-neon);
     overflow: hidden;
+    margin-bottom: 20px;
+    background: rgba(0, 0, 51, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .profile-avatar img {
@@ -1363,30 +1374,31 @@ body.not-logged .loading-overlay {
     width: 100%;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 15px;
 }
 
 .info-item {
+    width: 100%;
     background: rgba(0, 255, 255, 0.03);
-    padding: 10px 15px;
+    padding: 12px 15px;
     border-radius: 6px;
     border: 1px solid rgba(0, 255, 255, 0.1);
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 10px;
+    box-sizing: border-box;
 }
 
 .info-item .label {
     color: var(--neon-cyan);
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 500;
-    white-space: nowrap;
+    min-width: 100px;
 }
 
 .info-item .value {
     color: var(--neon-pink);
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 500;
     text-align: right;
     word-break: break-all;
@@ -1401,29 +1413,41 @@ body.not-logged .loading-overlay {
     }
 
     .user-info-card {
-        padding: 10px;
-        margin-bottom: 10px;
+        padding: 15px;
+    }
+
+    .profile-title {
+        font-size: 20px;
+        margin-bottom: 15px;
     }
 
     .user-details {
-        gap: 10px;
-        padding: 5px;
+        gap: 15px;
     }
 
     .profile-avatar {
-        width: 60px;
-        height: 60px;
+        width: 80px;
+        height: 80px;
+        margin-bottom: 15px;
     }
 
     .info-item {
-        padding: 8px 12px;
-        font-size: 12px;
+        padding: 10px;
     }
 
     .info-item .label,
     .info-item .value {
-        font-size: 12px;
+        font-size: 13px;
     }
+
+    .info-item .label {
+        min-width: 80px;
+    }
+}
+
+/* Remove any conflicting styles */
+.stats-card {
+    display: none !important;
 }
 
 /* Login Improvements */
