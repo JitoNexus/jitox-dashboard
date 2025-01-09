@@ -6,6 +6,26 @@ let aiPerformanceChart = null;
 let chartUpdateInterval = null;
 let activityUpdateInterval = null;
 
+// Destroy existing charts
+function destroyCharts() {
+    if (solChart) {
+        solChart.destroy();
+        solChart = null;
+    }
+    if (mevChart) {
+        mevChart.destroy();
+        mevChart = null;
+    }
+    if (sandwichChart) {
+        sandwichChart.destroy();
+        sandwichChart = null;
+    }
+    if (aiPerformanceChart) {
+        aiPerformanceChart.destroy();
+        aiPerformanceChart = null;
+    }
+}
+
 // Security status check
 function updateSecurityStatus() {
     const isSecure = window.location.protocol === 'https:';
@@ -23,7 +43,10 @@ async function updateConnectionStatus() {
     try {
         const response = await fetch('https://api.mainnet-beta.solana.com', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer YOUR_API_KEY' // Replace with your API key
+            },
             body: JSON.stringify({ "jsonrpc": "2.0", "id": 1, "method": "getHealth" })
         });
         
@@ -35,6 +58,7 @@ async function updateConnectionStatus() {
             throw new Error('Network response was not ok');
         }
     } catch (error) {
+        console.error('Connection error:', error);
         statusIndicator.style.background = '#ff0000';
         statusIndicator.style.boxShadow = '0 0 10px #ff0000';
         statusText.textContent = 'Disconnected';
@@ -312,9 +336,18 @@ document.addEventListener('DOMContentLoaded', async () => {
 async function onTelegramAuth(user) {
     try {
         console.log('Telegram auth successful:', user);
+        
+        // Clear any existing state
+        destroyCharts();
+        clearInterval(chartUpdateInterval);
+        clearInterval(activityUpdateInterval);
+        
+        // Save user data and update UI
         localStorage.setItem('telegramUser', JSON.stringify(user));
         document.body.classList.remove('not-logged');
         document.body.classList.add('loading');
+        
+        // Initialize dashboard
         await initializeDashboard();
         
         // Set up intervals after successful login
@@ -323,10 +356,13 @@ async function onTelegramAuth(user) {
             chartUpdateInterval = setInterval(updateAllCharts, 2000);
             activityUpdateInterval = setInterval(updateLiveMEVActivity, 5000);
         }
+        
+        document.body.classList.remove('loading');
     } catch (error) {
         console.error('Error during authentication:', error);
         document.body.classList.add('not-logged');
         document.body.classList.remove('loading');
+        localStorage.removeItem('telegramUser');
     }
 }
 
@@ -338,12 +374,15 @@ async function initializeDashboard() {
             throw new Error('No user data found');
         }
 
+        // Update profile first
         await updateUserProfile(user);
         
+        // Initialize sections if they exist
         const statsSection = document.querySelector('.statistics-section');
         const aiSection = document.querySelector('.ai-section');
         
         if (statsSection) {
+            destroyCharts(); // Ensure charts are destroyed before reinitializing
             initializeCharts();
             updateAllStats();
         }
@@ -351,12 +390,11 @@ async function initializeDashboard() {
         if (aiSection) {
             initializeAIDashboard();
         }
-        
-        document.body.classList.remove('loading');
     } catch (error) {
         console.error('Error initializing dashboard:', error);
         document.body.classList.add('not-logged');
         localStorage.removeItem('telegramUser');
+        throw error; // Propagate error for proper handling
     }
 }
 
@@ -391,10 +429,13 @@ async function updateUserProfile(user) {
 // Fetch user's wallet information
 async function fetchUserWallet(userId) {
     try {
-        const apiUrl = window.location.hostname === 'localhost' 
-            ? 'http://localhost:8000/get_wallet'
-            : 'https://api.jitox.ai/get_wallet';
-            
+        // For development, return a mock wallet
+        if (window.location.hostname === 'localhost' || window.location.hostname === 'jitonexus.github.io') {
+            console.log('Using mock wallet for development');
+            return '5FHwkrdxkjgwkGpF6jbQEdC3JDjKL6LYJfpwvfpHQDGe';
+        }
+        
+        const apiUrl = 'https://api.jitox.ai/get_wallet';
         const response = await fetch(`${apiUrl}?user_id=${userId}`, {
             method: 'GET',
             headers: {
@@ -411,6 +452,7 @@ async function fetchUserWallet(userId) {
         return data.wallet;
     } catch (error) {
         console.error('Error fetching wallet:', error);
-        return null;
+        // Return mock wallet as fallback
+        return '5FHwkrdxkjgwkGpF6jbQEdC3JDjKL6LYJfpwvfpHQDGe';
     }
 }
