@@ -1317,17 +1317,20 @@ body.not-logged .loading-overlay {
 
 /* User Profile Styles - Updated */
 .user-profile-container {
-    max-width: 100%;
-    margin: 10px;
+    width: 100%;
+    max-width: 600px;
+    margin: 10px auto;
     padding: 15px;
     background: var(--card-bg);
     border-radius: 8px;
     border: 1px solid var(--neon-cyan);
+    box-sizing: border-box;
 }
 
 .user-info-card {
-    margin-bottom: 20px;
+    width: 100%;
     padding: 15px;
+    margin-bottom: 15px;
     background: rgba(0, 0, 51, 0.98);
     border-radius: 8px;
     box-shadow: var(--shadow-neon);
@@ -1337,16 +1340,23 @@ body.not-logged .loading-overlay {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 20px;
-    padding: 15px;
+    gap: 15px;
+    padding: 10px;
 }
 
 .profile-avatar {
-    width: 100px;
-    height: 100px;
+    width: 80px;
+    height: 80px;
     border-radius: 50%;
     border: 2px solid var(--neon-cyan);
     box-shadow: var(--shadow-neon);
+    overflow: hidden;
+}
+
+.profile-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
 .profile-info {
@@ -1358,7 +1368,7 @@ body.not-logged .loading-overlay {
 
 .info-item {
     background: rgba(0, 255, 255, 0.03);
-    padding: 12px 15px;
+    padding: 10px 15px;
     border-radius: 6px;
     border: 1px solid rgba(0, 255, 255, 0.1);
     display: flex;
@@ -1369,18 +1379,106 @@ body.not-logged .loading-overlay {
 
 .info-item .label {
     color: var(--neon-cyan);
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 500;
     white-space: nowrap;
 }
 
 .info-item .value {
     color: var(--neon-pink);
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 500;
     text-align: right;
     word-break: break-all;
     max-width: 60%;
+}
+
+/* Mobile Profile Adjustments */
+@media (max-width: 768px) {
+    .user-profile-container {
+        margin: 5px;
+        padding: 10px;
+    }
+
+    .user-info-card {
+        padding: 10px;
+        margin-bottom: 10px;
+    }
+
+    .user-details {
+        gap: 10px;
+        padding: 5px;
+    }
+
+    .profile-avatar {
+        width: 60px;
+        height: 60px;
+    }
+
+    .info-item {
+        padding: 8px 12px;
+        font-size: 12px;
+    }
+
+    .info-item .label,
+    .info-item .value {
+        font-size: 12px;
+    }
+}
+
+/* Login Improvements */
+.login-container {
+    max-width: 300px;
+    padding: 20px;
+    background: var(--card-bg);
+    border-radius: 8px;
+    border: 1px solid var(--neon-cyan);
+    text-align: center;
+}
+
+.login-logo {
+    width: 60px;
+    height: 60px;
+    margin: 0 auto 15px;
+}
+
+.login-container h2 {
+    font-size: 18px;
+    margin-bottom: 10px;
+    color: var(--neon-cyan);
+}
+
+.login-container p {
+    font-size: 13px;
+    margin-bottom: 15px;
+    color: #fff;
+    opacity: 0.8;
+}
+
+#telegram-login {
+    margin-top: 15px;
+}
+
+/* Mobile Login Adjustments */
+@media (max-width: 768px) {
+    .login-container {
+        max-width: 280px;
+        padding: 15px;
+        margin: 10px;
+    }
+
+    .login-logo {
+        width: 50px;
+        height: 50px;
+    }
+
+    .login-container h2 {
+        font-size: 16px;
+    }
+
+    .login-container p {
+        font-size: 12px;
+    }
 }
 
 /* Statistics Tab Improvements */
