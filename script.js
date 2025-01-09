@@ -758,89 +758,92 @@ async function onTelegramAuth(user) {
     await initializeDashboard(user);
 }
 
-// Check if user is already logged in
-function checkLoginStatus() {
-    const user = localStorage.getItem('telegramUser');
-    if (user) {
-        document.body.classList.remove('not-logged');
-        document.body.classList.add('loading');
-        initializeDashboard(JSON.parse(user));
+// Utility function to safely query elements
+function safeQuerySelector(selector) {
+    const element = document.querySelector(selector);
+    if (!element) {
+        console.warn(`Element not found: ${selector}`);
+        return null;
+    }
+    return element;
+}
+
+// Initialize dashboard with error handling
+async function initializeDashboard() {
+    try {
+        const user = JSON.parse(localStorage.getItem('telegramUser'));
+        if (user) {
+            document.body.classList.remove('not-logged');
+            await updateUserProfile(user);
+            initializeCharts();
+            updateAllStats();
+        }
+    } catch (error) {
+        console.error('Error initializing dashboard:', error);
+        document.body.classList.add('not-logged');
+        localStorage.removeItem('telegramUser');
     }
 }
 
-// Initialize dashboard with user data
-async function initializeDashboard(user) {
-    // Update header with user info
-    updateUserProfile(user);
-    
-    // Initialize the rest of the dashboard
-    initializeLoadingSequence();
+// Check login status with error handling
+async function checkLoginStatus() {
+    try {
+        const user = localStorage.getItem('telegramUser');
+        if (user) {
+            await initializeDashboard();
+        } else {
+            document.body.classList.add('not-logged');
+        }
+    } catch (error) {
+        console.error('Error checking login status:', error);
+        document.body.classList.add('not-logged');
+    }
 }
 
 // Update user profile information
-function updateUserProfile(user) {
-    console.log('Updating user profile with data:', user);
-    
-    // Update profile photo
-    const userPhoto = document.getElementById('userPhoto');
-    if (userPhoto) {
-        if (user.photo_url) {
-            userPhoto.src = user.photo_url;
-            userPhoto.style.display = 'block';
-        } else {
-            userPhoto.src = 'https://via.placeholder.com/120x120.png?text=No+Photo';
+async function updateUserProfile(user) {
+    try {
+        const userPhoto = safeQuerySelector('#userPhoto');
+        const userName = safeQuerySelector('#userName');
+        const userId = safeQuerySelector('#userId');
+        const userWallet = safeQuerySelector('#userWallet');
+        
+        if (userPhoto) userPhoto.src = user.photo_url || '';
+        if (userName) userName.textContent = user.username || 'Anonymous';
+        if (userId) userId.textContent = user.id || 'Unknown';
+        if (userWallet) {
+            const wallet = await fetchUserWallet(user.id);
+            userWallet.textContent = wallet || 'Not connected';
         }
+    } catch (error) {
+        console.error('Error updating profile:', error);
     }
-
-    // Update user information
-    const userName = document.getElementById('userName');
-    const userId = document.getElementById('userId');
-    
-    if (userName) {
-        const fullName = `${user.first_name || ''} ${user.last_name || ''}`.trim();
-        userName.textContent = fullName || 'Anonymous';
-    }
-    
-    if (userId) {
-        userId.textContent = user.id || 'Not available';
-    }
-
-    // Fetch wallet information
-    fetchUserWallet(user.id);
 }
 
 // Fetch user's wallet information
 async function fetchUserWallet(userId) {
     try {
-        const walletElement = document.getElementById('userWallet');
-        const balanceElement = document.getElementById('walletBalance');
-        
-        if (walletElement && balanceElement) {
-            walletElement.textContent = 'Fetching wallet...';
-            balanceElement.textContent = '...';
+        // Use environment-based API URL
+        const apiUrl = window.location.hostname === 'localhost' 
+            ? `http://localhost:8000/get_wallet`
+            : `https://api.jitox.ai/get_wallet`;
             
-            try {
-                // Your bot's API endpoint
-                const response = await fetch(`http://YOUR_SERVER_IP:8000/get_wallet?user_id=${userId}`);
-                const data = await response.json();
-                
-                if (data && data.wallet) {
-                    walletElement.textContent = data.wallet;
-                    
-                    // Fetch balance
-                    await updateWalletBalance(data.wallet, balanceElement);
-                } else {
-                    walletElement.textContent = 'No wallet assigned';
-                    balanceElement.textContent = '0 SOL';
-                }
-            } catch (error) {
-                console.error('Error fetching from API:', error);
-                walletElement.textContent = 'Error fetching wallet';
-                balanceElement.textContent = 'Error';
+        const response = await fetch(`${apiUrl}?user_id=${userId}`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json'
             }
+        });
+
+        if (!response.ok) {
+            throw new Error(`API responded with status: ${response.status}`);
         }
+
+        const data = await response.json();
+        return data.wallet;
     } catch (error) {
-        console.error('Error in fetchUserWallet:', error);
+        console.error('Error fetching wallet:', error);
+        return null;
     }
 }
 
@@ -937,9 +940,14 @@ async function updateConnectionStatus() {
 
 // Initialize Security Features
 document.addEventListener('DOMContentLoaded', async () => {
-    updateSecurityStatus();
-    await updateConnectionStatus();
-    
-    // Update connection status every 10 seconds
-    setInterval(updateConnectionStatus, 10000);
+    try {
+        updateSecurityStatus();
+        await updateConnectionStatus();
+        await checkLoginStatus();
+        
+        // Update connection status every 10 seconds
+        setInterval(updateConnectionStatus, 10000);
+    } catch (error) {
+        console.error('Error during initialization:', error);
+    }
 });
