@@ -435,17 +435,76 @@ body.loading {
 
 @media (max-width: 768px) {
     .cyber-frame {
-        margin: 5px;
+        width: calc(100% - 20px);
+        margin: 10px;
         padding: 10px;
     }
-    
-    .stat-value {
-        font-size: 28px;
+
+    .content-section {
+        height: calc(100vh - 100px);
+        padding: 10px;
+        margin: 0;
     }
-    
+
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+        padding: 5px;
+        margin: 0;
+    }
+
+    .cyber-card {
+        padding: 10px;
+        margin: 0 0 8px 0;
+    }
+
+    .chart-card {
+        min-height: 200px;
+        padding: 10px;
+        margin: 0 0 15px 0;
+    }
+
+    .chart-card canvas {
+        max-height: 180px !important;
+    }
+
+    .chart-title {
+        font-size: 14px;
+        margin: 0 0 10px 0;
+    }
+
+    .stat-value {
+        font-size: 18px;
+    }
+
+    .card-content h2 {
+        font-size: 12px;
+        margin-bottom: 5px;
+    }
+
+    /* Navigation Adjustments */
+    .cyber-nav {
+        padding: 8px 5px;
+        margin: 0 0 8px 0;
+    }
+
     .cyber-button {
         padding: 6px 12px;
-        font-size: 0.8em;
+        font-size: 12px;
+    }
+
+    /* Header Adjustments */
+    .dashboard-header {
+        padding: 8px;
+        margin-bottom: 8px;
+    }
+
+    .cyber-title {
+        font-size: 18px;
+    }
+
+    .last-update {
+        font-size: 11px;
     }
 }
 
@@ -1603,8 +1662,8 @@ body {
 .charts-grid {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 20px;
-    padding: 10px;
+    gap: 15px;
+    padding: 5px;
     margin: 0;
     width: 100%;
     max-width: 100%;
@@ -1613,10 +1672,9 @@ body {
 
 .chart-card {
     width: 100%;
-    height: auto;
-    min-height: 300px;
-    padding: 15px;
-    margin: 0;
+    max-width: 100%;
+    min-height: 250px;
+    margin: 0 0 15px 0;
     background: var(--card-bg);
     border: 1px solid var(--neon-cyan);
     border-radius: 8px;
@@ -1736,4 +1794,32 @@ body {
     margin: 0 0 15px 0;
     padding: 0;
     text-align: center;
+}
+
+/* Chart Container Adjustments */
+.charts-grid {
+    grid-template-columns: 1fr;
+    gap: 15px;
+    padding: 5px;
+    margin: 0;
+}
+
+.chart-card {
+    width: 100%;
+    max-width: 100%;
+    min-height: 250px;
+    margin: 0 0 15px 0;
+}
+
+/* Stats Grid Adjustments */
+.stats-grid {
+    max-width: 100%;
+    margin: 0;
+    padding: 5px;
+}
+
+/* Container Width Control */
+.cyber-frame, .content-section {
+    max-width: 100%;
+    box-sizing: border-box;
 }
