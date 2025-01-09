@@ -245,6 +245,36 @@ function getRandomData(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
+// Update live MEV activity
+function updateLiveMEVActivity() {
+    const activityFeed = document.querySelector('.mev-activity-feed');
+    if (!activityFeed) return;
+
+    const activities = [
+        { type: 'arbitrage', description: 'Arbitrage opportunity detected', priority: 'high' },
+        { type: 'sandwich', description: 'Sandwich trade executed', priority: 'medium' },
+        { type: 'liquidation', description: 'Liquidation opportunity found', priority: 'high' }
+    ];
+
+    const activity = activities[Math.floor(Math.random() * activities.length)];
+    const time = new Date().toLocaleTimeString();
+
+    const activityItem = document.createElement('div');
+    activityItem.className = `activity-item ${activity.priority}-priority`;
+    activityItem.innerHTML = `
+        <div class="activity-time">${time}</div>
+        <div class="activity-description">
+            <i class="fas fa-bolt"></i> ${activity.description}
+        </div>
+        <div class="activity-details">Profit potential: ${getRandomData(1, 10)} SOL</div>
+    `;
+
+    activityFeed.insertBefore(activityItem, activityFeed.firstChild);
+    if (activityFeed.children.length > 10) {
+        activityFeed.removeChild(activityFeed.lastChild);
+    }
+}
+
 // Initialize Security Features
 document.addEventListener('DOMContentLoaded', async () => {
     try {
@@ -257,19 +287,20 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (user) {
             document.body.classList.remove('not-logged');
             await initializeDashboard();
-        } else {
-            document.body.classList.add('not-logged');
-        }
-        
-        // Set up intervals only if logged in
-        if (!document.body.classList.contains('not-logged')) {
+            
+            // Set up intervals only if logged in
             setInterval(updateConnectionStatus, 10000);
             
-            // Update charts if visible
+            // Update charts and activity if visible
             if (!document.hidden) {
+                if (chartUpdateInterval) clearInterval(chartUpdateInterval);
+                if (activityUpdateInterval) clearInterval(activityUpdateInterval);
+                
                 chartUpdateInterval = setInterval(updateAllCharts, 2000);
                 activityUpdateInterval = setInterval(updateLiveMEVActivity, 5000);
             }
+        } else {
+            document.body.classList.add('not-logged');
         }
     } catch (error) {
         console.error('Error during initialization:', error);
@@ -280,13 +311,22 @@ document.addEventListener('DOMContentLoaded', async () => {
 // Telegram Authentication Handler
 async function onTelegramAuth(user) {
     try {
+        console.log('Telegram auth successful:', user);
         localStorage.setItem('telegramUser', JSON.stringify(user));
         document.body.classList.remove('not-logged');
         document.body.classList.add('loading');
         await initializeDashboard();
+        
+        // Set up intervals after successful login
+        setInterval(updateConnectionStatus, 10000);
+        if (!document.hidden) {
+            chartUpdateInterval = setInterval(updateAllCharts, 2000);
+            activityUpdateInterval = setInterval(updateLiveMEVActivity, 5000);
+        }
     } catch (error) {
         console.error('Error during authentication:', error);
         document.body.classList.add('not-logged');
+        document.body.classList.remove('loading');
     }
 }
 
