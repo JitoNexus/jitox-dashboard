@@ -352,60 +352,19 @@ async function initializeDashboard() {
     }
 }
 
-// Telegram Authentication Handler
-async function onTelegramAuth(user) {
-    try {
-        console.log('Telegram auth successful:', user);
-        
-        // Clear any existing state
-        destroyCharts();
-        if (chartUpdateInterval) clearInterval(chartUpdateInterval);
-        if (activityUpdateInterval) clearInterval(activityUpdateInterval);
-        
-        // Save user data and update UI
-        localStorage.setItem('telegramUser', JSON.stringify(user));
-        document.body.classList.remove('not-logged');
-        document.body.classList.add('loading');
-        
-        // Initialize dashboard
-        const initialized = await initializeDashboard();
-        if (!initialized) {
-            throw new Error('Dashboard initialization failed');
-        }
-        
-        // Set up intervals after successful login
-        setInterval(updateConnectionStatus, 10000);
-        if (!document.hidden) {
-            chartUpdateInterval = setInterval(updateAllCharts, 2000);
-            activityUpdateInterval = setInterval(updateLiveMEVActivity, 5000);
-        }
-        
-        document.body.classList.remove('loading');
-        document.querySelector('.dashboard-container')?.classList.remove('hidden');
-    } catch (error) {
-        console.error('Error during authentication:', error);
-        document.body.classList.add('not-logged');
-        document.body.classList.remove('loading');
-        localStorage.removeItem('telegramUser');
-        
-        // Show error message to user
-        const errorMessage = document.createElement('div');
-        errorMessage.className = 'error-message';
-        errorMessage.textContent = 'Login failed. Please try again.';
-        document.body.appendChild(errorMessage);
-        setTimeout(() => errorMessage.remove(), 5000);
-    }
-}
-
 // Initialize Security Features
 document.addEventListener('DOMContentLoaded', async () => {
     try {
+        // Set initial state to prevent flash
+        document.body.classList.add('loading');
+        
         // Initialize security features first
         updateSecurityStatus();
         
         // Check login status
         const userStr = localStorage.getItem('telegramUser');
         if (!userStr) {
+            document.body.classList.remove('loading');
             document.body.classList.add('not-logged');
             return;
         }
@@ -416,10 +375,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 throw new Error('Invalid user data');
             }
 
-            // Show loading state
-            document.body.classList.remove('not-logged');
-            document.body.classList.add('loading');
-            
             // Clear any existing intervals
             if (chartUpdateInterval) clearInterval(chartUpdateInterval);
             if (activityUpdateInterval) clearInterval(activityUpdateInterval);
@@ -442,25 +397,93 @@ document.addEventListener('DOMContentLoaded', async () => {
                 activityUpdateInterval = setInterval(updateLiveMEVActivity, 5000);
             }
             
-            // Show dashboard
+            // Show dashboard only after everything is ready
+            requestAnimationFrame(() => {
+                document.body.classList.remove('loading');
+                document.body.classList.remove('not-logged');
+                const dashboardContainer = document.querySelector('.dashboard-container');
+                if (dashboardContainer) {
+                    dashboardContainer.classList.remove('hidden');
+                }
+            });
+        } catch (error) {
+            console.error('Error parsing user data:', error);
+            localStorage.removeItem('telegramUser');
+            document.body.classList.remove('loading');
+            document.body.classList.add('not-logged');
+            const dashboardContainer = document.querySelector('.dashboard-container');
+            if (dashboardContainer) {
+                dashboardContainer.classList.add('hidden');
+            }
+        }
+    } catch (error) {
+        console.error('Error during initialization:', error);
+        localStorage.removeItem('telegramUser');
+        document.body.classList.remove('loading');
+        document.body.classList.add('not-logged');
+        const dashboardContainer = document.querySelector('.dashboard-container');
+        if (dashboardContainer) {
+            dashboardContainer.classList.add('hidden');
+        }
+    }
+});
+
+// Telegram Authentication Handler
+async function onTelegramAuth(user) {
+    try {
+        console.log('Telegram auth successful:', user);
+        
+        // Set initial state
+        document.body.classList.add('loading');
+        document.body.classList.remove('not-logged');
+        
+        // Clear any existing state
+        destroyCharts();
+        if (chartUpdateInterval) clearInterval(chartUpdateInterval);
+        if (activityUpdateInterval) clearInterval(activityUpdateInterval);
+        
+        // Save user data
+        localStorage.setItem('telegramUser', JSON.stringify(user));
+        
+        // Initialize dashboard
+        const initialized = await initializeDashboard();
+        if (!initialized) {
+            throw new Error('Dashboard initialization failed');
+        }
+        
+        // Set up intervals after successful login
+        setInterval(updateConnectionStatus, 10000);
+        if (!document.hidden) {
+            chartUpdateInterval = setInterval(updateAllCharts, 2000);
+            activityUpdateInterval = setInterval(updateLiveMEVActivity, 5000);
+        }
+        
+        // Show dashboard only after everything is ready
+        requestAnimationFrame(() => {
             document.body.classList.remove('loading');
             const dashboardContainer = document.querySelector('.dashboard-container');
             if (dashboardContainer) {
                 dashboardContainer.classList.remove('hidden');
             }
-        } catch (error) {
-            console.error('Error parsing user data:', error);
-            localStorage.removeItem('telegramUser');
-            document.body.classList.add('not-logged');
-            document.body.classList.remove('loading');
-        }
+        });
     } catch (error) {
-        console.error('Error during initialization:', error);
-        document.body.classList.add('not-logged');
-        document.body.classList.remove('loading');
+        console.error('Error during authentication:', error);
         localStorage.removeItem('telegramUser');
+        document.body.classList.remove('loading');
+        document.body.classList.add('not-logged');
+        const dashboardContainer = document.querySelector('.dashboard-container');
+        if (dashboardContainer) {
+            dashboardContainer.classList.add('hidden');
+        }
+        
+        // Show error message to user
+        const errorMessage = document.createElement('div');
+        errorMessage.className = 'error-message';
+        errorMessage.textContent = 'Login failed. Please try again.';
+        document.body.appendChild(errorMessage);
+        setTimeout(() => errorMessage.remove(), 5000);
     }
-});
+}
 
 // Handle visibility changes
 document.addEventListener('visibilitychange', () => {
