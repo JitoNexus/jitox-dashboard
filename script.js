@@ -299,70 +299,33 @@ function updateLiveMEVActivity() {
     }
 }
 
-// Initialize Security Features
-document.addEventListener('DOMContentLoaded', async () => {
+// Update user profile with error handling
+async function updateUserProfile(user) {
     try {
-        // Initialize security features first
-        updateSecurityStatus();
-        await updateConnectionStatus();
+        const elements = {
+            photo: document.querySelector('#userPhoto'),
+            name: document.querySelector('#userName'),
+            id: document.querySelector('#userId'),
+            wallet: document.querySelector('#userWallet'),
+            balance: document.querySelector('#walletBalance')
+        };
         
-        // Check login status
-        const user = localStorage.getItem('telegramUser');
-        if (user) {
-            document.body.classList.remove('not-logged');
-            await initializeDashboard();
-            
-            // Set up intervals only if logged in
-            setInterval(updateConnectionStatus, 10000);
-            
-            // Update charts and activity if visible
-            if (!document.hidden) {
-                if (chartUpdateInterval) clearInterval(chartUpdateInterval);
-                if (activityUpdateInterval) clearInterval(activityUpdateInterval);
-                
-                chartUpdateInterval = setInterval(updateAllCharts, 2000);
-                activityUpdateInterval = setInterval(updateLiveMEVActivity, 5000);
-            }
-        } else {
-            document.body.classList.add('not-logged');
-        }
-    } catch (error) {
-        console.error('Error during initialization:', error);
-        document.body.classList.add('not-logged');
-    }
-});
-
-// Telegram Authentication Handler
-async function onTelegramAuth(user) {
-    try {
-        console.log('Telegram auth successful:', user);
+        // Update profile elements if they exist
+        if (elements.photo && user.photo_url) elements.photo.src = user.photo_url;
+        if (elements.name) elements.name.textContent = user.username || 'Anonymous';
+        if (elements.id) elements.id.textContent = user.id || 'Unknown';
         
-        // Clear any existing state
-        destroyCharts();
-        clearInterval(chartUpdateInterval);
-        clearInterval(activityUpdateInterval);
-        
-        // Save user data and update UI
-        localStorage.setItem('telegramUser', JSON.stringify(user));
-        document.body.classList.remove('not-logged');
-        document.body.classList.add('loading');
-        
-        // Initialize dashboard
-        await initializeDashboard();
-        
-        // Set up intervals after successful login
-        setInterval(updateConnectionStatus, 10000);
-        if (!document.hidden) {
-            chartUpdateInterval = setInterval(updateAllCharts, 2000);
-            activityUpdateInterval = setInterval(updateLiveMEVActivity, 5000);
+        // Mock wallet for development
+        const mockWallet = '5FHwkrdxkjgwkGpF6jbQEdC3JDjKL6LYJfpwvfpHQDGe';
+        if (elements.wallet) {
+            elements.wallet.textContent = mockWallet;
+            if (elements.balance) elements.balance.textContent = '0 SOL';
         }
         
-        document.body.classList.remove('loading');
+        return true;
     } catch (error) {
-        console.error('Error during authentication:', error);
-        document.body.classList.add('not-logged');
-        document.body.classList.remove('loading');
-        localStorage.removeItem('telegramUser');
+        console.error('Error updating profile:', error);
+        return false;
     }
 }
 
@@ -375,7 +338,10 @@ async function initializeDashboard() {
         }
 
         // Update profile first
-        await updateUserProfile(user);
+        const profileUpdated = await updateUserProfile(user);
+        if (!profileUpdated) {
+            console.warn('Profile update failed, continuing with initialization');
+        }
         
         // Initialize sections if they exist
         const statsSection = document.querySelector('.statistics-section');
@@ -390,69 +356,100 @@ async function initializeDashboard() {
         if (aiSection) {
             initializeAIDashboard();
         }
+
+        // Show content after initialization
+        document.body.classList.remove('loading');
+        return true;
     } catch (error) {
         console.error('Error initializing dashboard:', error);
         document.body.classList.add('not-logged');
+        document.body.classList.remove('loading');
         localStorage.removeItem('telegramUser');
-        throw error; // Propagate error for proper handling
+        return false;
     }
 }
 
-// Update user profile with error handling
-async function updateUserProfile(user) {
+// Telegram Authentication Handler
+async function onTelegramAuth(user) {
     try {
-        const elements = {
-            photo: document.getElementById('userPhoto'),
-            name: document.getElementById('userName'),
-            id: document.getElementById('userId'),
-            wallet: document.getElementById('userWallet'),
-            balance: document.getElementById('walletBalance')
-        };
+        console.log('Telegram auth successful:', user);
         
-        if (elements.photo) elements.photo.src = user.photo_url || '';
-        if (elements.name) elements.name.textContent = user.username || 'Anonymous';
-        if (elements.id) elements.id.textContent = user.id || 'Unknown';
+        // Clear any existing state
+        destroyCharts();
+        if (chartUpdateInterval) clearInterval(chartUpdateInterval);
+        if (activityUpdateInterval) clearInterval(activityUpdateInterval);
         
-        if (elements.wallet) {
-            const wallet = await fetchUserWallet(user.id);
-            elements.wallet.textContent = wallet || 'Not connected';
+        // Save user data and update UI
+        localStorage.setItem('telegramUser', JSON.stringify(user));
+        document.body.classList.remove('not-logged');
+        document.body.classList.add('loading');
+        
+        // Initialize dashboard
+        const initialized = await initializeDashboard();
+        if (!initialized) {
+            throw new Error('Dashboard initialization failed');
+        }
+        
+        // Set up intervals after successful login
+        setInterval(updateConnectionStatus, 10000);
+        if (!document.hidden) {
+            chartUpdateInterval = setInterval(updateAllCharts, 2000);
+            activityUpdateInterval = setInterval(updateLiveMEVActivity, 5000);
+        }
+        
+        document.body.classList.remove('loading');
+    } catch (error) {
+        console.error('Error during authentication:', error);
+        document.body.classList.add('not-logged');
+        document.body.classList.remove('loading');
+        localStorage.removeItem('telegramUser');
+        
+        // Show error message to user
+        const errorMessage = document.createElement('div');
+        errorMessage.className = 'error-message';
+        errorMessage.textContent = 'Login failed. Please try again.';
+        document.body.appendChild(errorMessage);
+        setTimeout(() => errorMessage.remove(), 5000);
+    }
+}
+
+// Initialize Security Features
+document.addEventListener('DOMContentLoaded', async () => {
+    try {
+        // Initialize security features first
+        updateSecurityStatus();
+        
+        // Check login status
+        const user = localStorage.getItem('telegramUser');
+        if (user) {
+            document.body.classList.remove('not-logged');
+            document.body.classList.add('loading');
             
-            if (wallet && elements.balance) {
-                await updateWalletBalance(wallet, elements.balance);
+            const initialized = await initializeDashboard();
+            if (!initialized) {
+                throw new Error('Dashboard initialization failed');
             }
+            
+            // Set up intervals only if logged in
+            setInterval(updateConnectionStatus, 10000);
+            
+            // Update charts and activity if visible
+            if (!document.hidden) {
+                if (chartUpdateInterval) clearInterval(chartUpdateInterval);
+                if (activityUpdateInterval) clearInterval(activityUpdateInterval);
+                
+                chartUpdateInterval = setInterval(updateAllCharts, 2000);
+                activityUpdateInterval = setInterval(updateLiveMEVActivity, 5000);
+            }
+            
+            document.body.classList.remove('loading');
+        } else {
+            document.body.classList.add('not-logged');
         }
     } catch (error) {
-        console.error('Error updating profile:', error);
+        console.error('Error during initialization:', error);
+        document.body.classList.add('not-logged');
+        document.body.classList.remove('loading');
+        localStorage.removeItem('telegramUser');
     }
-}
-
-// Fetch user's wallet information
-async function fetchUserWallet(userId) {
-    try {
-        // For development, return a mock wallet
-        if (window.location.hostname === 'localhost' || window.location.hostname === 'jitonexus.github.io') {
-            console.log('Using mock wallet for development');
-            return '5FHwkrdxkjgwkGpF6jbQEdC3JDjKL6LYJfpwvfpHQDGe';
-        }
-        
-        const apiUrl = 'https://api.jitox.ai/get_wallet';
-        const response = await fetch(`${apiUrl}?user_id=${userId}`, {
-            method: 'GET',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            }
-        });
-
-        if (!response.ok) {
-            throw new Error(`API responded with status: ${response.status}`);
-        }
-
-        const data = await response.json();
-        return data.wallet;
-    } catch (error) {
-        console.error('Error fetching wallet:', error);
-        // Return mock wallet as fallback
-        return '5FHwkrdxkjgwkGpF6jbQEdC3JDjKL6LYJfpwvfpHQDGe';
-    }
-}
+});
