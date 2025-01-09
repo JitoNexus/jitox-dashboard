@@ -902,3 +902,37 @@ document.addEventListener('visibilitychange', () => {
         activityUpdateInterval = setInterval(updateLiveMEVActivity, 5000);
     }
 });
+
+// Security Status Updates
+function updateSecurityStatus() {
+    const isSecure = window.location.protocol === 'https:';
+    const secureBadge = document.querySelector('.secure-badge');
+    if (secureBadge) {
+        secureBadge.style.display = isSecure ? 'flex' : 'none';
+    }
+}
+
+// Connection Status Updates
+function updateConnectionStatus() {
+    const statusIndicator = document.querySelector('.status-indicator');
+    const statusText = document.querySelector('.status-text');
+    
+    if (window.solana && window.solana.isConnected) {
+        statusIndicator.style.background = '#00ff00';
+        statusIndicator.style.boxShadow = '0 0 10px #00ff00';
+        statusText.textContent = 'Connected to Solana';
+    } else {
+        statusIndicator.style.background = '#ff0000';
+        statusIndicator.style.boxShadow = '0 0 10px #ff0000';
+        statusText.textContent = 'Disconnected';
+    }
+}
+
+// Initialize Security Features
+document.addEventListener('DOMContentLoaded', () => {
+    updateSecurityStatus();
+    updateConnectionStatus();
+    
+    // Update connection status periodically
+    setInterval(updateConnectionStatus, 5000);
+});
