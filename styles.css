@@ -1598,3 +1598,142 @@ body {
     -webkit-overflow-scrolling: touch;
     scroll-behavior: smooth;
 }
+
+/* Chart Container Optimization */
+.charts-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+    padding: 10px;
+    margin: 0;
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+}
+
+.chart-card {
+    width: 100%;
+    height: auto;
+    min-height: 300px;
+    padding: 15px;
+    margin: 0;
+    background: var(--card-bg);
+    border: 1px solid var(--neon-cyan);
+    border-radius: 8px;
+    overflow: hidden;
+    transform: translateZ(0);
+    will-change: transform;
+}
+
+.chart-card canvas {
+    width: 100% !important;
+    height: 100% !important;
+    max-height: 300px;
+    margin: 0;
+    padding: 0;
+}
+
+/* Content Section Fixes */
+.content-section {
+    position: relative;
+    height: calc(100vh - 150px);
+    padding: 15px;
+    margin: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    background: var(--deep-blue);
+}
+
+/* Stats Grid Optimization */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    padding: 10px;
+    margin: 0;
+    width: 100%;
+}
+
+.cyber-card {
+    width: 100%;
+    padding: 15px;
+    margin: 0;
+    background: var(--card-bg);
+    border: 1px solid var(--neon-cyan);
+    border-radius: 8px;
+}
+
+/* Mobile Optimization */
+@media (max-width: 768px) {
+    .content-section {
+        height: calc(100vh - 120px);
+        padding: 10px;
+    }
+
+    .chart-card {
+        min-height: 250px;
+        padding: 10px;
+    }
+
+    .chart-card canvas {
+        max-height: 200px;
+    }
+
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+        padding: 5px;
+    }
+
+    .cyber-card {
+        padding: 10px;
+    }
+
+    .stat-value {
+        font-size: 20px;
+    }
+}
+
+/* Performance Optimizations */
+* {
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Fix Container Overflow */
+.cyber-frame {
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    padding: 10px;
+    overflow: hidden;
+}
+
+/* Navigation Improvements */
+.cyber-nav {
+    display: flex;
+    gap: 8px;
+    padding: 10px;
+    margin: 0 0 10px 0;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    background: var(--deep-blue);
+    border-bottom: 1px solid var(--neon-cyan);
+}
+
+.cyber-button {
+    flex: 0 0 auto;
+    padding: 8px 15px;
+    white-space: nowrap;
+}
+
+/* Chart Title Optimization */
+.chart-title {
+    font-size: 16px;
+    margin: 0 0 15px 0;
+    padding: 0;
+    text-align: center;
+}

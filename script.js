@@ -167,140 +167,91 @@ function animateValue(element, start, end, duration) {
 // Update stats every 10 seconds
 setInterval(updateAllStats, 10000);
 
-// Update charts every 8 seconds
-setInterval(updateAllCharts, 8000);
-
-function updateAlertTimes() {
-    const alerts = document.querySelectorAll('.alert-item .time');
-    alerts.forEach((alert, index) => {
-        const minutes = parseInt(alert.textContent) + 1;
-        alert.textContent = `${minutes}m ago`;
-    });
-}
-
-// Previous chart data storage
-let previousChartData = {
-    sol: Array(24).fill(500),
-    mev: [100, 200, 100, 50],
-    sandwich: [30, 25, 20]
+// Chart optimization
+const chartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    animation: {
+        duration: 0 // Disable animations for better performance
+    },
+    elements: {
+        line: {
+            tension: 0.1 // Reduce line tension for better performance
+        },
+        point: {
+            radius: 2 // Smaller points for better performance
+        }
+    },
+    plugins: {
+        legend: {
+            display: false // Hide legend for better performance
+        }
+    },
+    scales: {
+        y: {
+            beginAtZero: true,
+            grid: {
+                display: false // Hide grid for better performance
+            },
+            ticks: {
+                maxTicksLimit: 5 // Limit number of ticks for better performance
+            }
+        },
+        x: {
+            grid: {
+                display: false // Hide grid for better performance
+            },
+            ticks: {
+                maxTicksLimit: 6 // Limit number of ticks for better performance
+            }
+        }
+    }
 };
 
+// Optimize chart updates
 function updateAllCharts() {
-    if (!document.hidden) {
-        // Only update charts if the page is visible
+    if (document.hidden) return; // Skip updates when page is not visible
+    
+    requestAnimationFrame(() => {
         if (solChart) solChart.update('none');
         if (mevChart) mevChart.update('none');
         if (sandwichChart) sandwichChart.update('none');
         if (aiPerformanceChart) aiPerformanceChart.update('none');
-    }
+    });
 }
 
+// Optimize chart initialization
 function initializeCharts() {
     try {
-        const commonOptions = {
-            responsive: true,
-            maintainAspectRatio: false,
-            animation: {
-                duration: 2000,
-                easing: 'easeInOutQuart'
-            },
-            plugins: {
-                legend: {
-                    display: true,
-                    position: 'top',
-                    labels: { 
-                        color: '#00ffff',
-                        font: {
-                            family: 'Courier New',
-                            size: 14
-                        },
-                        padding: 20
-                    }
-                },
-                tooltip: {
-                    backgroundColor: 'rgba(0, 0, 51, 0.9)',
-                    titleColor: '#00ffff',
-                    bodyColor: '#ffffff',
-                    borderColor: '#ff00ff',
-                    borderWidth: 1,
-                    padding: 15,
-                    displayColors: false,
-                    titleFont: {
-                        size: 16
-                    },
-                    bodyFont: {
-                        size: 14
-                    }
-                }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    grid: { 
-                        color: 'rgba(0, 255, 255, 0.1)',
-                        borderColor: 'rgba(0, 255, 255, 0.5)'
-                    },
-                    ticks: { 
-                        color: '#00ffff',
-                        font: {
-                            family: 'Courier New',
-                            size: 14
-                        },
-                        padding: 10
-                    }
-                },
-                x: {
-                    grid: { 
-                        color: 'rgba(0, 255, 255, 0.1)',
-                        borderColor: 'rgba(0, 255, 255, 0.5)'
-                    },
-                    ticks: {
-                        color: '#00ffff',
-                        font: {
-                            family: 'Courier New',
-                            size: 14
-                        },
-                        padding: 10
-                    }
-                }
-            }
-        };
-
         // SOL Gained Chart
-        solChart = new Chart(
-            document.getElementById('solGainedChart'),
-            {
+        const solCtx = document.getElementById('solGainedChart');
+        if (solCtx) {
+            solChart = new Chart(solCtx, {
                 type: 'line',
                 data: {
-                    labels: Array(24).fill('').map((_, i) => `${23-i}h`),
+                    labels: Array(12).fill('').map((_, i) => `${11-i}h`),
                     datasets: [{
-                        label: 'SOL Gained',
-                        data: Array(24).fill(0).map(() => getRandomData(100, 1000)),
+                        data: Array(12).fill(0).map(() => getRandomData(100, 1000)),
                         borderColor: '#ff00ff',
                         backgroundColor: 'rgba(255, 0, 255, 0.1)',
-                        fill: true,
-                        tension: 0.4,
-                        borderWidth: 3,
-                        pointRadius: 5,
-                        pointHoverRadius: 8
+                        fill: true
                     }]
                 },
-                options: commonOptions
-            }
-        );
+                options: chartOptions
+            });
+        }
 
         // MEV Operations Chart
-        mevChart = new Chart(
-            document.getElementById('mevOpsChart'),
-            {
+        const mevCtx = document.getElementById('mevOpsChart');
+        if (mevCtx) {
+            mevChart = new Chart(mevCtx, {
                 type: 'bar',
                 data: {
-                    labels: ['Arbitrage', 'Sandwich', 'Liquidation', 'Other'],
+                    labels: ['Arb', 'Sand', 'Liq', 'Other'],
                     datasets: [{
-                        label: 'Active Operations',
                         data: [
-                            getRandomData(10, 523),
-                            getRandomData(24, 721),
+                            getRandomData(10, 500),
+                            getRandomData(24, 700),
                             getRandomData(10, 300),
                             getRandomData(5, 200)
                         ],
@@ -309,86 +260,60 @@ function initializeCharts() {
                             'rgba(255, 0, 255, 0.7)',
                             'rgba(255, 255, 0, 0.7)',
                             'rgba(0, 255, 0, 0.7)'
-                        ],
-                        borderColor: [
-                            '#00ffff',
-                            '#ff00ff',
-                            '#ffff00',
-                            '#00ff00'
-                        ],
-                        borderWidth: 2,
-                        borderRadius: 5
+                        ]
                     }]
                 },
-                options: {
-                    ...commonOptions,
-                    plugins: {
-                        ...commonOptions.plugins,
-                        legend: {
-                            display: false
-                        }
-                    },
-                    scales: {
-                        ...commonOptions.scales,
-                        y: {
-                            ...commonOptions.scales.y,
-                    grid: {
-                                display: true,
-                                color: 'rgba(0, 255, 255, 0.1)'
-                            }
-                        }
-                    }
-                }
-            }
-        );
+                options: chartOptions
+            });
+        }
 
         // Sandwich Opportunities Chart
-        sandwichChart = new Chart(
-            document.getElementById('sandwichChart'),
-            {
+        const sandwichCtx = document.getElementById('sandwichChart');
+        if (sandwichCtx) {
+            sandwichChart = new Chart(sandwichCtx, {
                 type: 'doughnut',
                 data: {
-                    labels: ['High Profit', 'Medium Profit', 'Low Profit'],
+                    labels: ['High', 'Med', 'Low'],
                     datasets: [{
                         data: [35, 45, 20],
                         backgroundColor: [
                             'rgba(255, 0, 255, 0.8)',
                             'rgba(0, 255, 255, 0.8)',
                             'rgba(255, 255, 0, 0.8)'
-                        ],
-                        borderColor: '#000033',
-                        borderWidth: 2,
-                        hoverOffset: 15
+                        ]
                     }]
                 },
                 options: {
-                    ...commonOptions,
+                    ...chartOptions,
                     cutout: '60%',
-                    radius: '90%',
-            plugins: {
-                        ...commonOptions.plugins,
-                legend: {
-                            position: 'bottom',
-                    labels: {
-                                padding: 20,
-                                font: {
-                                    size: 14
-                                }
-                            }
-                        }
-                    }
+                    radius: '90%'
                 }
-            }
-        );
+            });
+        }
 
-        console.log('Charts initialized successfully');
+        console.log('Charts initialized with optimized settings');
     } catch (error) {
         console.error('Error initializing charts:', error);
-        document.querySelectorAll('.chart-card').forEach(card => {
-            card.classList.add('error-state');
-        });
     }
 }
+
+// Optimize performance with throttling
+function throttle(func, limit) {
+    let inThrottle;
+    return function(...args) {
+        if (!inThrottle) {
+            func.apply(this, args);
+            inThrottle = true;
+            setTimeout(() => inThrottle = false, limit);
+        }
+    }
+}
+
+// Throttle chart updates
+const throttledChartUpdate = throttle(updateAllCharts, 1000);
+
+// Update charts with throttling
+setInterval(throttledChartUpdate, 2000);
 
 function initializeAIDashboard() {
     // Update AI stats
