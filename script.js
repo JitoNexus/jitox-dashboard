@@ -404,11 +404,30 @@ document.addEventListener('DOMContentLoaded', async () => {
         updateSecurityStatus();
         
         // Check login status
-        const user = localStorage.getItem('telegramUser');
-        if (user) {
+        const userStr = localStorage.getItem('telegramUser');
+        if (!userStr) {
+            document.body.classList.add('not-logged');
+            return;
+        }
+
+        try {
+            const user = JSON.parse(userStr);
+            if (!user) {
+                throw new Error('Invalid user data');
+            }
+
+            // Show loading state
             document.body.classList.remove('not-logged');
             document.body.classList.add('loading');
             
+            // Clear any existing intervals
+            if (chartUpdateInterval) clearInterval(chartUpdateInterval);
+            if (activityUpdateInterval) clearInterval(activityUpdateInterval);
+            
+            // Destroy any existing charts
+            destroyCharts();
+            
+            // Initialize dashboard
             const initialized = await initializeDashboard();
             if (!initialized) {
                 throw new Error('Dashboard initialization failed');
@@ -419,21 +438,52 @@ document.addEventListener('DOMContentLoaded', async () => {
             
             // Update charts and activity if visible
             if (!document.hidden) {
-                if (chartUpdateInterval) clearInterval(chartUpdateInterval);
-                if (activityUpdateInterval) clearInterval(activityUpdateInterval);
-                
                 chartUpdateInterval = setInterval(updateAllCharts, 2000);
                 activityUpdateInterval = setInterval(updateLiveMEVActivity, 5000);
             }
             
+            // Show dashboard
             document.body.classList.remove('loading');
-        } else {
+            const dashboardContainer = document.querySelector('.dashboard-container');
+            if (dashboardContainer) {
+                dashboardContainer.classList.remove('hidden');
+            }
+        } catch (error) {
+            console.error('Error parsing user data:', error);
+            localStorage.removeItem('telegramUser');
             document.body.classList.add('not-logged');
+            document.body.classList.remove('loading');
         }
     } catch (error) {
         console.error('Error during initialization:', error);
         document.body.classList.add('not-logged');
         document.body.classList.remove('loading');
         localStorage.removeItem('telegramUser');
+    }
+});
+
+// Handle visibility changes
+document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+        // Clear intervals when page is hidden
+        if (chartUpdateInterval) {
+            clearInterval(chartUpdateInterval);
+            chartUpdateInterval = null;
+        }
+        if (activityUpdateInterval) {
+            clearInterval(activityUpdateInterval);
+            activityUpdateInterval = null;
+        }
+    } else {
+        // Restart intervals when page becomes visible
+        const user = localStorage.getItem('telegramUser');
+        if (user) {
+            if (!chartUpdateInterval) {
+                chartUpdateInterval = setInterval(updateAllCharts, 2000);
+            }
+            if (!activityUpdateInterval) {
+                activityUpdateInterval = setInterval(updateLiveMEVActivity, 5000);
+            }
+        }
     }
 });
