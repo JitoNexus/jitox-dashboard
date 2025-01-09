@@ -912,16 +912,23 @@ function updateSecurityStatus() {
     }
 }
 
+// Initialize Solana Connection
+const connection = new solanaWeb3.Connection('https://api.mainnet-beta.solana.com');
+
 // Connection Status Updates
-function updateConnectionStatus() {
+async function updateConnectionStatus() {
     const statusIndicator = document.querySelector('.status-indicator');
     const statusText = document.querySelector('.status-text');
     
-    if (window.solana && window.solana.isConnected) {
+    try {
+        // Check if connection is alive
+        const blockHeight = await connection.getBlockHeight();
+        
         statusIndicator.style.background = '#00ff00';
         statusIndicator.style.boxShadow = '0 0 10px #00ff00';
         statusText.textContent = 'Connected to Solana';
-    } else {
+    } catch (error) {
+        console.error('Connection error:', error);
         statusIndicator.style.background = '#ff0000';
         statusIndicator.style.boxShadow = '0 0 10px #ff0000';
         statusText.textContent = 'Disconnected';
@@ -929,10 +936,10 @@ function updateConnectionStatus() {
 }
 
 // Initialize Security Features
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     updateSecurityStatus();
-    updateConnectionStatus();
+    await updateConnectionStatus();
     
-    // Update connection status periodically
-    setInterval(updateConnectionStatus, 5000);
+    // Update connection status every 10 seconds
+    setInterval(updateConnectionStatus, 10000);
 });
