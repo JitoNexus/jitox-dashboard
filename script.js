@@ -40,28 +40,11 @@ async function updateConnectionStatus() {
     const statusIndicator = document.querySelector('.status-indicator');
     const statusText = document.querySelector('.status-text');
     
-    try {
-        const response = await fetch('https://api.mainnet-beta.solana.com', {
-            method: 'POST',
-            headers: { 
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer YOUR_API_KEY' // Replace with your API key
-            },
-            body: JSON.stringify({ "jsonrpc": "2.0", "id": 1, "method": "getHealth" })
-        });
-        
-        if (response.ok) {
-            statusIndicator.style.background = '#00ff00';
-            statusIndicator.style.boxShadow = '0 0 10px #00ff00';
-            statusText.textContent = 'Connected to Solana';
-        } else {
-            throw new Error('Network response was not ok');
-        }
-    } catch (error) {
-        console.error('Connection error:', error);
-        statusIndicator.style.background = '#ff0000';
-        statusIndicator.style.boxShadow = '0 0 10px #ff0000';
-        statusText.textContent = 'Disconnected';
+    if (statusIndicator && statusText) {
+        // Use mock connected status for development
+        statusIndicator.style.background = '#00ff00';
+        statusIndicator.style.boxShadow = '0 0 10px #00ff00';
+        statusText.textContent = 'Connected to Solana';
     }
 }
 
@@ -315,10 +298,9 @@ async function updateUserProfile(user) {
         if (elements.name) elements.name.textContent = user.username || 'Anonymous';
         if (elements.id) elements.id.textContent = user.id || 'Unknown';
         
-        // Mock wallet for development
-        const mockWallet = '5FHwkrdxkjgwkGpF6jbQEdC3JDjKL6LYJfpwvfpHQDGe';
+        // Use mock wallet data
         if (elements.wallet) {
-            elements.wallet.textContent = mockWallet;
+            elements.wallet.textContent = '5FHwkrdxkjgwkGpF6jbQEdC3JDjKL6LYJfpwvfpHQDGe';
             if (elements.balance) elements.balance.textContent = '0 SOL';
         }
         
@@ -359,6 +341,7 @@ async function initializeDashboard() {
 
         // Show content after initialization
         document.body.classList.remove('loading');
+        document.querySelector('.dashboard-container')?.classList.remove('hidden');
         return true;
     } catch (error) {
         console.error('Error initializing dashboard:', error);
@@ -398,6 +381,7 @@ async function onTelegramAuth(user) {
         }
         
         document.body.classList.remove('loading');
+        document.querySelector('.dashboard-container')?.classList.remove('hidden');
     } catch (error) {
         console.error('Error during authentication:', error);
         document.body.classList.add('not-logged');
