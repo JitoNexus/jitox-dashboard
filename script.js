@@ -353,10 +353,18 @@ async function initializeDashboard() {
 }
 
 // Handle Telegram Login Callback
-window.onTelegramAuth = function(user) {
+function onTelegramAuth(user) {
     console.log('Telegram auth callback received:', user);
-    handleTelegramLogin(user);
-};
+    handleTelegramLogin(user).catch(error => {
+        console.error('Error in Telegram auth:', error);
+        // Show error message to user
+        const errorMessage = document.createElement('div');
+        errorMessage.className = 'error-message';
+        errorMessage.textContent = 'Login failed. Please try again.';
+        document.body.appendChild(errorMessage);
+        setTimeout(() => errorMessage.remove(), 5000);
+    });
+}
 
 // Handle Telegram Login
 async function handleTelegramLogin(user) {
@@ -372,7 +380,7 @@ async function handleTelegramLogin(user) {
         if (chartUpdateInterval) clearInterval(chartUpdateInterval);
         if (activityUpdateInterval) clearInterval(activityUpdateInterval);
         
-        // Save user data in sessionStorage instead of localStorage
+        // Save user data in sessionStorage
         sessionStorage.setItem('telegramUser', JSON.stringify(user));
         
         // Initialize dashboard
@@ -395,6 +403,10 @@ async function handleTelegramLogin(user) {
             if (dashboardContainer) {
                 dashboardContainer.classList.remove('hidden');
             }
+            const loginSection = document.querySelector('.login-section');
+            if (loginSection) {
+                loginSection.style.display = 'none';
+            }
         });
     } catch (error) {
         console.error('Error during authentication:', error);
@@ -404,6 +416,10 @@ async function handleTelegramLogin(user) {
         const dashboardContainer = document.querySelector('.dashboard-container');
         if (dashboardContainer) {
             dashboardContainer.classList.add('hidden');
+        }
+        const loginSection = document.querySelector('.login-section');
+        if (loginSection) {
+            loginSection.style.display = 'block';
         }
         
         // Show error message to user
