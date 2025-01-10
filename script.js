@@ -352,6 +352,69 @@ async function initializeDashboard() {
     }
 }
 
+// Handle Telegram Login Callback
+window.onTelegramAuth = function(user) {
+    console.log('Telegram auth callback received:', user);
+    handleTelegramLogin(user);
+};
+
+// Handle Telegram Login
+async function handleTelegramLogin(user) {
+    try {
+        console.log('Processing Telegram login:', user);
+        
+        // Set initial state
+        document.body.classList.add('loading');
+        document.body.classList.remove('not-logged');
+        
+        // Clear any existing state
+        destroyCharts();
+        if (chartUpdateInterval) clearInterval(chartUpdateInterval);
+        if (activityUpdateInterval) clearInterval(activityUpdateInterval);
+        
+        // Save user data in sessionStorage instead of localStorage
+        sessionStorage.setItem('telegramUser', JSON.stringify(user));
+        
+        // Initialize dashboard
+        const initialized = await initializeDashboard();
+        if (!initialized) {
+            throw new Error('Dashboard initialization failed');
+        }
+        
+        // Set up intervals after successful login
+        setInterval(updateConnectionStatus, 10000);
+        if (!document.hidden) {
+            chartUpdateInterval = setInterval(updateAllCharts, 2000);
+            activityUpdateInterval = setInterval(updateLiveMEVActivity, 5000);
+        }
+        
+        // Show dashboard only after everything is ready
+        requestAnimationFrame(() => {
+            document.body.classList.remove('loading');
+            const dashboardContainer = document.querySelector('.dashboard-container');
+            if (dashboardContainer) {
+                dashboardContainer.classList.remove('hidden');
+            }
+        });
+    } catch (error) {
+        console.error('Error during authentication:', error);
+        sessionStorage.removeItem('telegramUser');
+        document.body.classList.remove('loading');
+        document.body.classList.add('not-logged');
+        const dashboardContainer = document.querySelector('.dashboard-container');
+        if (dashboardContainer) {
+            dashboardContainer.classList.add('hidden');
+        }
+        
+        // Show error message to user
+        const errorMessage = document.createElement('div');
+        errorMessage.className = 'error-message';
+        errorMessage.textContent = 'Login failed. Please try again.';
+        document.body.appendChild(errorMessage);
+        setTimeout(() => errorMessage.remove(), 5000);
+    }
+}
+
 // Initialize Security Features
 document.addEventListener('DOMContentLoaded', async () => {
     try {
@@ -361,8 +424,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Initialize security features first
         updateSecurityStatus();
         
-        // Check login status
-        const userStr = localStorage.getItem('telegramUser');
+        // Check login status from sessionStorage instead of localStorage
+        const userStr = sessionStorage.getItem('telegramUser');
         if (!userStr) {
             document.body.classList.remove('loading');
             document.body.classList.add('not-logged');
@@ -408,7 +471,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
         } catch (error) {
             console.error('Error parsing user data:', error);
-            localStorage.removeItem('telegramUser');
+            sessionStorage.removeItem('telegramUser');
             document.body.classList.remove('loading');
             document.body.classList.add('not-logged');
             const dashboardContainer = document.querySelector('.dashboard-container');
@@ -418,7 +481,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     } catch (error) {
         console.error('Error during initialization:', error);
-        localStorage.removeItem('telegramUser');
+        sessionStorage.removeItem('telegramUser');
         document.body.classList.remove('loading');
         document.body.classList.add('not-logged');
         const dashboardContainer = document.querySelector('.dashboard-container');
@@ -427,63 +490,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 });
-
-// Telegram Authentication Handler
-async function onTelegramAuth(user) {
-    try {
-        console.log('Telegram auth successful:', user);
-        
-        // Set initial state
-        document.body.classList.add('loading');
-        document.body.classList.remove('not-logged');
-        
-        // Clear any existing state
-        destroyCharts();
-        if (chartUpdateInterval) clearInterval(chartUpdateInterval);
-        if (activityUpdateInterval) clearInterval(activityUpdateInterval);
-        
-        // Save user data
-        localStorage.setItem('telegramUser', JSON.stringify(user));
-        
-        // Initialize dashboard
-        const initialized = await initializeDashboard();
-        if (!initialized) {
-            throw new Error('Dashboard initialization failed');
-        }
-        
-        // Set up intervals after successful login
-        setInterval(updateConnectionStatus, 10000);
-        if (!document.hidden) {
-            chartUpdateInterval = setInterval(updateAllCharts, 2000);
-            activityUpdateInterval = setInterval(updateLiveMEVActivity, 5000);
-        }
-        
-        // Show dashboard only after everything is ready
-        requestAnimationFrame(() => {
-            document.body.classList.remove('loading');
-            const dashboardContainer = document.querySelector('.dashboard-container');
-            if (dashboardContainer) {
-                dashboardContainer.classList.remove('hidden');
-            }
-        });
-    } catch (error) {
-        console.error('Error during authentication:', error);
-        localStorage.removeItem('telegramUser');
-        document.body.classList.remove('loading');
-        document.body.classList.add('not-logged');
-        const dashboardContainer = document.querySelector('.dashboard-container');
-        if (dashboardContainer) {
-            dashboardContainer.classList.add('hidden');
-        }
-        
-        // Show error message to user
-        const errorMessage = document.createElement('div');
-        errorMessage.className = 'error-message';
-        errorMessage.textContent = 'Login failed. Please try again.';
-        document.body.appendChild(errorMessage);
-        setTimeout(() => errorMessage.remove(), 5000);
-    }
-}
 
 // Handle visibility changes
 document.addEventListener('visibilitychange', () => {
