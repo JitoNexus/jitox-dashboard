@@ -40,6 +40,7 @@ async function initializeDashboard(skipUserCheck = false) {
         // Show content after initialization
         document.body.classList.remove('loading');
         document.body.classList.remove('not-logged');
+        document.body.classList.add('logged-in');
         
         // Mark dashboard as accessed
         sessionStorage.setItem('dashboardAccessed', 'true');
@@ -49,6 +50,8 @@ async function initializeDashboard(skipUserCheck = false) {
     } catch (error) {
         console.error('Error initializing dashboard:', error);
         document.body.classList.remove('loading');
+        document.body.classList.remove('logged-in');
+        document.body.classList.add('not-logged');
         
         // Show error message to user
         const errorMessage = document.createElement('div');

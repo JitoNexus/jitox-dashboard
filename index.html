@@ -8,6 +8,20 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.min.js"></script>
+    <style>
+        .hidden {
+            display: none !important;
+        }
+        .dashboard-container {
+            display: none;
+        }
+        body.logged-in .dashboard-container {
+            display: block;
+        }
+        body.logged-in .login-section {
+            display: none;
+        }
+    </style>
 </head>
 <body class="not-logged">
     <!-- Login Section -->
@@ -38,7 +52,7 @@
     </div>
 
     <!-- Dashboard Container -->
-    <div class="dashboard-container hidden">
+    <div class="dashboard-container">
         <div class="dashboard-header">
             <h1 class="cyber-title">JitoX Dashboard</h1>
             <div class="connection-status">
@@ -99,8 +113,7 @@
         document.getElementById('continueBtn').addEventListener('click', function() {
             console.log('Continue button clicked');
             document.body.classList.remove('not-logged');
-            document.querySelector('.login-section').classList.add('hidden');
-            document.querySelector('.dashboard-container').classList.remove('hidden');
+            document.body.classList.add('logged-in');
             if (typeof initializeDashboard === 'function') {
                 initializeDashboard(true);
             } else {
