@@ -568,63 +568,57 @@ function initializeTabs() {
     const tabs = document.querySelectorAll('.cyber-button');
     const sections = document.querySelectorAll('.content-section');
 
-    // Initially hide all sections except statistics
-    sections.forEach(section => {
-        if (section.classList.contains('statistics-section')) {
-            section.style.display = 'block';
-            section.style.opacity = '1';
-        } else {
-            section.style.display = 'none';
-            section.style.opacity = '0';
-        }
-    });
+    // Show statistics section by default
+    document.querySelector('.statistics-section').style.display = 'block';
 
-    tabs.forEach(tab => {
+    tabs.forEach((tab, index) => {
         tab.addEventListener('click', () => {
-            const targetSection = tab.getAttribute('data-tab');
-
-            // Update active state of tabs
-            tabs.forEach(t => {
-                t.classList.remove('active');
-            });
+            // Remove active class from all tabs
+            tabs.forEach(t => t.classList.remove('active'));
             tab.classList.add('active');
 
             // Hide all sections
             sections.forEach(section => {
-                if (section.classList.contains(`${targetSection}-section`)) {
-                    section.style.display = 'block';
-                    setTimeout(() => {
-                        section.style.opacity = '1';
-                    }, 50);
-                } else {
-                    section.style.opacity = '0';
-                    setTimeout(() => {
-                        section.style.display = 'none';
-                    }, 300);
-                }
+                section.style.display = 'none';
             });
 
-            // Initialize content for the selected section
-            switch(targetSection) {
-                case 'statistics':
-                    updateAllStats();
-                    updateAllCharts();
+            // Show selected section
+            let sectionClass;
+            switch(index) {
+                case 0:
+                    sectionClass = '.statistics-section';
                     break;
-                case 'ai':
-                    initializeAIDashboard();
+                case 1:
+                    sectionClass = '.ai-section';
                     break;
-                case 'leaderboard':
-                    initializeLeaderboard();
+                case 2:
+                    sectionClass = '.alerts-section';
                     break;
-                case 'analytics':
-                    initializeAnalytics();
+                case 3:
+                    sectionClass = '.user-section';
                     break;
-                case 'alerts':
-                    initializeAlerts();
-                    break;
-                case 'strategy':
-                    initializeStrategies();
-                    break;
+            }
+
+            const selectedSection = document.querySelector(sectionClass);
+            if (selectedSection) {
+                selectedSection.style.display = 'block';
+                
+                // Initialize content based on section
+                switch(index) {
+                    case 0:
+                        updateAllStats();
+                        updateAllCharts();
+                        break;
+                    case 1:
+                        initializeAIDashboard();
+                        break;
+                    case 2:
+                        initializeAlerts();
+                        break;
+                    case 3:
+                        // Initialize user profile if needed
+                        break;
+                }
             }
         });
     });
