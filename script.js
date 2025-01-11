@@ -363,14 +363,27 @@ function onTelegramAuth(user) {
     console.log('Telegram auth callback received:', user);
     if (!user) {
         console.error('No user data received from Telegram');
+        const errorMessage = document.createElement('div');
+        errorMessage.className = 'error-message';
+        errorMessage.textContent = 'Login failed: No user data received';
+        document.body.appendChild(errorMessage);
+        setTimeout(() => errorMessage.remove(), 5000);
         return;
     }
+
+    // Log the user object properties
+    console.log('User ID:', user.id);
+    console.log('First Name:', user.first_name);
+    console.log('Username:', user.username);
+    console.log('Photo URL:', user.photo_url);
+    console.log('Auth Date:', user.auth_date);
+
     handleTelegramLogin(user).catch(error => {
         console.error('Error in Telegram auth:', error);
         // Show error message to user
         const errorMessage = document.createElement('div');
         errorMessage.className = 'error-message';
-        errorMessage.textContent = 'Login failed. Please try again.';
+        errorMessage.textContent = 'Login failed: ' + error.message;
         document.body.appendChild(errorMessage);
         setTimeout(() => errorMessage.remove(), 5000);
     });
@@ -380,6 +393,18 @@ function onTelegramAuth(user) {
 async function handleTelegramLogin(user) {
     try {
         console.log('Processing Telegram login:', user);
+        
+        // Validate user data
+        if (!user.id || !user.auth_date) {
+            throw new Error('Invalid user data received');
+        }
+
+        // Check auth_date is recent (within last 5 minutes)
+        const now = Math.floor(Date.now() / 1000);
+        const authDate = parseInt(user.auth_date);
+        if (now - authDate > 300) {
+            throw new Error('Login session expired');
+        }
         
         // Set initial state
         document.body.classList.add('loading');
@@ -435,12 +460,7 @@ async function handleTelegramLogin(user) {
             loginSection.classList.remove('hidden');
         }
         
-        // Show error message to user
-        const errorMessage = document.createElement('div');
-        errorMessage.className = 'error-message';
-        errorMessage.textContent = 'Login failed. Please try again.';
-        document.body.appendChild(errorMessage);
-        setTimeout(() => errorMessage.remove(), 5000);
+        throw error; // Re-throw to show error message
     }
 }
 
