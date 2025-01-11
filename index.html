@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JitoX Dashboard</title>
     <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="cookie-warning.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.min.js"></script>
@@ -17,14 +16,14 @@
             <h2>Welcome to JitoX Dashboard</h2>
             <p>Access the dashboard or log in to save your preferences</p>
             <div class="login-buttons">
-                <button class="continue-button" onclick="continueWithoutLogin()">
+                <button class="continue-button" id="continueBtn">
                     <i class="fas fa-arrow-right"></i>
                     Continue to Dashboard
                 </button>
                 <div class="or-divider">
                     <span>or</span>
                 </div>
-                <button class="telegram-login-button" disabled title="Coming soon">
+                <button class="telegram-login-button" disabled>
                     <i class="fab fa-telegram"></i>
                     Log in with Telegram (Coming Soon)
                 </button>
@@ -47,25 +46,76 @@
                 <span class="status-text">Connecting...</span>
             </div>
         </div>
-        <!-- Add your dashboard content here -->
+        
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+            <div class="cyber-card">
+                <div class="card-content">
+                    <h2>Active Searchers</h2>
+                    <div class="stat-value">0</div>
+                </div>
+            </div>
+            <div class="cyber-card">
+                <div class="card-content">
+                    <h2>Active MEV Operations</h2>
+                    <div class="stat-value">0</div>
+                </div>
+            </div>
+            <div class="cyber-card">
+                <div class="card-content">
+                    <h2>Ongoing Arbitrage</h2>
+                    <div class="stat-value">0</div>
+                </div>
+            </div>
+            <div class="cyber-card">
+                <div class="card-content">
+                    <h2>Ongoing Sandwich</h2>
+                    <div class="stat-value">0</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Grid -->
+        <div class="charts-grid">
+            <div class="chart-card">
+                <h3 class="chart-title">SOL Gained Over Time</h3>
+                <canvas id="solGainedChart"></canvas>
+            </div>
+            <div class="chart-card">
+                <h3 class="chart-title">MEV Operations Distribution</h3>
+                <canvas id="mevOpsChart"></canvas>
+            </div>
+        </div>
+
+        <!-- MEV Activity Feed -->
+        <div class="cyber-card">
+            <h3 class="chart-title">Live MEV Activity</h3>
+            <div class="mev-activity-feed"></div>
+        </div>
     </div>
 
+    <script src="script.js"></script>
     <script>
-        function continueWithoutLogin() {
+        document.getElementById('continueBtn').addEventListener('click', function() {
+            console.log('Continue button clicked');
             document.body.classList.remove('not-logged');
             document.querySelector('.login-section').classList.add('hidden');
             document.querySelector('.dashboard-container').classList.remove('hidden');
-            initializeDashboard();
-        }
+            if (typeof initializeDashboard === 'function') {
+                initializeDashboard(true);
+            } else {
+                console.error('initializeDashboard function not found');
+            }
+        });
 
         // Run when the page loads
         window.addEventListener('load', () => {
+            console.log('Page loaded');
             // Check if user was previously in the dashboard
             if (sessionStorage.getItem('dashboardAccessed')) {
-                continueWithoutLogin();
+                document.getElementById('continueBtn').click();
             }
         });
     </script>
-    <script src="script.js"></script>
 </body>
 </html>
