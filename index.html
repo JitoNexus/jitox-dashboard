@@ -11,32 +11,28 @@
     <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.min.js"></script>
 </head>
 <body>
-    <!-- Enhanced Loading Screen -->
+    <!-- Loading Screen -->
     <div class="loading-overlay">
-        <div class="cyber-grid"></div>
         <div class="loading-content">
-            <div class="loading-logo">
-                <div class="logo-hexagon"></div>
-                <span class="logo-text">JitoX</span>
-            </div>
+            <img src="assets/logo.png" alt="JitoX Logo" class="loading-logo">
             <div class="loading-text">Initializing JitoX</div>
             <div class="loading-status">
                 <div class="status-item">
                     <i class="fas fa-network-wired"></i>
-                    <span>Connecting to Solana network...</span>
+                    <span>Establishing Network Connection</span>
                 </div>
                 <div class="status-item">
                     <i class="fas fa-database"></i>
-                    <span>Loading market data...</span>
+                    <span>Loading Market Data</span>
                 </div>
                 <div class="status-item">
                     <i class="fas fa-shield-alt"></i>
-                    <span>Initializing MEV protection...</span>
+                    <span>Initializing MEV Protection</span>
                 </div>
             </div>
             <div class="loading-progress">
                 <div class="progress-bar"></div>
-                <div class="progress-percentage">0%</div>
+                <span class="progress-text">0%</span>
             </div>
         </div>
     </div>
@@ -48,40 +44,32 @@
             <header class="dashboard-header">
                 <div class="header-left">
                     <div class="logo-container">
-                        <div class="logo-hexagon">
-                            <img src="assets/logo.png" alt="JitoX Logo" class="logo">
-                            <div class="network-pulse"></div>
-                        </div>
+                        <img src="assets/logo.png" alt="JitoX Logo" class="logo">
                         <h1 class="cyber-title">JitoX</h1>
                     </div>
+                    <div class="network-stats">
+                        <div class="stat-item">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span class="stat-label">Network TPS:</span>
+                            <span class="stat-value" id="networkTPS">4,521</span>
+                        </div>
+                        <div class="stat-item">
+                            <i class="fas fa-cube"></i>
+                            <span class="stat-label">Block Height:</span>
+                            <span class="stat-value" id="blockHeight">219,584,932</span>
+                        </div>
+                        <div class="stat-item">
+                            <i class="fas fa-gas-pump"></i>
+                            <span class="stat-label">Gas Price:</span>
+                            <span class="stat-value" id="gasPrice">0.000001</span>
+                        </div>
+                    </div>
                 </div>
-                
                 <div class="header-right">
-                    <div class="security-status">
-                        <div class="status-container">
-                            <div class="status-ring">
-                                <div class="status-circle"></div>
-                            </div>
-                            <span class="status-label">MEV Protection Active</span>
-                        </div>
-                    </div>
-
-                    <div class="network-quality">
-                        <div class="quality-bars">
-                            <div class="bar"></div>
-                            <div class="bar"></div>
-                            <div class="bar"></div>
-                            <div class="bar"></div>
-                        </div>
-                        <span>Network Quality</span>
-                    </div>
-
                     <div class="connection-status">
-                        <div class="connection-indicator"></div>
-                        <div class="connection-details">
-                            <span class="status-text connected">Connected to Solana</span>
-                            <span class="latency">Latency: 12ms</span>
-                        </div>
+                        <div class="status-indicator"></div>
+                        <span class="status-text">Connected</span>
+                        <span class="latency">12ms</span>
                     </div>
                 </div>
             </header>

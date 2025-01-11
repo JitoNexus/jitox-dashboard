@@ -131,80 +131,96 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Loading Screen Handler
+document.addEventListener('DOMContentLoaded', () => {
+    initializeLoadingSequence();
+});
+
 function initializeLoadingSequence() {
     const loadingOverlay = document.querySelector('.loading-overlay');
     const mainContent = document.querySelector('.main-content');
     const progressBar = document.querySelector('.progress-bar');
-    const progressPercentage = document.querySelector('.progress-percentage');
+    const progressText = document.querySelector('.progress-text');
     const statusItems = document.querySelectorAll('.status-item');
     
+    mainContent.style.opacity = '0';
     let progress = 0;
     const totalSteps = statusItems.length;
-    const timePerStep = 1000; // ms per step
+    const stepProgress = 100 / totalSteps;
     
-    // Show loading overlay and hide main content
-    loadingOverlay.style.display = 'flex';
-    mainContent.style.opacity = '0';
-    document.body.classList.add('loading');
-    
-    // Animate each status item with delay
     statusItems.forEach((item, index) => {
         setTimeout(() => {
             item.style.opacity = '1';
-            progress = ((index + 1) / totalSteps) * 100;
+            progress += stepProgress;
             progressBar.style.width = `${progress}%`;
-            progressPercentage.textContent = `${Math.round(progress)}%`;
+            progressText.textContent = `${Math.round(progress)}%`;
             
-            // Add success indicator when item completes
-            const icon = item.querySelector('i');
-            icon.classList.add('success');
-            
-            // On last item, prepare to show main content
             if (index === totalSteps - 1) {
                 setTimeout(() => {
-                    // Add final success animation
-                    loadingOverlay.classList.add('completed');
-                    
-                    setTimeout(() => {
-                        loadingOverlay.classList.add('fade-out');
-                        mainContent.style.opacity = '1';
-                        document.body.classList.remove('loading');
-                        
-                        // Initialize main content after loading
-                        initializeCharts();
-                        startContinuousUpdates();
-                        
-                        // Remove overlay after animation
-                        setTimeout(() => {
-                            loadingOverlay.style.display = 'none';
-                        }, 500);
-                    }, 500);
-                }, timePerStep / 2);
+                    loadingOverlay.classList.add('fade-out');
+                    mainContent.style.opacity = '1';
+                    mainContent.style.transition = 'opacity 0.5s ease-out';
+                    initializeCharts();
+                    startNetworkUpdates();
+                }, 1000);
             }
-        }, index * timePerStep);
+        }, (index + 1) * 1000);
     });
 }
 
-function initializeLoadingStates() {
-    // Hide loading overlay after initialization
-    setTimeout(() => {
-        const loadingOverlay = document.querySelector('.loading-overlay');
-        if (loadingOverlay) {
-            loadingOverlay.classList.add('hidden');
+// Network Stats Updates
+function startNetworkUpdates() {
+    updateNetworkStats();
+    setInterval(updateNetworkStats, 2000);
+}
+
+function updateNetworkStats() {
+    const tps = document.querySelector('[data-stat="tps"]');
+    const blockHeight = document.querySelector('[data-stat="block-height"]');
+    const gasPrice = document.querySelector('[data-stat="gas-price"]');
+    const latency = document.querySelector('[data-stat="latency"]');
+    
+    // Simulate real-time updates with random variations
+    const currentTPS = Math.floor(Math.random() * (3000 - 2000) + 2000);
+    const currentBlock = parseInt(blockHeight.textContent.replace(/,/g, '')) + Math.floor(Math.random() * 10);
+    const currentGas = (Math.random() * (0.001 - 0.0001) + 0.0001).toFixed(6);
+    const currentLatency = (Math.random() * (0.2 - 0.05) + 0.05).toFixed(3);
+    
+    animateValue(tps, parseInt(tps.textContent), currentTPS, 1000, value => `${value.toLocaleString()}`);
+    animateValue(blockHeight, parseInt(blockHeight.textContent.replace(/,/g, '')), currentBlock, 1000, value => value.toLocaleString());
+    animateValue(gasPrice, parseFloat(gasPrice.textContent), parseFloat(currentGas), 1000, value => value.toFixed(6));
+    animateValue(latency, parseFloat(latency.textContent), parseFloat(currentLatency), 1000, value => `${value.toFixed(3)}s`);
+    
+    // Update connection status indicator color based on latency
+    const statusIndicator = document.querySelector('.status-indicator');
+    if (currentLatency < 0.1) {
+        statusIndicator.style.background = '#00ff00';
+        statusIndicator.style.boxShadow = '0 0 10px #00ff00';
+    } else if (currentLatency < 0.15) {
+        statusIndicator.style.background = '#ffff00';
+        statusIndicator.style.boxShadow = '0 0 10px #ffff00';
+    } else {
+        statusIndicator.style.background = '#ff0000';
+        statusIndicator.style.boxShadow = '0 0 10px #ff0000';
+    }
+}
+
+function animateValue(element, start, end, duration, formatter) {
+    const range = end - start;
+    const startTime = performance.now();
+    
+    function update(currentTime) {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        
+        const current = start + (range * progress);
+        element.textContent = formatter(Math.round(current * 100) / 100);
+        
+        if (progress < 1) {
+            requestAnimationFrame(update);
         }
-    }, 2000);
-
-    // Add loading state to charts
-    document.querySelectorAll('.chart-loading').forEach(loader => {
-        loader.classList.add('active');
-    });
-
-    // Remove loading state after charts are initialized
-    setTimeout(() => {
-        document.querySelectorAll('.chart-loading').forEach(loader => {
-            loader.classList.remove('active');
-        });
-    }, 1500);
+    }
+    
+    requestAnimationFrame(update);
 }
 
 // Initialize continuous updates
@@ -248,30 +264,6 @@ function updateAllStats() {
             animateValue(valueElement, currentValue, newValue, 4000); // 4 second animation
         }
     });
-}
-
-function animateValue(element, start, end, duration, formatter = (val) => val) {
-    const startTime = performance.now();
-    const change = end - start;
-    
-    function easeOutQuart(x) {
-        return 1 - Math.pow(1 - x, 4);
-    }
-    
-    function update(currentTime) {
-        const elapsed = currentTime - startTime;
-        const progress = Math.min(elapsed / duration, 1);
-        
-        const easedProgress = easeOutQuart(progress);
-        const current = start + (change * easedProgress);
-        element.textContent = formatter(current);
-        
-        if (progress < 1) {
-            requestAnimationFrame(update);
-        }
-    }
-    
-    requestAnimationFrame(update);
 }
 
 // Update stats every 10 seconds
