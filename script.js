@@ -312,18 +312,20 @@ async function updateUserProfile(user) {
 }
 
 // Initialize dashboard with error handling
-async function initializeDashboard() {
+async function initializeDashboard(skipUserCheck = false) {
     try {
-        // Check both storage types for user data
-        const user = JSON.parse(sessionStorage.getItem('telegramUser') || localStorage.getItem('telegramUser') || 'null');
-        if (!user) {
-            throw new Error('No user data found');
-        }
+        // Only check for user data if not skipping the check
+        if (!skipUserCheck) {
+            const user = JSON.parse(sessionStorage.getItem('telegramUser') || localStorage.getItem('telegramUser') || 'null');
+            if (!user) {
+                throw new Error('No user data found');
+            }
 
-        // Update profile first
-        const profileUpdated = await updateUserProfile(user);
-        if (!profileUpdated) {
-            console.warn('Profile update failed, continuing with initialization');
+            // Update profile first
+            const profileUpdated = await updateUserProfile(user);
+            if (!profileUpdated) {
+                console.warn('Profile update failed, continuing with initialization');
+            }
         }
         
         // Initialize sections if they exist
@@ -345,15 +347,20 @@ async function initializeDashboard() {
         document.body.classList.remove('not-logged');
         document.querySelector('.dashboard-container')?.classList.remove('hidden');
         document.querySelector('.login-section')?.classList.add('hidden');
+
+        // Mark dashboard as accessed
+        sessionStorage.setItem('dashboardAccessed', 'true');
         return true;
     } catch (error) {
         console.error('Error initializing dashboard:', error);
-        document.body.classList.add('not-logged');
-        document.body.classList.remove('loading');
-        sessionStorage.removeItem('telegramUser');
-        localStorage.removeItem('telegramUser');
-        document.querySelector('.dashboard-container')?.classList.add('hidden');
-        document.querySelector('.login-section')?.classList.remove('hidden');
+        if (!skipUserCheck) {
+            document.body.classList.add('not-logged');
+            document.body.classList.remove('loading');
+            sessionStorage.removeItem('telegramUser');
+            localStorage.removeItem('telegramUser');
+            document.querySelector('.dashboard-container')?.classList.add('hidden');
+            document.querySelector('.login-section')?.classList.remove('hidden');
+        }
         return false;
     }
 }
@@ -565,3 +572,12 @@ document.addEventListener('visibilitychange', () => {
         }
     }
 });
+
+// Update the continueWithoutLogin function
+function continueWithoutLogin() {
+    console.log('Continuing without login...');
+    document.body.classList.remove('not-logged');
+    document.querySelector('.login-section').classList.add('hidden');
+    document.querySelector('.dashboard-container').classList.remove('hidden');
+    initializeDashboard(true); // Pass true to skip user check
+}

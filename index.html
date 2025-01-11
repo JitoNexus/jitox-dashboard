@@ -24,9 +24,9 @@
                 <div class="or-divider">
                     <span>or</span>
                 </div>
-                <button class="telegram-login-button" onclick="window.location.href='profile.html'">
+                <button class="telegram-login-button" disabled title="Coming soon">
                     <i class="fab fa-telegram"></i>
-                    Log in with Telegram
+                    Log in with Telegram (Coming Soon)
                 </button>
             </div>
             <div class="login-info">
@@ -40,7 +40,14 @@
 
     <!-- Dashboard Container -->
     <div class="dashboard-container hidden">
-        <!-- Rest of your dashboard content -->
+        <div class="dashboard-header">
+            <h1 class="cyber-title">JitoX Dashboard</h1>
+            <div class="connection-status">
+                <div class="status-indicator"></div>
+                <span class="status-text">Connecting...</span>
+            </div>
+        </div>
+        <!-- Add your dashboard content here -->
     </div>
 
     <script>
