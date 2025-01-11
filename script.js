@@ -58,13 +58,14 @@ function initializeLoadingSequence() {
     
     let progress = 0;
     const totalSteps = statusItems.length;
-    const timePerStep = 800; // ms per step
+    const timePerStep = 1000; // ms per step
     
-    // Show loading overlay
+    // Show loading overlay and hide main content
     loadingOverlay.style.display = 'flex';
     mainContent.style.opacity = '0';
+    document.body.classList.add('loading');
     
-    // Animate each status item
+    // Animate each status item with delay
     statusItems.forEach((item, index) => {
         setTimeout(() => {
             item.style.opacity = '1';
@@ -72,21 +73,31 @@ function initializeLoadingSequence() {
             progressBar.style.width = `${progress}%`;
             progressPercentage.textContent = `${Math.round(progress)}%`;
             
+            // Add success indicator when item completes
+            const icon = item.querySelector('i');
+            icon.classList.add('success');
+            
             // On last item, prepare to show main content
             if (index === totalSteps - 1) {
                 setTimeout(() => {
-                    loadingOverlay.classList.add('fade-out');
-                    mainContent.style.opacity = '1';
+                    // Add final success animation
+                    loadingOverlay.classList.add('completed');
                     
-                    // Initialize main content after loading
-                    initializeCharts();
-                    startContinuousUpdates();
-                    
-                    // Remove overlay after animation
                     setTimeout(() => {
-                        loadingOverlay.style.display = 'none';
+                        loadingOverlay.classList.add('fade-out');
+                        mainContent.style.opacity = '1';
+                        document.body.classList.remove('loading');
+                        
+                        // Initialize main content after loading
+                        initializeCharts();
+                        startContinuousUpdates();
+                        
+                        // Remove overlay after animation
+                        setTimeout(() => {
+                            loadingOverlay.style.display = 'none';
+                        }, 500);
                     }, 500);
-                }, timePerStep);
+                }, timePerStep / 2);
             }
         }, index * timePerStep);
     });
@@ -157,28 +168,28 @@ function updateAllStats() {
     });
 }
 
-function animateValue(element, start, end, duration) {
-    const range = end - start;
+function animateValue(element, start, end, duration, formatter = (val) => val) {
     const startTime = performance.now();
+    const change = end - start;
     
     function easeOutQuart(x) {
         return 1 - Math.pow(1 - x, 4);
     }
     
-    function updateNumber(currentTime) {
+    function update(currentTime) {
         const elapsed = currentTime - startTime;
         const progress = Math.min(elapsed / duration, 1);
         
         const easedProgress = easeOutQuart(progress);
-        const current = Math.floor(start + (range * easedProgress));
-        element.textContent = current.toLocaleString();
+        const current = start + (change * easedProgress);
+        element.textContent = formatter(current);
         
         if (progress < 1) {
-            requestAnimationFrame(updateNumber);
+            requestAnimationFrame(update);
         }
     }
     
-    requestAnimationFrame(updateNumber);
+    requestAnimationFrame(update);
 }
 
 // Update stats every 10 seconds
@@ -809,18 +820,43 @@ document.addEventListener('DOMContentLoaded', () => {
     setInterval(updateConnectionStatus, 5000);
 });
 
-// Network Stats Update
+// Network Stats Update with smooth transitions
 function updateNetworkStats() {
-    const tps = document.getElementById('networkTPS');
-    const blockHeight = document.getElementById('blockHeight');
-    const gasPrice = document.getElementById('gasPrice');
-    const latency = document.getElementById('networkLatency');
+    const stats = {
+        networkTPS: {
+            elem: document.getElementById('networkTPS'),
+            min: 4000,
+            max: 5000,
+            format: (val) => val.toLocaleString()
+        },
+        blockHeight: {
+            elem: document.getElementById('blockHeight'),
+            min: 219584932,
+            max: 219585032,
+            format: (val) => val.toLocaleString()
+        },
+        gasPrice: {
+            elem: document.getElementById('gasPrice'),
+            min: 0.000001,
+            max: 0.000002,
+            format: (val) => val.toFixed(6)
+        },
+        networkLatency: {
+            elem: document.getElementById('networkLatency'),
+            min: 10,
+            max: 15,
+            format: (val) => `${val}ms`
+        }
+    };
 
-    // Simulate real-time updates
-    if (tps) tps.textContent = (4000 + Math.floor(Math.random() * 1000)).toLocaleString();
-    if (blockHeight) blockHeight.textContent = (219584932 + Math.floor(Math.random() * 100)).toLocaleString();
-    if (gasPrice) gasPrice.textContent = (0.000001 + Math.random() * 0.000001).toFixed(6);
-    if (latency) latency.textContent = (10 + Math.floor(Math.random() * 5)) + 'ms';
+    Object.entries(stats).forEach(([key, stat]) => {
+        if (stat.elem) {
+            const currentValue = parseFloat(stat.elem.textContent.replace(/[^0-9.-]+/g, ""));
+            const targetValue = stat.min + Math.random() * (stat.max - stat.min);
+            
+            animateValue(stat.elem, currentValue, targetValue, 2000, stat.format);
+        }
+    });
 }
 
 // Mini Charts for Stats
