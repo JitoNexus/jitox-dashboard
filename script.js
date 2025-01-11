@@ -14,6 +14,88 @@ const MAX_CHANGE_PERCENT = 0.05;
 let isUpdating = false;
 let scrollTimeout;
 
+// Mobile optimization for animations
+const isMobile = window.innerWidth <= 768;
+
+// Update network quality bars animation
+function updateNetworkQuality() {
+    const bars = document.querySelectorAll('.quality-bars .bar');
+    const quality = Math.floor(Math.random() * 4) + 1; // 1-4 bars
+    
+    bars.forEach((bar, index) => {
+        if (index < quality) {
+            bar.classList.add('active');
+        } else {
+            bar.classList.remove('active');
+        }
+    });
+}
+
+// Smooth status updates
+function updateStatus() {
+    const statusCircle = document.querySelector('.status-circle');
+    const connectionIndicator = document.querySelector('.connection-indicator');
+    
+    // Simulate status changes
+    const isProtectionActive = Math.random() > 0.1;
+    const isConnected = Math.random() > 0.05;
+    
+    statusCircle.classList.toggle('active', isProtectionActive);
+    connectionIndicator.classList.toggle('connected', isConnected);
+    
+    // Update latency
+    const latency = Math.floor(Math.random() * 20) + 8;
+    document.querySelector('.latency').textContent = `Latency: ${latency}ms`;
+}
+
+// Initialize mobile-optimized animations
+function initializeMobileAnimations() {
+    if (isMobile) {
+        // Reduce animation frequency on mobile
+        setInterval(updateNetworkQuality, 3000);
+        setInterval(updateStatus, 5000);
+        
+        // Add touch feedback
+        const buttons = document.querySelectorAll('.cyber-button');
+        buttons.forEach(button => {
+            button.addEventListener('touchstart', () => {
+                button.classList.add('touched');
+            });
+            button.addEventListener('touchend', () => {
+                button.classList.remove('touched');
+            });
+        });
+        
+        // Optimize scroll performance
+        let scrollTimeout;
+        const content = document.querySelector('.content-section');
+        content.addEventListener('scroll', () => {
+            if (!content.classList.contains('scrolling')) {
+                content.classList.add('scrolling');
+            }
+            clearTimeout(scrollTimeout);
+            scrollTimeout = setTimeout(() => {
+                content.classList.remove('scrolling');
+            }, 150);
+        }, { passive: true });
+    }
+}
+
+// Initialize everything
+document.addEventListener('DOMContentLoaded', () => {
+    initializeMobileAnimations();
+    updateNetworkQuality();
+    updateStatus();
+});
+
+// Handle orientation changes
+window.addEventListener('orientationchange', () => {
+    setTimeout(() => {
+        updateNetworkQuality();
+        updateStatus();
+    }, 300);
+});
+
 // Throttle scroll events
 function throttleScroll(callback) {
     if (!isUpdating) {
