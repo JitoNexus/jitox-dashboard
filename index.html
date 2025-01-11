@@ -10,34 +10,7 @@
     <script src="https://telegram.org/js/telegram-widget.js?22"></script>
     <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.min.js"></script>
 </head>
-<body class="not-logged">
-    <!-- Telegram Login Overlay -->
-    <div class="login-overlay" id="loginOverlay">
-        <div class="login-container cyber-card">
-            <div class="login-content">
-                <div class="login-logo">
-                    <div class="logo-hexagon"></div>
-                    <span class="logo-text">JitoX</span>
-                </div>
-                <h2>Connect with Telegram</h2>
-                <p>Please log in with your Telegram account to access the dashboard</p>
-                <div id="telegram-login">
-                    <script async src="https://telegram.org/js/telegram-widget.js?22" 
-                            data-telegram-login="jitoxai_bot" 
-                            data-size="large" 
-                            data-radius="8"
-                            data-onauth="onTelegramAuth(user)"
-                            data-request-access="write"
-                            data-userpic="true"
-                            data-auth-url="https://jitonexus.github.io/jitox-dashboard"
-                            data-bot-id="6545649615"
-                            data-lang="en"
-                            data-corner-radius="8"></script>
-                </div>
-            </div>
-        </div>
-    </div>
-
+<body>
     <!-- Enhanced Loading Screen -->
     <div class="loading-overlay">
         <div class="cyber-grid"></div>
