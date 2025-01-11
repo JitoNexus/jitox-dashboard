@@ -85,6 +85,7 @@ function initializeMobileAnimations() {
 document.addEventListener('DOMContentLoaded', () => {
     initializeLoadingSequence();
     initializeTabs();
+    initializeNetworkStatus();
     startContinuousUpdates();
 });
 
@@ -195,8 +196,119 @@ function startContinuousUpdates() {
         if (document.querySelector('.statistics-section').style.display !== 'none') {
             updateAllStats();
             updateAllCharts();
+            updateNetworkStats();
+            updateMEVPerformance();
         }
     }, 5000);
+}
+
+function updateAllStats() {
+    // Statistics ranges for realistic data
+    const ranges = {
+        'Active Searchers': { min: 2500, max: 10000, format: true },
+        'Active MEV Operations': { min: 100, max: 1232, format: true },
+        'Ongoing Arbitrage': { min: 10, max: 523, format: true },
+        'Ongoing Sandwich': { min: 24, max: 721, format: true }
+    };
+
+    // Update each statistic with animation
+    document.querySelectorAll('.cyber-card .card-content').forEach(card => {
+        const title = card.querySelector('h2')?.textContent;
+        const valueElement = card.querySelector('.stat-value');
+        const trendElement = card.querySelector('.trend span');
+        
+        if (title && valueElement && ranges[title]) {
+            const range = ranges[title];
+            const currentValue = parseInt(valueElement.textContent.replace(/,/g, '')) || 0;
+            
+            // Calculate new value with smaller change
+            const maxChange = Math.floor((range.max - range.min) * 0.1); // 10% max change
+            const minNewValue = Math.max(currentValue - maxChange, range.min);
+            const maxNewValue = Math.min(currentValue + maxChange, range.max);
+            const newValue = Math.floor(Math.random() * (maxNewValue - minNewValue + 1)) + minNewValue;
+            
+            // Calculate trend percentage
+            const trendPercentage = ((newValue - currentValue) / currentValue * 100).toFixed(1);
+            if (trendElement) {
+                trendElement.textContent = `${trendPercentage > 0 ? '+' : ''}${trendPercentage}%`;
+                const trendContainer = trendElement.parentElement;
+                if (trendContainer) {
+                    trendContainer.className = `trend ${trendPercentage >= 0 ? 'up' : 'down'}`;
+                }
+            }
+            
+            // Animate the number change
+            animateValue(valueElement, currentValue, newValue, 1000, val => 
+                range.format ? val.toLocaleString() : val.toString()
+            );
+        }
+    });
+}
+
+function updateNetworkStats() {
+    const stats = {
+        'Network Security': { value: getRandomData(85, 100), unit: '%' },
+        'MEV Protection': { value: getRandomData(90, 100), unit: '%' },
+        'Active Validators': { value: getRandomData(1500, 2000), unit: '' }
+    };
+
+    Object.entries(stats).forEach(([key, data]) => {
+        const element = document.querySelector(`[data-stat="${key}"]`);
+        if (element) {
+            const valueElement = element.querySelector('.stat-value');
+            if (valueElement) {
+                const currentValue = parseInt(valueElement.textContent);
+                animateValue(valueElement, currentValue, data.value, 1000, val => 
+                    `${val.toLocaleString()}${data.unit}`
+                );
+            }
+        }
+    });
+}
+
+function updateMEVPerformance() {
+    const stats = {
+        'Total MEV Extracted': { value: getRandomData(1000000, 2000000), prefix: '$' },
+        'Average Block Profit': { value: getRandomData(500, 2000), prefix: '$' },
+        'Protection Success Rate': { value: getRandomData(95, 100), suffix: '%' }
+    };
+
+    Object.entries(stats).forEach(([key, data]) => {
+        const element = document.querySelector(`[data-stat="${key}"]`);
+        if (element) {
+            const valueElement = element.querySelector('.stat-value');
+            if (valueElement) {
+                const currentValue = parseInt(valueElement.textContent.replace(/[$,%]/g, ''));
+                animateValue(valueElement, currentValue, data.value, 1000, val => 
+                    `${data.prefix || ''}${val.toLocaleString()}${data.suffix || ''}`
+                );
+            }
+        }
+    });
+}
+
+function animateValue(element, start, end, duration, formatter = (val) => val) {
+    const startTime = performance.now();
+    const change = end - start;
+    
+    function easeOutQuart(x) {
+        return 1 - Math.pow(1 - x, 4);
+    }
+    
+    function update(currentTime) {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        
+        const easedProgress = easeOutQuart(progress);
+        const current = Math.round(start + (change * easedProgress));
+        element.textContent = formatter(current);
+        
+        if (progress < 1) {
+            requestAnimationFrame(update);
+        }
+    }
+    
+    requestAnimationFrame(update);
 }
 
 // Handle orientation changes
@@ -1007,3 +1119,65 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+
+// Network Status Handler
+function initializeNetworkStatus() {
+    const networkIndicator = document.querySelector('.status-indicator');
+    const networkValue = document.querySelector('.network-value');
+    const protectionValue = document.querySelector('.status-value');
+    
+    // Simulate initial connection attempt
+    updateNetworkStatus('connecting');
+    
+    // Simulate connection after 2 seconds
+    setTimeout(() => {
+        updateNetworkStatus('connected');
+        updateProtectionStatus('active');
+    }, 2000);
+}
+
+function updateNetworkStatus(status) {
+    const networkIndicator = document.querySelector('.status-indicator');
+    const networkValue = document.querySelector('.network-value');
+    
+    switch(status) {
+        case 'connected':
+            networkIndicator.classList.add('connected');
+            networkValue.textContent = 'Connected';
+            networkValue.style.color = 'var(--neon-cyan)';
+            break;
+        case 'disconnected':
+            networkIndicator.classList.remove('connected');
+            networkValue.textContent = 'Disconnected';
+            networkValue.style.color = 'var(--neon-pink)';
+            break;
+        case 'connecting':
+            networkIndicator.classList.remove('connected');
+            networkValue.textContent = 'Connecting...';
+            networkValue.style.color = 'var(--neon-cyan)';
+            break;
+    }
+}
+
+function updateProtectionStatus(status) {
+    const protectionValue = document.querySelector('.status-value');
+    const statusRing = document.querySelector('.status-ring');
+    
+    switch(status) {
+        case 'active':
+            protectionValue.textContent = 'Active';
+            protectionValue.style.color = 'var(--neon-cyan)';
+            statusRing.style.display = 'block';
+            break;
+        case 'inactive':
+            protectionValue.textContent = 'Inactive';
+            protectionValue.style.color = 'var(--neon-pink)';
+            statusRing.style.display = 'none';
+            break;
+        case 'initializing':
+            protectionValue.textContent = 'Initializing...';
+            protectionValue.style.color = 'var(--neon-cyan)';
+            statusRing.style.display = 'block';
+            break;
+    }
+}
