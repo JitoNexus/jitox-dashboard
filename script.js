@@ -576,8 +576,37 @@ document.addEventListener('visibilitychange', () => {
 // Update the continueWithoutLogin function
 function continueWithoutLogin() {
     console.log('Continuing without login...');
+    
+    // Set session flag
+    sessionStorage.setItem('dashboardAccessed', 'true');
+    
+    // Update UI state
     document.body.classList.remove('not-logged');
-    document.querySelector('.login-section').classList.add('hidden');
-    document.querySelector('.dashboard-container').classList.remove('hidden');
-    initializeDashboard(true); // Pass true to skip user check
+    document.body.classList.remove('loading');
+    
+    // Hide login, show dashboard
+    const loginSection = document.querySelector('.login-section');
+    const dashboardContainer = document.querySelector('.dashboard-container');
+    
+    if (loginSection) loginSection.classList.add('hidden');
+    if (dashboardContainer) dashboardContainer.classList.remove('hidden');
+    
+    // Initialize dashboard with mock data
+    initializeDashboard(true).then(() => {
+        // Start update intervals
+        if (!chartUpdateInterval) {
+            chartUpdateInterval = setInterval(updateAllCharts, 2000);
+        }
+        if (!activityUpdateInterval) {
+            activityUpdateInterval = setInterval(updateLiveMEVActivity, 5000);
+        }
+    }).catch(error => {
+        console.error('Failed to initialize dashboard:', error);
+        // Show error message
+        const errorMessage = document.createElement('div');
+        errorMessage.className = 'error-message';
+        errorMessage.textContent = 'Failed to load dashboard. Please try again.';
+        document.body.appendChild(errorMessage);
+        setTimeout(() => errorMessage.remove(), 5000);
+    });
 }
