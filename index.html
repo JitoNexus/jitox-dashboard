@@ -11,28 +11,27 @@
     <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.min.js"></script>
 </head>
 <body>
-    <!-- Loading Screen -->
+    <!-- Enhanced Loading Screen -->
     <div class="loading-overlay">
         <div class="loading-content">
-            <img src="uploads/Jito_Nexus_major_update._1.png" alt="JitoX Logo" class="loading-logo">
             <div class="loading-text">Initializing JitoX</div>
             <div class="loading-status">
                 <div class="status-item">
                     <i class="fas fa-network-wired"></i>
-                    <span>Establishing Network Connection</span>
+                    <span>Connecting to Solana network...</span>
                 </div>
                 <div class="status-item">
                     <i class="fas fa-database"></i>
-                    <span>Loading Market Data</span>
+                    <span>Loading market data...</span>
                 </div>
                 <div class="status-item">
                     <i class="fas fa-shield-alt"></i>
-                    <span>Initializing MEV Protection</span>
+                    <span>Initializing MEV protection...</span>
                 </div>
             </div>
             <div class="loading-progress">
                 <div class="progress-bar"></div>
-                <span class="progress-text">0%</span>
+                <div class="progress-percentage">0%</div>
             </div>
         </div>
     </div>
@@ -43,33 +42,17 @@
             <!-- Header Section -->
             <header class="dashboard-header">
                 <div class="header-left">
-                    <div class="logo-container">
-                        <img src="uploads/Jito_Nexus_major_update._1.png" alt="JitoX Logo" class="logo">
-                        <h1 class="cyber-title">JitoX</h1>
-                    </div>
-                    <div class="network-stats">
-                        <div class="stat-item">
-                            <i class="fas fa-tachometer-alt"></i>
-                            <span class="stat-label">Network TPS:</span>
-                            <span class="stat-value" id="networkTPS">4,521</span>
-                        </div>
-                        <div class="stat-item">
-                            <i class="fas fa-cube"></i>
-                            <span class="stat-label">Block Height:</span>
-                            <span class="stat-value" id="blockHeight">219,584,932</span>
-                        </div>
-                        <div class="stat-item">
-                            <i class="fas fa-gas-pump"></i>
-                            <span class="stat-label">Gas Price:</span>
-                            <span class="stat-value" id="gasPrice">0.000001</span>
-                        </div>
-                    </div>
+                    <h1 class="cyber-title">JitoX</h1>
                 </div>
+                
                 <div class="header-right">
-                    <div class="connection-status">
-                        <div class="status-indicator"></div>
-                        <span class="status-text">Connected</span>
-                        <span class="latency">12ms</span>
+                    <div class="security-status">
+                        <div class="status-container">
+                            <div class="status-ring">
+                                <div class="status-circle"></div>
+                            </div>
+                            <span class="status-label">MEV Protection Active</span>
+                        </div>
                     </div>
                 </div>
             </header>
@@ -77,20 +60,20 @@
             <!-- Navigation -->
             <nav class="cyber-nav">
                 <div class="nav-container">
-                    <button class="cyber-button active">
+                    <button class="cyber-button active" data-tab="statistics">
                         <i class="fas fa-chart-line"></i>
                         Dashboard
                     </button>
-                    <button class="cyber-button">
+                    <button class="cyber-button" data-tab="ai">
                         <i class="fas fa-brain"></i>
                         AI Dashboard
                     </button>
-                    <button class="cyber-button">
+                    <button class="cyber-button" data-tab="alerts">
                         <i class="fas fa-bell"></i>
                         Alerts
                         <span class="notification-badge">3</span>
                     </button>
-                    <button class="cyber-button">
+                    <button class="cyber-button" data-tab="profile">
                         <i class="fas fa-user"></i>
                         Profile
                     </button>

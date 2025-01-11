@@ -83,10 +83,121 @@ function initializeMobileAnimations() {
 
 // Initialize everything
 document.addEventListener('DOMContentLoaded', () => {
-    initializeMobileAnimations();
-    updateNetworkQuality();
-    updateStatus();
+    initializeLoadingSequence();
+    initializeTabs();
+    startContinuousUpdates();
 });
+
+// Loading Screen Handler
+function initializeLoadingSequence() {
+    const loadingOverlay = document.querySelector('.loading-overlay');
+    const mainContent = document.querySelector('.main-content');
+    const progressBar = document.querySelector('.progress-bar');
+    const progressPercentage = document.querySelector('.progress-percentage');
+    const statusItems = document.querySelectorAll('.status-item');
+    
+    let progress = 0;
+    const totalSteps = statusItems.length;
+    const timePerStep = 1000; // ms per step
+    
+    // Show loading overlay and hide main content
+    loadingOverlay.style.display = 'flex';
+    mainContent.style.opacity = '0';
+    
+    // Animate each status item with delay
+    statusItems.forEach((item, index) => {
+        setTimeout(() => {
+            item.style.opacity = '1';
+            progress = ((index + 1) / totalSteps) * 100;
+            progressBar.style.width = `${progress}%`;
+            progressPercentage.textContent = `${Math.round(progress)}%`;
+            
+            // On last item, prepare to show main content
+            if (index === totalSteps - 1) {
+                setTimeout(() => {
+                    loadingOverlay.classList.add('fade-out');
+                    mainContent.style.opacity = '1';
+                    
+                    // Remove overlay after animation
+                    setTimeout(() => {
+                        loadingOverlay.style.display = 'none';
+                    }, 300);
+                }, 500);
+            }
+        }, index * timePerStep);
+    });
+}
+
+// Initialize tabs
+function initializeTabs() {
+    const tabs = document.querySelectorAll('.cyber-button');
+    const sections = document.querySelectorAll('.content-section');
+
+    // Show initial section
+    const initialSection = document.querySelector('.statistics-section');
+    if (initialSection) {
+        initialSection.style.display = 'block';
+        initialSection.style.opacity = '1';
+    }
+
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            const targetSection = tab.getAttribute('data-tab');
+
+            // Update active state of tabs
+            tabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+
+            // Show/hide sections
+            sections.forEach(section => {
+                if (section.classList.contains(`${targetSection}-section`)) {
+                    section.style.display = 'block';
+                    setTimeout(() => {
+                        section.style.opacity = '1';
+                    }, 50);
+                } else {
+                    section.style.opacity = '0';
+                    setTimeout(() => {
+                        section.style.display = 'none';
+                    }, 300);
+                }
+            });
+
+            // Initialize content for the selected section
+            initializeSectionContent(targetSection);
+        });
+    });
+}
+
+// Initialize section content
+function initializeSectionContent(section) {
+    switch(section) {
+        case 'statistics':
+            updateAllStats();
+            updateAllCharts();
+            break;
+        case 'ai':
+            initializeAIDashboard();
+            break;
+        case 'alerts':
+            initializeAlerts();
+            break;
+        case 'profile':
+            initializeProfile();
+            break;
+    }
+}
+
+// Start continuous updates
+function startContinuousUpdates() {
+    // Update stats every 5 seconds
+    setInterval(() => {
+        if (document.querySelector('.statistics-section').style.display !== 'none') {
+            updateAllStats();
+            updateAllCharts();
+        }
+    }, 5000);
+}
 
 // Handle orientation changes
 window.addEventListener('orientationchange', () => {
@@ -120,154 +231,6 @@ function getSmoothedValue(currentValue, targetValue, maxChangePercent) {
     if (Math.abs(difference) <= maxChange) return targetValue;
     return currentValue + (Math.sign(difference) * maxChange);
 }
-
-document.addEventListener('DOMContentLoaded', () => {
-    initializeLoadingSequence();
-    // Initialize other components
-    initializeCharts();
-    initializeTabs();
-    addHexagonalBackground();
-    startContinuousUpdates();
-});
-
-// Loading Screen Handler
-document.addEventListener('DOMContentLoaded', () => {
-    initializeLoadingSequence();
-});
-
-function initializeLoadingSequence() {
-    const loadingOverlay = document.querySelector('.loading-overlay');
-    const mainContent = document.querySelector('.main-content');
-    const progressBar = document.querySelector('.progress-bar');
-    const progressText = document.querySelector('.progress-text');
-    const statusItems = document.querySelectorAll('.status-item');
-    
-    mainContent.style.opacity = '0';
-    let progress = 0;
-    const totalSteps = statusItems.length;
-    const stepProgress = 100 / totalSteps;
-    
-    statusItems.forEach((item, index) => {
-        setTimeout(() => {
-            item.style.opacity = '1';
-            progress += stepProgress;
-            progressBar.style.width = `${progress}%`;
-            progressText.textContent = `${Math.round(progress)}%`;
-            
-            if (index === totalSteps - 1) {
-                setTimeout(() => {
-                    loadingOverlay.classList.add('fade-out');
-                    mainContent.style.opacity = '1';
-                    mainContent.style.transition = 'opacity 0.5s ease-out';
-                    initializeCharts();
-                    startNetworkUpdates();
-                }, 1000);
-            }
-        }, (index + 1) * 1000);
-    });
-}
-
-// Network Stats Updates
-function startNetworkUpdates() {
-    updateNetworkStats();
-    setInterval(updateNetworkStats, 2000);
-}
-
-function updateNetworkStats() {
-    const tps = document.querySelector('[data-stat="tps"]');
-    const blockHeight = document.querySelector('[data-stat="block-height"]');
-    const gasPrice = document.querySelector('[data-stat="gas-price"]');
-    const latency = document.querySelector('[data-stat="latency"]');
-    
-    // Simulate real-time updates with random variations
-    const currentTPS = Math.floor(Math.random() * (3000 - 2000) + 2000);
-    const currentBlock = parseInt(blockHeight.textContent.replace(/,/g, '')) + Math.floor(Math.random() * 10);
-    const currentGas = (Math.random() * (0.001 - 0.0001) + 0.0001).toFixed(6);
-    const currentLatency = (Math.random() * (0.2 - 0.05) + 0.05).toFixed(3);
-    
-    animateValue(tps, parseInt(tps.textContent), currentTPS, 1000, value => `${value.toLocaleString()}`);
-    animateValue(blockHeight, parseInt(blockHeight.textContent.replace(/,/g, '')), currentBlock, 1000, value => value.toLocaleString());
-    animateValue(gasPrice, parseFloat(gasPrice.textContent), parseFloat(currentGas), 1000, value => value.toFixed(6));
-    animateValue(latency, parseFloat(latency.textContent), parseFloat(currentLatency), 1000, value => `${value.toFixed(3)}s`);
-    
-    // Update connection status indicator color based on latency
-    const statusIndicator = document.querySelector('.status-indicator');
-    if (currentLatency < 0.1) {
-        statusIndicator.style.background = '#00ff00';
-        statusIndicator.style.boxShadow = '0 0 10px #00ff00';
-    } else if (currentLatency < 0.15) {
-        statusIndicator.style.background = '#ffff00';
-        statusIndicator.style.boxShadow = '0 0 10px #ffff00';
-    } else {
-        statusIndicator.style.background = '#ff0000';
-        statusIndicator.style.boxShadow = '0 0 10px #ff0000';
-    }
-}
-
-function animateValue(element, start, end, duration, formatter) {
-    const range = end - start;
-    const startTime = performance.now();
-    
-    function update(currentTime) {
-        const elapsed = currentTime - startTime;
-        const progress = Math.min(elapsed / duration, 1);
-        
-        const current = start + (range * progress);
-        element.textContent = formatter(Math.round(current * 100) / 100);
-        
-        if (progress < 1) {
-            requestAnimationFrame(update);
-        }
-    }
-    
-    requestAnimationFrame(update);
-}
-
-// Initialize continuous updates
-function startContinuousUpdates() {
-    // Update network stats every 2 seconds
-    setInterval(() => {
-        updateNetworkStats();
-    }, 2000);
-    
-    // Update charts every 5 seconds
-    setInterval(() => {
-        updateAllCharts();
-    }, 5000);
-}
-
-function updateAllStats() {
-    // Statistics tab ranges
-    const ranges = {
-        'Active Searchers': { min: 2500, max: 10000 },
-        'Active MEV Operations': { min: 100, max: 1232 },
-        'Ongoing Arbitrage': { min: 10, max: 523 },
-        'Ongoing Sandwich': { min: 24, max: 721 }
-    };
-
-    // Update each statistic with animation
-    document.querySelectorAll('.cyber-card .card-content').forEach(card => {
-        const title = card.querySelector('h2')?.textContent;
-        const valueElement = card.querySelector('.stat-value');
-        
-        if (title && valueElement && ranges[title]) {
-            const range = ranges[title];
-            const currentValue = parseInt(valueElement.textContent.replace(/,/g, '')) || 0;
-            
-            // Calculate new value with smaller change
-            const maxChange = Math.floor((range.max - range.min) * 0.1); // Only allow 10% range change
-            const minNewValue = Math.max(currentValue - maxChange, range.min);
-            const maxNewValue = Math.min(currentValue + maxChange, range.max);
-            const newValue = Math.floor(Math.random() * (maxNewValue - minNewValue + 1)) + minNewValue;
-            
-            // Animate the number change
-            animateValue(valueElement, currentValue, newValue, 4000); // 4 second animation
-        }
-    });
-}
-
-// Update stats every 10 seconds
-setInterval(updateAllStats, 10000);
 
 // Chart optimization
 const chartOptions = {
@@ -561,90 +524,6 @@ function initializeStrategies() {
         
         // Initialize strategy data
         updateStrategies();
-    }
-}
-
-function initializeTabs() {
-    const tabs = document.querySelectorAll('.cyber-button');
-    const sections = document.querySelectorAll('.content-section');
-
-    // Show statistics section by default
-    document.querySelector('.statistics-section').style.display = 'block';
-
-    tabs.forEach((tab, index) => {
-        tab.addEventListener('click', () => {
-            // Remove active class from all tabs
-            tabs.forEach(t => t.classList.remove('active'));
-            tab.classList.add('active');
-
-            // Hide all sections
-            sections.forEach(section => {
-                section.style.display = 'none';
-            });
-
-            // Show selected section
-            let sectionClass;
-            switch(index) {
-                case 0:
-                    sectionClass = '.statistics-section';
-                    break;
-                case 1:
-                    sectionClass = '.ai-section';
-                    break;
-                case 2:
-                    sectionClass = '.alerts-section';
-                    break;
-                case 3:
-                    sectionClass = '.user-section';
-                    break;
-            }
-
-            const selectedSection = document.querySelector(sectionClass);
-            if (selectedSection) {
-                selectedSection.style.display = 'block';
-                
-                // Initialize content based on section
-                switch(index) {
-                    case 0:
-                        updateAllStats();
-                        updateAllCharts();
-                        break;
-                    case 1:
-                        initializeAIDashboard();
-                        break;
-                    case 2:
-                        initializeAlerts();
-                        break;
-                    case 3:
-                        // Initialize user profile if needed
-                        break;
-                }
-            }
-        });
-    });
-}
-
-function initializeSectionContent(section) {
-    switch(section) {
-        case 'statistics':
-            updateAllStats();
-            updateAllCharts();
-            break;
-        case 'ai':
-            initializeAIDashboard();
-            break;
-        case 'leaderboard':
-            initializeLeaderboard();
-            break;
-        case 'analytics':
-            initializeAnalytics();
-            break;
-        case 'alerts':
-            initializeAlerts();
-            break;
-        case 'strategy':
-            initializeStrategies();
-            break;
     }
 }
 
