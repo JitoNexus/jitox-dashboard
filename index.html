@@ -9,31 +9,28 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.min.js"></script>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body class="not-logged">
-    <!-- Cookie Warning -->
-    <div id="cookieWarning" class="cookie-warning hidden">
-        <div class="cookie-content">
-            <i class="fas fa-cookie-bite"></i>
-            <p>This site requires third-party cookies for the Telegram login to work properly. Please enable them in your browser settings.</p>
-            <button onclick="dismissCookieWarning()">Got it</button>
-        </div>
-    </div>
-
     <!-- Login Section -->
     <div class="login-section">
         <div class="login-container">
             <h2>Welcome to JitoX Dashboard</h2>
-            <p>Please log in with Telegram to continue</p>
-            <div id="telegram-login-container">
-                <button class="telegram-login-button" onclick="loginWithTelegram()">
+            <p>Access the dashboard or log in to save your preferences</p>
+            <div class="login-buttons">
+                <button class="continue-button" onclick="continueWithoutLogin()">
+                    <i class="fas fa-arrow-right"></i>
+                    Continue to Dashboard
+                </button>
+                <div class="or-divider">
+                    <span>or</span>
+                </div>
+                <button class="telegram-login-button" onclick="window.location.href='profile.html'">
                     <i class="fab fa-telegram"></i>
                     Log in with Telegram
                 </button>
             </div>
             <div class="login-info">
-                <p>Secure login powered by Telegram</p>
+                <p>Secure access powered by JitoX</p>
                 <div class="secure-badge">
                     <i class="fas fa-shield-alt"></i> Secure Connection
                 </div>
@@ -47,56 +44,20 @@
     </div>
 
     <script>
-        // Telegram WebApp initialization
-        window.Telegram.WebApp.ready();
+        function continueWithoutLogin() {
+            document.body.classList.remove('not-logged');
+            document.querySelector('.login-section').classList.add('hidden');
+            document.querySelector('.dashboard-container').classList.remove('hidden');
+            initializeDashboard();
+        }
 
-        function loginWithTelegram() {
-            // Get user data directly from Telegram WebApp
-            const user = window.Telegram.WebApp.initDataUnsafe.user;
-            if (user) {
-                onTelegramAuth(user);
-            } else {
-                const errorMessage = document.createElement('div');
-                errorMessage.className = 'error-message';
-                errorMessage.textContent = 'Please open this link in Telegram';
-                document.body.appendChild(errorMessage);
-                setTimeout(() => errorMessage.remove(), 5000);
+        // Run when the page loads
+        window.addEventListener('load', () => {
+            // Check if user was previously in the dashboard
+            if (sessionStorage.getItem('dashboardAccessed')) {
+                continueWithoutLogin();
             }
-        }
-
-        // Check for third-party cookie support
-        function checkThirdPartyCookies() {
-            var cookieEnabled = navigator.cookieEnabled;
-            if (!cookieEnabled) {
-                document.getElementById('cookieWarning').classList.remove('hidden');
-                return;
-            }
-
-            // Test third-party cookies specifically
-            var iframe = document.createElement('iframe');
-            iframe.style.display = 'none';
-            iframe.src = 'https://telegram.org/js/telegram-widget.js?22';
-            document.body.appendChild(iframe);
-
-            setTimeout(function() {
-                try {
-                    // Try to access the iframe's cookies
-                    var cookies = iframe.contentWindow.document.cookie;
-                    document.body.removeChild(iframe);
-                } catch (e) {
-                    // If we can't access the iframe's cookies, third-party cookies are likely blocked
-                    document.getElementById('cookieWarning').classList.remove('hidden');
-                    document.body.removeChild(iframe);
-                }
-            }, 1000);
-        }
-
-        function dismissCookieWarning() {
-            document.getElementById('cookieWarning').classList.add('hidden');
-        }
-
-        // Run the cookie check when the page loads
-        window.addEventListener('load', checkThirdPartyCookies);
+        });
     </script>
     <script src="script.js"></script>
 </body>

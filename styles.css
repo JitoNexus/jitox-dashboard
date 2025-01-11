@@ -2164,3 +2164,86 @@ body {
         font-size: 18px;
     }
 }
+
+.login-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 100%;
+    max-width: 250px;
+    margin: 0 auto;
+}
+
+.continue-button {
+    background: var(--neon-cyan);
+    color: var(--deep-blue);
+    border: none;
+    border-radius: 8px;
+    padding: 12px 24px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    transition: all 0.2s ease;
+}
+
+.continue-button:hover {
+    background: #fff;
+    transform: translateY(-1px);
+}
+
+.continue-button i {
+    font-size: 18px;
+}
+
+.or-divider {
+    position: relative;
+    text-align: center;
+    margin: 5px 0;
+}
+
+.or-divider::before,
+.or-divider::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 45%;
+    height: 1px;
+    background: rgba(0, 255, 255, 0.3);
+}
+
+.or-divider::before {
+    left: 0;
+}
+
+.or-divider::after {
+    right: 0;
+}
+
+.or-divider span {
+    background: var(--card-bg);
+    padding: 0 10px;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 14px;
+}
+
+@media (max-width: 768px) {
+    .continue-button,
+    .telegram-login-button {
+        padding: 10px 20px;
+        font-size: 14px;
+    }
+
+    .continue-button i,
+    .telegram-login-button i {
+        font-size: 16px;
+    }
+
+    .or-divider span {
+        font-size: 12px;
+    }
+}
