@@ -9,9 +9,6 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.min.js"></script>
     <style>
-        .hidden {
-            display: none !important;
-        }
         .dashboard-container {
             display: none;
         }
@@ -20,6 +17,12 @@
         }
         body.logged-in .login-section {
             display: none;
+        }
+        .content-section {
+            display: none;
+        }
+        .content-section.active {
+            display: block;
         }
     </style>
 </head>
@@ -60,56 +63,120 @@
                 <span class="status-text">Connecting...</span>
             </div>
         </div>
+
+        <!-- Navigation Tabs -->
+        <div class="cyber-nav">
+            <button class="cyber-button active" data-section="statistics">Statistics</button>
+            <button class="cyber-button" data-section="mev">MEV Activity</button>
+            <button class="cyber-button" data-section="ai">AI Performance</button>
+            <button class="cyber-button" data-section="settings">Settings</button>
+        </div>
         
-        <!-- Stats Grid -->
-        <div class="stats-grid">
-            <div class="cyber-card">
-                <div class="card-content">
-                    <h2>Active Searchers</h2>
-                    <div class="stat-value">0</div>
+        <!-- Statistics Section -->
+        <div class="content-section active" id="statistics-section">
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+                <div class="cyber-card">
+                    <div class="card-content">
+                        <h2>Active Searchers</h2>
+                        <div class="stat-value">0</div>
+                    </div>
+                </div>
+                <div class="cyber-card">
+                    <div class="card-content">
+                        <h2>Active MEV Operations</h2>
+                        <div class="stat-value">0</div>
+                    </div>
+                </div>
+                <div class="cyber-card">
+                    <div class="card-content">
+                        <h2>Ongoing Arbitrage</h2>
+                        <div class="stat-value">0</div>
+                    </div>
+                </div>
+                <div class="cyber-card">
+                    <div class="card-content">
+                        <h2>Ongoing Sandwich</h2>
+                        <div class="stat-value">0</div>
+                    </div>
                 </div>
             </div>
-            <div class="cyber-card">
-                <div class="card-content">
-                    <h2>Active MEV Operations</h2>
-                    <div class="stat-value">0</div>
+
+            <!-- Charts Grid -->
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <h3 class="chart-title">SOL Gained Over Time</h3>
+                    <canvas id="solGainedChart"></canvas>
                 </div>
-            </div>
-            <div class="cyber-card">
-                <div class="card-content">
-                    <h2>Ongoing Arbitrage</h2>
-                    <div class="stat-value">0</div>
-                </div>
-            </div>
-            <div class="cyber-card">
-                <div class="card-content">
-                    <h2>Ongoing Sandwich</h2>
-                    <div class="stat-value">0</div>
+                <div class="chart-card">
+                    <h3 class="chart-title">MEV Operations Distribution</h3>
+                    <canvas id="mevOpsChart"></canvas>
                 </div>
             </div>
         </div>
 
-        <!-- Charts Grid -->
-        <div class="charts-grid">
-            <div class="chart-card">
-                <h3 class="chart-title">SOL Gained Over Time</h3>
-                <canvas id="solGainedChart"></canvas>
-            </div>
-            <div class="chart-card">
-                <h3 class="chart-title">MEV Operations Distribution</h3>
-                <canvas id="mevOpsChart"></canvas>
+        <!-- MEV Activity Section -->
+        <div class="content-section" id="mev-section">
+            <div class="cyber-card">
+                <h3 class="chart-title">Live MEV Activity</h3>
+                <div class="mev-activity-feed"></div>
             </div>
         </div>
 
-        <!-- MEV Activity Feed -->
-        <div class="cyber-card">
-            <h3 class="chart-title">Live MEV Activity</h3>
-            <div class="mev-activity-feed"></div>
+        <!-- AI Performance Section -->
+        <div class="content-section" id="ai-section">
+            <div class="cyber-card">
+                <h3 class="chart-title">AI Performance Metrics</h3>
+                <div class="ai-stats-grid">
+                    <div class="cyber-card">
+                        <h4>Success Rate</h4>
+                        <div class="stat-value">98.5%</div>
+                    </div>
+                    <div class="cyber-card">
+                        <h4>Predictions Made</h4>
+                        <div class="stat-value">1,234</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Section -->
+        <div class="content-section" id="settings-section">
+            <div class="cyber-card">
+                <h3 class="chart-title">Dashboard Settings</h3>
+                <div class="settings-grid">
+                    <div class="setting-item">
+                        <label>Update Interval</label>
+                        <select id="updateInterval">
+                            <option value="1000">1 second</option>
+                            <option value="2000" selected>2 seconds</option>
+                            <option value="5000">5 seconds</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
     <script src="script.js"></script>
     <script>
+        // Tab Navigation
+        document.querySelectorAll('.cyber-button').forEach(button => {
+            button.addEventListener('click', () => {
+                // Remove active class from all buttons and sections
+                document.querySelectorAll('.cyber-button').forEach(btn => btn.classList.remove('active'));
+                document.querySelectorAll('.content-section').forEach(section => section.classList.remove('active'));
+                
+                // Add active class to clicked button
+                button.classList.add('active');
+                
+                // Show corresponding section
+                const sectionId = button.getAttribute('data-section') + '-section';
+                document.getElementById(sectionId).classList.add('active');
+            });
+        });
+
+        // Continue Button
         document.getElementById('continueBtn').addEventListener('click', function() {
             console.log('Continue button clicked');
             document.body.classList.remove('not-logged');
