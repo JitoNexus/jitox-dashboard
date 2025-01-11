@@ -11,12 +11,123 @@
     --shadow-pink: 0 0 15px rgba(255, 0, 255, 0.2);
 }
 
+/* Base Styles */
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background: var(--deep-blue);
+}
+
+.main-content {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.cyber-frame {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    padding: 0;
+    margin: 0;
+}
+
+/* Header Styles */
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    background: rgba(0, 0, 51, 0.5);
+    border-bottom: 1px solid rgba(0, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    flex-shrink: 0;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.header-logo {
+    height: 40px;
+    width: auto;
+    object-fit: contain;
+}
+
+.cyber-title {
+    font-size: 24px;
+    color: var(--neon-cyan);
+    margin: 0;
+}
+
+/* Content Section */
+.content-section {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 20px;
+    position: relative;
+}
+
+/* Navigation */
+.cyber-nav {
+    padding: 10px 20px;
+    background: rgba(0, 0, 51, 0.3);
+    border-bottom: 1px solid rgba(0, 255, 255, 0.1);
+    flex-shrink: 0;
+}
+
+.nav-container {
+    display: flex;
+    gap: 15px;
+    overflow-x: auto;
+    padding-bottom: 5px;
+}
+
+/* Prevent content from being cut off */
+.stats-grid {
+    margin-bottom: 20px;
+}
+
+/* Mobile Optimization */
+@media (max-width: 768px) {
+    .header-logo {
+        height: 32px;
+    }
+
+    .cyber-title {
+        font-size: 20px;
+    }
+
+    .dashboard-header {
+        padding: 10px;
+    }
+
+    .content-section {
+        padding: 10px;
+    }
+
+    .nav-container {
+        gap: 10px;
+    }
+
+    .cyber-button {
+        padding: 8px 12px;
+        font-size: 14px;
+    }
+}
+
 /* Optimized Background */
 body {
     margin: 0;
     padding: 0;
     font-family: 'Courier New', monospace;
-    background: var(--deep-blue);
     color: var(--neon-cyan);
     min-height: 100vh;
     overflow-x: hidden;
