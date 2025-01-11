@@ -209,7 +209,7 @@ body {
     transition: opacity 0.5s ease-out, visibility 0.5s ease-out;
 }
 
-.loading-overlay.hidden {
+.loading-overlay.fade-out {
     opacity: 0;
     visibility: hidden;
 }
@@ -218,16 +218,19 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 30px;
+    gap: 20px;
     position: relative;
     z-index: 2;
+    padding: 20px;
+    max-width: 90%;
+    width: 400px;
 }
 
 .loading-logo {
     position: relative;
-    width: 120px;
-    height: 120px;
-    margin-bottom: 20px;
+    width: 100px;
+    height: 100px;
+    margin-bottom: 10px;
 }
 
 .logo-hexagon {
@@ -244,104 +247,66 @@ body {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+    color: var(--text-color);
     font-size: 24px;
     font-weight: bold;
-    color: var(--deep-blue);
     text-shadow: 0 0 10px var(--neon-cyan);
-    z-index: 1;
 }
 
 .loading-text {
-    font-size: 32px;
-    font-weight: bold;
-    color: var(--neon-cyan);
+    font-size: 24px;
+    color: var(--text-color);
     text-transform: uppercase;
-    letter-spacing: 3px;
+    letter-spacing: 2px;
     text-shadow: 0 0 10px var(--neon-cyan);
-    animation: glitch 3s infinite;
+    animation: pulse 1.5s ease-in-out infinite alternate;
 }
 
 .loading-status {
+    width: 100%;
     display: flex;
     flex-direction: column;
     gap: 15px;
-    width: 300px;
 }
 
 .status-item {
     display: flex;
     align-items: center;
-    gap: 15px;
-    color: var(--neon-cyan);
+    gap: 10px;
+    color: var(--text-color);
     font-size: 14px;
-    opacity: 0;
-    animation: fadeInUp 0.5s ease forwards;
+    opacity: 0.8;
+    animation: fadeInUp 0.5s ease-out forwards;
 }
 
-.status-item:nth-child(1) { animation-delay: 0.5s; }
-.status-item:nth-child(2) { animation-delay: 1s; }
-.status-item:nth-child(3) { animation-delay: 1.5s; }
-
 .status-item i {
-    font-size: 18px;
-    color: var(--neon-pink);
-    animation: pulse 1.5s ease-in-out infinite;
+    color: var(--neon-cyan);
+    font-size: 16px;
 }
 
 .loading-progress {
-    width: 300px;
+    width: 100%;
     height: 4px;
     background: rgba(0, 255, 255, 0.1);
-    border-radius: 4px;
+    border-radius: 2px;
     overflow: hidden;
     position: relative;
 }
 
 .progress-bar {
-    position: absolute;
-    left: 0;
-    top: 0;
     height: 100%;
-    width: 0%;
     background: linear-gradient(90deg, var(--neon-cyan), var(--neon-pink));
-    box-shadow: 0 0 20px var(--neon-cyan);
-    animation: progress 3s ease-in-out forwards;
+    width: 0%;
+    animation: progress 2s ease-out forwards;
 }
 
 .progress-percentage {
     position: absolute;
-    top: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-    color: var(--neon-cyan);
+    top: -20px;
+    right: 0;
+    color: var(--text-color);
     font-size: 12px;
-    animation: updatePercentage 3s linear forwards;
-}
-
-.cyber-grid {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: 
-        linear-gradient(90deg, var(--grid-line) 1px, transparent 1px) 0 0,
-        linear-gradient(0deg, var(--grid-line) 1px, transparent 1px) 0 0;
-    background-size: 50px 50px;
-    animation: grid-move 20s linear infinite;
-    opacity: 0.2;
-}
-
-/* Main Content Visibility */
-.main-content {
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.5s ease-out, visibility 0.5s ease-out;
-}
-
-.main-content.visible {
-    opacity: 1;
-    visibility: visible;
+    animation: updatePercentage 2s linear;
 }
 
 /* Loading Animations */
@@ -351,60 +316,55 @@ body {
 }
 
 @keyframes pulse {
-    from { opacity: 0.5; transform: scale(0.95); }
-    to { opacity: 1; transform: scale(1.05); }
+    from { opacity: 0.7; transform: scale(0.98); }
+    to { opacity: 1; transform: scale(1.02); }
 }
 
 @keyframes fadeInUp {
     from { 
         opacity: 0;
-        transform: translateY(20px);
+        transform: translateY(10px);
     }
     to {
-        opacity: 1;
+        opacity: 0.8;
         transform: translateY(0);
     }
 }
 
 @keyframes progress {
-    from { width: 0%; }
-    to { width: 100%; }
+    0% { width: 0%; }
+    50% { width: 70%; }
+    100% { width: 100%; }
 }
 
 @keyframes updatePercentage {
     0% { content: "0%"; }
+    50% { content: "70%"; }
     100% { content: "100%"; }
-}
-
-@keyframes grid-move {
-    from { transform: translateY(0); }
-    to { transform: translateY(50px); }
-}
-
-/* Loading State Control */
-body.loading {
-    overflow: hidden;
-}
-
-body:not(.loading) .loading-overlay {
-    opacity: 0;
-    visibility: hidden;
 }
 
 /* Mobile Optimization */
 @media (max-width: 768px) {
-    .loading-text {
-        font-size: 32px;
-        letter-spacing: 2px;
+    .loading-content {
+        padding: 15px;
+        gap: 15px;
     }
 
-    .cyber-spinner {
+    .loading-logo {
         width: 80px;
         height: 80px;
     }
 
-    .loading-progress {
-        width: 200px;
+    .loading-text {
+        font-size: 20px;
+    }
+
+    .status-item {
+        font-size: 12px;
+    }
+
+    .status-item i {
+        font-size: 14px;
     }
 }
 

@@ -48,6 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
     startContinuousUpdates();
 });
 
+// Loading Screen Handler
 function initializeLoadingSequence() {
     const loadingOverlay = document.querySelector('.loading-overlay');
     const mainContent = document.querySelector('.main-content');
@@ -56,26 +57,39 @@ function initializeLoadingSequence() {
     const statusItems = document.querySelectorAll('.status-item');
     
     let progress = 0;
-    const progressInterval = setInterval(() => {
-        progress += 1;
-        if (progressPercentage) {
-            progressPercentage.textContent = `${progress}%`;
-        }
-        
-        // Update status items based on progress
-        if (progress >= 30) statusItems[0].classList.add('completed');
-        if (progress >= 60) statusItems[1].classList.add('completed');
-        if (progress >= 90) statusItems[2].classList.add('completed');
-        
-        if (progress >= 100) {
-            clearInterval(progressInterval);
-            setTimeout(() => {
-                document.body.classList.remove('loading');
-                loadingOverlay.classList.add('hidden');
-                mainContent.classList.add('visible');
-            }, 500);
-        }
-    }, 30); // Adjust timing as needed
+    const totalSteps = statusItems.length;
+    const timePerStep = 800; // ms per step
+    
+    // Show loading overlay
+    loadingOverlay.style.display = 'flex';
+    mainContent.style.opacity = '0';
+    
+    // Animate each status item
+    statusItems.forEach((item, index) => {
+        setTimeout(() => {
+            item.style.opacity = '1';
+            progress = ((index + 1) / totalSteps) * 100;
+            progressBar.style.width = `${progress}%`;
+            progressPercentage.textContent = `${Math.round(progress)}%`;
+            
+            // On last item, prepare to show main content
+            if (index === totalSteps - 1) {
+                setTimeout(() => {
+                    loadingOverlay.classList.add('fade-out');
+                    mainContent.style.opacity = '1';
+                    
+                    // Initialize main content after loading
+                    initializeCharts();
+                    startContinuousUpdates();
+                    
+                    // Remove overlay after animation
+                    setTimeout(() => {
+                        loadingOverlay.style.display = 'none';
+                    }, 500);
+                }, timePerStep);
+            }
+        }, index * timePerStep);
+    });
 }
 
 function initializeLoadingStates() {
@@ -100,14 +114,17 @@ function initializeLoadingStates() {
     }, 1500);
 }
 
+// Initialize continuous updates
 function startContinuousUpdates() {
+    // Update network stats every 2 seconds
     setInterval(() => {
-        const activeSection = document.querySelector('.content-section[style*="display: block"]');
-        if (activeSection) {
-            const sectionType = activeSection.classList[1].replace('-section', '');
-            initializeSectionContent(sectionType);
-        }
+        updateNetworkStats();
     }, 2000);
+    
+    // Update charts every 5 seconds
+    setInterval(() => {
+        updateAllCharts();
+    }, 5000);
 }
 
 function updateAllStats() {
