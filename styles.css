@@ -2052,24 +2052,24 @@ body {
 
 .security-info {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    justify-content: center;
+    gap: 15px;
     margin-bottom: 15px;
-    padding-bottom: 10px;
-    border-bottom: 1px solid rgba(0, 255, 255, 0.1);
 }
 
-.source-link {
-    color: var(--neon-cyan);
-    text-decoration: none;
-    font-size: 12px;
+.encryption-badge, .verified-badge {
     display: flex;
     align-items: center;
     gap: 5px;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 0.9em;
+    background: rgba(0, 255, 255, 0.1);
+    color: #00ffff;
 }
 
-.source-link:hover {
-    color: var(--neon-pink);
+.encryption-badge i, .verified-badge i {
+    color: #00ffff;
 }
 
 @media (max-width: 768px) {
