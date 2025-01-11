@@ -189,17 +189,27 @@ function initializeSectionContent(section) {
     }
 }
 
+// Utility functions
+function getRandomData(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
 // Start continuous updates
 function startContinuousUpdates() {
-    // Update stats every 5 seconds
+    // Initial update
+    updateAllStats();
+    updateNetworkStats();
+    updateMEVPerformance();
+
+    // Update stats every 3 seconds
     setInterval(() => {
-        if (document.querySelector('.statistics-section').style.display !== 'none') {
+        if (!document.hidden) {  // Only update if page is visible
             updateAllStats();
-            updateAllCharts();
             updateNetworkStats();
             updateMEVPerformance();
+            updateAllCharts();
         }
-    }, 5000);
+    }, 3000);
 }
 
 function updateAllStats() {
@@ -219,13 +229,13 @@ function updateAllStats() {
         
         if (title && valueElement && ranges[title]) {
             const range = ranges[title];
-            const currentValue = parseInt(valueElement.textContent.replace(/,/g, '')) || 0;
+            const currentValue = parseInt(valueElement.textContent.replace(/[,$]/g, '')) || range.min;
             
             // Calculate new value with smaller change
             const maxChange = Math.floor((range.max - range.min) * 0.1); // 10% max change
             const minNewValue = Math.max(currentValue - maxChange, range.min);
             const maxNewValue = Math.min(currentValue + maxChange, range.max);
-            const newValue = Math.floor(Math.random() * (maxNewValue - minNewValue + 1)) + minNewValue;
+            const newValue = getRandomData(minNewValue, maxNewValue);
             
             // Calculate trend percentage
             const trendPercentage = ((newValue - currentValue) / currentValue * 100).toFixed(1);
@@ -234,6 +244,10 @@ function updateAllStats() {
                 const trendContainer = trendElement.parentElement;
                 if (trendContainer) {
                     trendContainer.className = `trend ${trendPercentage >= 0 ? 'up' : 'down'}`;
+                    const icon = trendContainer.querySelector('i');
+                    if (icon) {
+                        icon.className = `fas fa-arrow-${trendPercentage >= 0 ? 'up' : 'down'}`;
+                    }
                 }
             }
             
@@ -257,7 +271,7 @@ function updateNetworkStats() {
         if (element) {
             const valueElement = element.querySelector('.stat-value');
             if (valueElement) {
-                const currentValue = parseInt(valueElement.textContent);
+                const currentValue = parseInt(valueElement.textContent.replace(/[,%]/g, ''));
                 animateValue(valueElement, currentValue, data.value, 1000, val => 
                     `${val.toLocaleString()}${data.unit}`
                 );
@@ -657,11 +671,6 @@ function addHexagonalBackground() {
             hexGrid.appendChild(hex);
         }
     });
-}
-
-// Utility functions
-function getRandomData(min, max) {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
 // Update footer timestamp
