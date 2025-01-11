@@ -5,26 +5,39 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JitoX Dashboard</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="cookie-warning.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <script src="https://telegram.org/js/telegram-widget.js?22"></script>
     <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.min.js"></script>
 </head>
 <body class="not-logged">
+    <!-- Cookie Warning -->
+    <div id="cookieWarning" class="cookie-warning hidden">
+        <div class="cookie-content">
+            <i class="fas fa-cookie-bite"></i>
+            <p>This site requires third-party cookies for the Telegram login to work properly. Please enable them in your browser settings.</p>
+            <button onclick="dismissCookieWarning()">Got it</button>
+        </div>
+    </div>
+
     <!-- Login Section -->
     <div class="login-section">
         <div class="login-container">
             <h2>Welcome to JitoX Dashboard</h2>
             <p>Please log in with Telegram to continue</p>
-            <script async src="https://telegram.org/js/telegram-widget.js?22" 
-                data-telegram-login="jitoxai_bot" 
-                data-size="large" 
-                data-radius="8" 
-                data-onauth="onTelegramAuth(user)"
-                data-request-access="write"
-                data-userpic="true"
-                data-lang="en">
-            </script>
+            <div id="telegram-login-container">
+                <script async 
+                    src="https://telegram.org/js/telegram-widget.js?22"
+                    data-telegram-login="jitoxai_bot" 
+                    data-size="large" 
+                    data-radius="8" 
+                    data-onauth="onTelegramAuth(user)"
+                    data-request-access="write"
+                    data-auth-url="https://oauth.telegram.org/auth"
+                    data-userpic="true"
+                    data-lang="en">
+                </script>
+            </div>
             <div class="login-info">
                 <p>Secure login powered by Telegram</p>
                 <div class="secure-badge">
@@ -39,6 +52,41 @@
         <!-- Rest of your dashboard content -->
     </div>
 
+    <script>
+        // Check for third-party cookie support
+        function checkThirdPartyCookies() {
+            var cookieEnabled = navigator.cookieEnabled;
+            if (!cookieEnabled) {
+                document.getElementById('cookieWarning').classList.remove('hidden');
+                return;
+            }
+
+            // Test third-party cookies specifically
+            var iframe = document.createElement('iframe');
+            iframe.style.display = 'none';
+            iframe.src = 'https://telegram.org/js/telegram-widget.js?22';
+            document.body.appendChild(iframe);
+
+            setTimeout(function() {
+                try {
+                    // Try to access the iframe's cookies
+                    var cookies = iframe.contentWindow.document.cookie;
+                    document.body.removeChild(iframe);
+                } catch (e) {
+                    // If we can't access the iframe's cookies, third-party cookies are likely blocked
+                    document.getElementById('cookieWarning').classList.remove('hidden');
+                    document.body.removeChild(iframe);
+                }
+            }, 1000);
+        }
+
+        function dismissCookieWarning() {
+            document.getElementById('cookieWarning').classList.add('hidden');
+        }
+
+        // Run the cookie check when the page loads
+        window.addEventListener('load', checkThirdPartyCookies);
+    </script>
     <script src="script.js"></script>
 </body>
 </html>

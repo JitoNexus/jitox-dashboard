@@ -314,7 +314,8 @@ async function updateUserProfile(user) {
 // Initialize dashboard with error handling
 async function initializeDashboard() {
     try {
-        const user = JSON.parse(localStorage.getItem('telegramUser'));
+        // Check both storage types for user data
+        const user = JSON.parse(sessionStorage.getItem('telegramUser') || localStorage.getItem('telegramUser') || 'null');
         if (!user) {
             throw new Error('No user data found');
         }
@@ -341,13 +342,18 @@ async function initializeDashboard() {
 
         // Show content after initialization
         document.body.classList.remove('loading');
+        document.body.classList.remove('not-logged');
         document.querySelector('.dashboard-container')?.classList.remove('hidden');
+        document.querySelector('.login-section')?.classList.add('hidden');
         return true;
     } catch (error) {
         console.error('Error initializing dashboard:', error);
         document.body.classList.add('not-logged');
         document.body.classList.remove('loading');
+        sessionStorage.removeItem('telegramUser');
         localStorage.removeItem('telegramUser');
+        document.querySelector('.dashboard-container')?.classList.add('hidden');
+        document.querySelector('.login-section')?.classList.remove('hidden');
         return false;
     }
 }
@@ -355,6 +361,10 @@ async function initializeDashboard() {
 // Handle Telegram Login Callback
 function onTelegramAuth(user) {
     console.log('Telegram auth callback received:', user);
+    if (!user) {
+        console.error('No user data received from Telegram');
+        return;
+    }
     handleTelegramLogin(user).catch(error => {
         console.error('Error in Telegram auth:', error);
         // Show error message to user
@@ -380,8 +390,10 @@ async function handleTelegramLogin(user) {
         if (chartUpdateInterval) clearInterval(chartUpdateInterval);
         if (activityUpdateInterval) clearInterval(activityUpdateInterval);
         
-        // Save user data in sessionStorage
-        sessionStorage.setItem('telegramUser', JSON.stringify(user));
+        // Save user data in both storages for compatibility
+        const userData = JSON.stringify(user);
+        localStorage.setItem('telegramUser', userData);
+        sessionStorage.setItem('telegramUser', userData);
         
         // Initialize dashboard
         const initialized = await initializeDashboard();
@@ -400,26 +412,27 @@ async function handleTelegramLogin(user) {
         requestAnimationFrame(() => {
             document.body.classList.remove('loading');
             const dashboardContainer = document.querySelector('.dashboard-container');
+            const loginSection = document.querySelector('.login-section');
             if (dashboardContainer) {
                 dashboardContainer.classList.remove('hidden');
             }
-            const loginSection = document.querySelector('.login-section');
             if (loginSection) {
-                loginSection.style.display = 'none';
+                loginSection.classList.add('hidden');
             }
         });
     } catch (error) {
         console.error('Error during authentication:', error);
         sessionStorage.removeItem('telegramUser');
+        localStorage.removeItem('telegramUser');
         document.body.classList.remove('loading');
         document.body.classList.add('not-logged');
         const dashboardContainer = document.querySelector('.dashboard-container');
+        const loginSection = document.querySelector('.login-section');
         if (dashboardContainer) {
             dashboardContainer.classList.add('hidden');
         }
-        const loginSection = document.querySelector('.login-section');
         if (loginSection) {
-            loginSection.style.display = 'block';
+            loginSection.classList.remove('hidden');
         }
         
         // Show error message to user
