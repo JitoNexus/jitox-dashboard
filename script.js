@@ -39,43 +39,175 @@ function getSmoothedValue(currentValue, targetValue, maxChangePercent) {
     return currentValue + (Math.sign(difference) * maxChange);
 }
 
+// Main initialization
 document.addEventListener('DOMContentLoaded', () => {
-    initializeLoadingSequence();
-    // Initialize other components
-    initializeCharts();
-    initializeTabs();
-    addHexagonalBackground();
-    startContinuousUpdates();
+    console.log('DOM Content Loaded');
+    initializeLoadingScreen();
 });
 
-function initializeLoadingSequence() {
-    const loadingOverlay = document.querySelector('.loading-overlay');
+function initializeLoadingScreen() {
+    console.log('Initializing loading screen');
+    const loadingContainer = document.querySelector('.loading-container');
     const mainContent = document.querySelector('.main-content');
-    const progressBar = document.querySelector('.progress-bar');
-    const progressPercentage = document.querySelector('.progress-percentage');
-    const statusItems = document.querySelectorAll('.status-item');
     
-    let progress = 0;
-    const progressInterval = setInterval(() => {
-        progress += 1;
-        if (progressPercentage) {
-            progressPercentage.textContent = `${progress}%`;
+    if (!loadingContainer || !mainContent) {
+        console.error('Required elements not found');
+        return;
+    }
+
+    // Force initial states
+    loadingContainer.style.display = 'flex';
+    loadingContainer.style.opacity = '1';
+    loadingContainer.style.visibility = 'visible';
+    mainContent.style.display = 'none';
+    mainContent.style.opacity = '0';
+    mainContent.style.visibility = 'hidden';
+
+    // Initialize components
+    try {
+        initializeParticles();
+        initializeAnimations();
+        startProgressBar();
+    } catch (error) {
+        console.error('Error during initialization:', error);
+        // Fallback to hide loading screen if something fails
+        hideLoadingScreen();
+    }
+}
+
+function initializeParticles() {
+    if (!window.particlesJS || !document.getElementById('particles')) {
+        console.warn('ParticlesJS not available or particles container not found');
+        return;
+    }
+
+    particlesJS('particles', {
+        particles: {
+            number: { value: 30 },
+            color: { value: '#ffffff' },
+            shape: { type: 'circle' },
+            opacity: {
+                value: 0.5,
+                random: true
+            },
+            size: {
+                value: 3,
+                random: true
+            },
+            move: {
+                enable: true,
+                speed: 2,
+                direction: 'none',
+                random: true,
+                out_mode: 'out'
+            }
         }
+    });
+}
+
+function initializeAnimations() {
+    if (!window.gsap) {
+        console.warn('GSAP not available');
+        return;
+    }
+
+    const wallet = document.querySelector('.wallet-body');
+    if (wallet) {
+        gsap.to(wallet, {
+            rotationY: 10,
+            rotationX: 5,
+            duration: 2,
+            repeat: -1,
+            yoyo: true,
+            ease: "power1.inOut"
+        });
+    }
+
+    const coins = document.querySelectorAll('.coin');
+    coins.forEach((coin, index) => {
+        gsap.to(coin, {
+            y: -20,
+            rotation: index === 0 ? 10 : -10,
+            duration: 2,
+            delay: index * 0.2,
+            repeat: -1,
+            yoyo: true,
+            ease: "power1.inOut"
+        });
+    });
+}
+
+function startProgressBar() {
+    const progress = document.querySelector('.progress');
+    if (!progress) {
+        console.error('Progress bar not found');
+        hideLoadingScreen();
+        return;
+    }
+
+    let width = 0;
+    const interval = setInterval(() => {
+        if (width >= 100) {
+            clearInterval(interval);
+            hideLoadingScreen();
+        } else {
+            width += 1;
+            progress.style.width = width + '%';
+        }
+    }, 30);
+}
+
+function hideLoadingScreen() {
+    console.log('Hiding loading screen');
+    const loadingContainer = document.querySelector('.loading-container');
+    const mainContent = document.querySelector('.main-content');
+    
+    if (!loadingContainer || !mainContent) {
+        console.error('Required elements not found for hiding');
+        return;
+    }
+
+    try {
+        // Show main content first
+        mainContent.style.display = 'block';
         
-        // Update status items based on progress
-        if (progress >= 30) statusItems[0].classList.add('completed');
-        if (progress >= 60) statusItems[1].classList.add('completed');
-        if (progress >= 90) statusItems[2].classList.add('completed');
-        
-        if (progress >= 100) {
-            clearInterval(progressInterval);
+        // Force a reflow
+        void mainContent.offsetHeight;
+
+        // Add transitions
+        requestAnimationFrame(() => {
+            loadingContainer.style.opacity = '0';
+            loadingContainer.style.visibility = 'hidden';
+            mainContent.style.opacity = '1';
+            mainContent.style.visibility = 'visible';
+            
+            // Remove loading container after transition
             setTimeout(() => {
-                document.body.classList.remove('loading');
-                loadingOverlay.classList.add('hidden');
-                mainContent.classList.add('visible');
+                if (loadingContainer.parentNode) {
+                    loadingContainer.parentNode.removeChild(loadingContainer);
+                }
+                console.log('Loading screen removed');
             }, 500);
+        });
+    } catch (error) {
+        console.error('Error hiding loading screen:', error);
+        // Fallback: force remove loading screen
+        if (loadingContainer.parentNode) {
+            loadingContainer.parentNode.removeChild(loadingContainer);
         }
-    }, 30); // Adjust timing as needed
+        mainContent.style.display = 'block';
+        mainContent.style.opacity = '1';
+        mainContent.style.visibility = 'visible';
+    }
+}
+
+// Remove or comment out the updateConnectionStatus function if not needed
+// function updateConnectionStatus() { ... }
+
+// Start your other initializations after the loading screen is gone
+function initializeApp() {
+    // Your other initialization code here
+    console.log('App initialized');
 }
 
 function initializeLoadingStates() {
