@@ -2784,36 +2784,25 @@ body {
 
 /* Mobile Header Optimization */
 @media (max-width: 768px) {
-    body {
-        background: var(--deep-blue);
-        will-change: transform;
-    }
-
-    .cyber-frame {
-        padding-top: 140px; /* Space for fixed header */
-    }
-
     .dashboard-header {
-        position: fixed;
+        position: sticky;
         top: 0;
-        left: 0;
-        right: 0;
-        z-index: 1000;
+        z-index: 101;
         background: var(--deep-blue);
+        flex-direction: column;
+        gap: 8px;
         padding: 8px;
         margin: 0;
         border-bottom: 1px solid rgba(0, 255, 255, 0.1);
-        height: auto;
-        will-change: transform;
-        transform: translate3d(0,0,0);
-        -webkit-transform: translate3d(0,0,0);
     }
 
     .header-left {
         display: flex;
+        flex-direction: row;
         align-items: center;
+        justify-content: space-between;
+        width: 100%;
         gap: 8px;
-        margin-bottom: 8px;
     }
 
     .logo-container {
@@ -2828,8 +2817,8 @@ body {
     }
 
     .header-right {
-        display: flex;
-        flex-direction: column;
+        display: grid;
+        grid-template-columns: 1fr;
         gap: 8px;
         width: 100%;
     }
@@ -2841,109 +2830,16 @@ body {
     }
 
     .status-container, .network-quality {
-        height: 32px;
+        background: rgba(0, 255, 255, 0.03);
+        border: 1px solid rgba(0, 255, 255, 0.1);
+        border-radius: 4px;
+        padding: 6px 8px;
         display: flex;
         align-items: center;
         gap: 6px;
-        padding: 0 8px;
-        background: rgba(0, 255, 255, 0.03);
-        border: 1px solid rgba(0, 255, 255, 0.1);
-        border-radius: 4px;
-    }
-
-    .connection-status {
         height: 32px;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        padding: 0 8px;
-        background: rgba(0, 255, 255, 0.03);
-        border: 1px solid rgba(0, 255, 255, 0.1);
-        border-radius: 4px;
     }
 
-    /* Move network stats to a floating container */
-    .network-stats-container {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        background: rgba(0, 0, 51, 0.95);
-        padding: 8px;
-        border-top: 1px solid rgba(0, 255, 255, 0.1);
-        z-index: 1000;
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-    }
-
-    .network-stats {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 8px;
-    }
-
-    .stat-chip {
-        height: 40px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        gap: 2px;
-        padding: 4px;
-        background: rgba(0, 255, 255, 0.03);
-        border: 1px solid rgba(0, 255, 255, 0.1);
-        border-radius: 4px;
-    }
-
-    .stat-chip i {
-        font-size: 14px;
-        color: var(--neon-cyan);
-    }
-
-    .stat-chip .stat-label {
-        font-size: 10px;
-        color: var(--neon-cyan);
-        opacity: 0.8;
-    }
-
-    .stat-chip .stat-value {
-        font-size: 12px;
-        color: var(--neon-pink);
-        margin: 0;
-    }
-
-    /* Navigation */
-    .cyber-nav {
-        position: fixed;
-        top: 140px;
-        left: 0;
-        right: 0;
-        z-index: 999;
-        background: var(--deep-blue);
-        padding: 8px;
-        border-bottom: 1px solid rgba(0, 255, 255, 0.1);
-        will-change: transform;
-        transform: translate3d(0,0,0);
-        -webkit-transform: translate3d(0,0,0);
-    }
-
-    /* Content Section */
-    .content-section {
-        padding: 8px;
-        padding-bottom: 60px; /* Space for network stats */
-        margin-top: 60px; /* Space for nav */
-        height: calc(100vh - 260px);
-        overflow-y: auto;
-        -webkit-overflow-scrolling: touch;
-        background: var(--deep-blue);
-        position: relative;
-        z-index: 1;
-        will-change: transform;
-        transform: translate3d(0,0,0);
-        -webkit-transform: translate3d(0,0,0);
-    }
-
-    /* Status Elements */
     .status-ring {
         width: 16px;
         height: 16px;
@@ -2969,6 +2865,17 @@ body {
         background: var(--neon-cyan);
     }
 
+    .connection-status {
+        background: rgba(0, 255, 255, 0.03);
+        border: 1px solid rgba(0, 255, 255, 0.1);
+        border-radius: 4px;
+        padding: 6px 8px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
     .connection-indicator {
         width: 16px;
         height: 16px;
@@ -2992,5 +2899,57 @@ body {
     .latency {
         white-space: nowrap;
         flex-shrink: 0;
+    }
+
+    .network-stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+        width: 100%;
+        margin-top: 4px;
+    }
+
+    .stat-chip {
+        background: rgba(0, 255, 255, 0.03);
+        border: 1px solid rgba(0, 255, 255, 0.1);
+        border-radius: 4px;
+        padding: 6px 8px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+    }
+
+    .stat-chip i {
+        font-size: 14px;
+        color: var(--neon-cyan);
+    }
+
+    .stat-chip .stat-value {
+        font-size: 12px;
+        color: var(--neon-pink);
+        margin: 0;
+    }
+
+    /* Fix scrolling issues */
+    .content-section {
+        height: calc(100vh - 200px);
+        padding-top: 8px;
+        margin-top: 0;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        position: relative;
+        z-index: 1;
+    }
+
+    .cyber-nav {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        background: var(--deep-blue);
+        padding: 8px 0;
+        margin: 0;
+        width: 100%;
     }
 }
