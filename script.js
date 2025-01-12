@@ -39,69 +39,67 @@ function getSmoothedValue(currentValue, targetValue, maxChangePercent) {
     return currentValue + (Math.sign(difference) * maxChange);
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    initializeLoadingSequence();
-    // Initialize other components
-    initializeCharts();
-    initializeTabs();
-    addHexagonalBackground();
-    startContinuousUpdates();
-});
-
-// Loading Screen Handler
+// Initialize loading screen and main content
 function initializeLoadingSequence() {
+    console.log('Initializing loading screen');
     const loadingOverlay = document.querySelector('.loading-overlay');
     const mainContent = document.querySelector('.main-content');
-    const progressBar = document.querySelector('.progress-bar');
-    const progressPercentage = document.querySelector('.progress-percentage');
-    const statusItems = document.querySelectorAll('.status-item');
     
-    let progress = 0;
-    const totalSteps = statusItems.length;
-    const timePerStep = 1000; // ms per step
-    
-    // Show loading overlay and hide main content
-    loadingOverlay.style.display = 'flex';
-    mainContent.style.opacity = '0';
+    if (!loadingOverlay || !mainContent) {
+        console.error('Required elements not found');
+        return;
+    }
+
+    // Show loading screen
     document.body.classList.add('loading');
+    loadingOverlay.style.display = 'flex';
+    mainContent.style.display = 'none';
+
+    // Simulate loading progress
+    let progress = 0;
+    const progressBar = loadingOverlay.querySelector('.progress-bar');
+    const progressText = loadingOverlay.querySelector('.progress-percentage');
     
-    // Animate each status item with delay
-    statusItems.forEach((item, index) => {
-        setTimeout(() => {
-            item.style.opacity = '1';
-            progress = ((index + 1) / totalSteps) * 100;
+    const updateProgress = () => {
+        if (progressBar && progressText) {
             progressBar.style.width = `${progress}%`;
-            progressPercentage.textContent = `${Math.round(progress)}%`;
-            
-            // Add success indicator when item completes
-            const icon = item.querySelector('i');
-            icon.classList.add('success');
-            
-            // On last item, prepare to show main content
-            if (index === totalSteps - 1) {
+            progressText.textContent = `${progress}%`;
+        }
+    };
+
+    const progressInterval = setInterval(() => {
+        progress += 5;
+        updateProgress();
+        
+        if (progress >= 100) {
+            clearInterval(progressInterval);
+            // Hide loading screen and show main content
+            setTimeout(() => {
+                loadingOverlay.classList.add('fade-out');
+                document.body.classList.remove('loading');
+                mainContent.style.display = 'block';
+                mainContent.classList.add('visible');
+                
+                // Remove loading overlay after animation
                 setTimeout(() => {
-                    // Add final success animation
-                    loadingOverlay.classList.add('completed');
-                    
-                    setTimeout(() => {
-                        loadingOverlay.classList.add('fade-out');
-                        mainContent.style.opacity = '1';
-                        document.body.classList.remove('loading');
-                        
-                        // Initialize main content after loading
-                        initializeCharts();
-                        startContinuousUpdates();
-                        
-                        // Remove overlay after animation
-                        setTimeout(() => {
-                            loadingOverlay.style.display = 'none';
-                        }, 500);
-                    }, 500);
-                }, timePerStep / 2);
-            }
-        }, index * timePerStep);
-    });
+                    loadingOverlay.style.display = 'none';
+                }, 500);
+
+                // Initialize other components
+                initializeCharts();
+                startContinuousUpdates();
+            }, 500);
+        }
+    }, 50);
 }
+
+// Document ready handler
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('DOM Content Loaded');
+    initializeLoadingSequence();
+    initializeTabs();
+    addHexagonalBackground();
+});
 
 function initializeLoadingStates() {
     // Hide loading overlay after initialization
@@ -800,6 +798,8 @@ function updateConnectionStatus() {
     const statusIndicator = document.querySelector('.status-indicator');
     const statusText = document.querySelector('.status-text');
     
+    if (!statusIndicator || !statusText) return; // Exit if elements don't exist
+    
     if (window.solana && window.solana.isConnected) {
         statusIndicator.style.background = '#00ff00';
         statusIndicator.style.boxShadow = '0 0 10px #00ff00';
@@ -1059,4 +1059,53 @@ document.addEventListener('DOMContentLoaded', function() {
             // ... (implement time range filtering logic)
         });
     });
+});
+
+// Automatic Git Push Function
+async function gitAutoPush() {
+    try {
+        // Add all changes
+        await fetch('/git/add', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ command: 'git add .' })
+        });
+
+        // Create commit with timestamp
+        const timestamp = new Date().toISOString();
+        await fetch('/git/commit', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                command: `git commit -m "Auto-update: ${timestamp}"`
+            })
+        });
+
+        // Push changes
+        await fetch('/git/push', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ command: 'git push origin main' })
+        });
+
+        console.log('Successfully pushed changes to git');
+    } catch (error) {
+        console.error('Error pushing to git:', error);
+    }
+}
+
+// Set up auto-push interval (every 5 minutes)
+setInterval(gitAutoPush, 300000);
+
+// Also push when significant changes occur
+document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) {
+        gitAutoPush();
+    }
 });
