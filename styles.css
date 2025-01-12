@@ -393,18 +393,192 @@ body:not(.loading) .loading-overlay {
 
 /* Mobile Optimization */
 @media (max-width: 768px) {
-    .loading-text {
-        font-size: 32px;
-        letter-spacing: 2px;
+    /* Base Setup */
+    body {
+        background: var(--deep-blue);
+        overflow: hidden;
+        position: fixed;
+        width: 100%;
+        height: 100%;
     }
 
-    .cyber-spinner {
-        width: 80px;
-        height: 80px;
+    .main-content {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        overflow: hidden;
     }
 
-    .loading-progress {
-        width: 200px;
+    .cyber-frame {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        position: relative;
+    }
+
+    /* Fixed Header */
+    .dashboard-header {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 1000;
+        background: var(--deep-blue);
+        padding: 8px;
+        border-bottom: 1px solid rgba(0, 255, 255, 0.1);
+    }
+
+    .header-left {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .logo-container {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .cyber-title {
+        font-size: 18px;
+        margin: 0;
+    }
+
+    /* Status Bar */
+    .header-right {
+        margin-top: 8px;
+    }
+
+    .status-row {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+    }
+
+    .status-container, .network-quality {
+        height: 32px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 0 8px;
+        background: rgba(0, 255, 255, 0.03);
+        border: 1px solid rgba(0, 255, 255, 0.1);
+        border-radius: 4px;
+    }
+
+    /* Fixed Navigation */
+    .cyber-nav {
+        position: absolute;
+        top: 100px;
+        left: 0;
+        right: 0;
+        z-index: 1000;
+        background: var(--deep-blue);
+        padding: 8px;
+        border-bottom: 1px solid rgba(0, 255, 255, 0.1);
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+
+    .nav-container {
+        display: flex;
+        gap: 8px;
+    }
+
+    .cyber-button {
+        flex: 0 0 auto;
+        padding: 8px 16px;
+        font-size: 12px;
+        background: rgba(0, 255, 255, 0.03);
+        border: 1px solid rgba(0, 255, 255, 0.1);
+        border-radius: 4px;
+        color: var(--neon-cyan);
+    }
+
+    .cyber-button.active {
+        background: rgba(255, 0, 255, 0.1);
+        border-color: var(--neon-pink);
+        color: var(--neon-pink);
+    }
+
+    /* Fixed Stats Bar */
+    .network-stats-container {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 1000;
+        background: var(--deep-blue);
+        padding: 8px;
+        border-top: 1px solid rgba(0, 255, 255, 0.1);
+    }
+
+    .network-stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+    }
+
+    .stat-chip {
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        padding: 0 8px;
+        background: rgba(0, 255, 255, 0.03);
+        border: 1px solid rgba(0, 255, 255, 0.1);
+        border-radius: 4px;
+    }
+
+    .stat-chip i {
+        font-size: 14px;
+        color: var(--neon-cyan);
+    }
+
+    .stat-chip .stat-value {
+        font-size: 12px;
+        color: var(--neon-pink);
+    }
+
+    /* Scrollable Content */
+    .content-section {
+        position: absolute;
+        top: 150px;
+        bottom: 48px;
+        left: 0;
+        right: 0;
+        overflow-y: auto;
+        overflow-x: hidden;
+        padding: 8px;
+        background: var(--deep-blue);
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* Remove decorative elements */
+    .hex-grid,
+    .cyber-grid,
+    .button-glow,
+    .network-pulse {
+        display: none;
+    }
+
+    /* Disable animations */
+    * {
+        animation: none !important;
+        transition: none !important;
+    }
+
+    /* Prevent text selection */
+    * {
+        -webkit-tap-highlight-color: transparent;
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        user-select: none;
     }
 }
 
