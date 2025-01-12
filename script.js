@@ -83,247 +83,10 @@ function initializeMobileAnimations() {
 
 // Initialize everything
 document.addEventListener('DOMContentLoaded', () => {
-    initializeLoadingSequence();
-    initializeTabs();
-    initializeNetworkStatus();
-    startContinuousUpdates();
+    initializeMobileAnimations();
+    updateNetworkQuality();
+    updateStatus();
 });
-
-// Loading Screen Handler
-function initializeLoadingSequence() {
-    const loadingOverlay = document.querySelector('.loading-overlay');
-    const mainContent = document.querySelector('.main-content');
-    const progressBar = document.querySelector('.progress-bar');
-    const progressPercentage = document.querySelector('.progress-percentage');
-    const statusItems = document.querySelectorAll('.status-item');
-    
-    let progress = 0;
-    const totalSteps = statusItems.length;
-    const timePerStep = 1000; // ms per step
-    
-    // Show loading overlay and hide main content
-    loadingOverlay.style.display = 'flex';
-    mainContent.style.opacity = '0';
-    
-    // Animate each status item with delay
-    statusItems.forEach((item, index) => {
-        setTimeout(() => {
-            item.style.opacity = '1';
-            progress = ((index + 1) / totalSteps) * 100;
-            progressBar.style.width = `${progress}%`;
-            progressPercentage.textContent = `${Math.round(progress)}%`;
-            
-            // On last item, prepare to show main content
-            if (index === totalSteps - 1) {
-                setTimeout(() => {
-                    loadingOverlay.classList.add('fade-out');
-                    mainContent.style.opacity = '1';
-                    
-                    // Remove overlay after animation
-                    setTimeout(() => {
-                        loadingOverlay.style.display = 'none';
-                    }, 300);
-                }, 500);
-            }
-        }, index * timePerStep);
-    });
-}
-
-// Initialize tabs
-function initializeTabs() {
-    const tabs = document.querySelectorAll('.cyber-button');
-    const sections = document.querySelectorAll('.content-section');
-
-    // Show initial section
-    const initialSection = document.querySelector('.statistics-section');
-    if (initialSection) {
-        initialSection.style.display = 'block';
-        initialSection.style.opacity = '1';
-    }
-
-    tabs.forEach(tab => {
-        tab.addEventListener('click', () => {
-            const targetSection = tab.getAttribute('data-tab');
-
-            // Update active state of tabs
-            tabs.forEach(t => t.classList.remove('active'));
-            tab.classList.add('active');
-
-            // Show/hide sections
-            sections.forEach(section => {
-                if (section.classList.contains(`${targetSection}-section`)) {
-                    section.style.display = 'block';
-                    setTimeout(() => {
-                        section.style.opacity = '1';
-                    }, 50);
-                } else {
-                    section.style.opacity = '0';
-                    setTimeout(() => {
-                        section.style.display = 'none';
-                    }, 300);
-                }
-            });
-
-            // Initialize content for the selected section
-            initializeSectionContent(targetSection);
-        });
-    });
-}
-
-// Initialize section content
-function initializeSectionContent(section) {
-    switch(section) {
-        case 'statistics':
-            updateAllStats();
-            updateAllCharts();
-            break;
-        case 'ai':
-            initializeAIDashboard();
-            break;
-        case 'alerts':
-            initializeAlerts();
-            break;
-        case 'profile':
-            initializeProfile();
-            break;
-    }
-}
-
-// Utility functions
-function getRandomData(min, max) {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-
-// Start continuous updates
-function startContinuousUpdates() {
-    // Initial update
-    updateAllStats();
-    updateNetworkStats();
-    updateMEVPerformance();
-
-    // Update stats every 3 seconds
-    setInterval(() => {
-        if (!document.hidden) {  // Only update if page is visible
-            updateAllStats();
-            updateNetworkStats();
-            updateMEVPerformance();
-            updateAllCharts();
-        }
-    }, 3000);
-}
-
-function updateAllStats() {
-    // Statistics ranges for realistic data
-    const ranges = {
-        'Active Searchers': { min: 2500, max: 10000, format: true },
-        'Active MEV Operations': { min: 100, max: 1232, format: true },
-        'Ongoing Arbitrage': { min: 10, max: 523, format: true },
-        'Ongoing Sandwich': { min: 24, max: 721, format: true }
-    };
-
-    // Update each statistic with animation
-    document.querySelectorAll('.cyber-card .card-content').forEach(card => {
-        const title = card.querySelector('h2')?.textContent;
-        const valueElement = card.querySelector('.stat-value');
-        const trendElement = card.querySelector('.trend span');
-        
-        if (title && valueElement && ranges[title]) {
-            const range = ranges[title];
-            const currentValue = parseInt(valueElement.textContent.replace(/[,$]/g, '')) || range.min;
-            
-            // Calculate new value with smaller change
-            const maxChange = Math.floor((range.max - range.min) * 0.1); // 10% max change
-            const minNewValue = Math.max(currentValue - maxChange, range.min);
-            const maxNewValue = Math.min(currentValue + maxChange, range.max);
-            const newValue = getRandomData(minNewValue, maxNewValue);
-            
-            // Calculate trend percentage
-            const trendPercentage = ((newValue - currentValue) / currentValue * 100).toFixed(1);
-            if (trendElement) {
-                trendElement.textContent = `${trendPercentage > 0 ? '+' : ''}${trendPercentage}%`;
-                const trendContainer = trendElement.parentElement;
-                if (trendContainer) {
-                    trendContainer.className = `trend ${trendPercentage >= 0 ? 'up' : 'down'}`;
-                    const icon = trendContainer.querySelector('i');
-                    if (icon) {
-                        icon.className = `fas fa-arrow-${trendPercentage >= 0 ? 'up' : 'down'}`;
-                    }
-                }
-            }
-            
-            // Animate the number change
-            animateValue(valueElement, currentValue, newValue, 1000, val => 
-                range.format ? val.toLocaleString() : val.toString()
-            );
-        }
-    });
-}
-
-function updateNetworkStats() {
-    const stats = {
-        'Network Security': { value: getRandomData(85, 100), unit: '%' },
-        'MEV Protection': { value: getRandomData(90, 100), unit: '%' },
-        'Active Validators': { value: getRandomData(1500, 2000), unit: '' }
-    };
-
-    Object.entries(stats).forEach(([key, data]) => {
-        const element = document.querySelector(`[data-stat="${key}"]`);
-        if (element) {
-            const valueElement = element.querySelector('.stat-value');
-            if (valueElement) {
-                const currentValue = parseInt(valueElement.textContent.replace(/[,%]/g, ''));
-                animateValue(valueElement, currentValue, data.value, 1000, val => 
-                    `${val.toLocaleString()}${data.unit}`
-                );
-            }
-        }
-    });
-}
-
-function updateMEVPerformance() {
-    const stats = {
-        'Total MEV Extracted': { value: getRandomData(1000000, 2000000), prefix: '$' },
-        'Average Block Profit': { value: getRandomData(500, 2000), prefix: '$' },
-        'Protection Success Rate': { value: getRandomData(95, 100), suffix: '%' }
-    };
-
-    Object.entries(stats).forEach(([key, data]) => {
-        const element = document.querySelector(`[data-stat="${key}"]`);
-        if (element) {
-            const valueElement = element.querySelector('.stat-value');
-            if (valueElement) {
-                const currentValue = parseInt(valueElement.textContent.replace(/[$,%]/g, ''));
-                animateValue(valueElement, currentValue, data.value, 1000, val => 
-                    `${data.prefix || ''}${val.toLocaleString()}${data.suffix || ''}`
-                );
-            }
-        }
-    });
-}
-
-function animateValue(element, start, end, duration, formatter = (val) => val) {
-    const startTime = performance.now();
-    const change = end - start;
-    
-    function easeOutQuart(x) {
-        return 1 - Math.pow(1 - x, 4);
-    }
-    
-    function update(currentTime) {
-        const elapsed = currentTime - startTime;
-        const progress = Math.min(elapsed / duration, 1);
-        
-        const easedProgress = easeOutQuart(progress);
-        const current = Math.round(start + (change * easedProgress));
-        element.textContent = formatter(current);
-        
-        if (progress < 1) {
-            requestAnimationFrame(update);
-        }
-    }
-    
-    requestAnimationFrame(update);
-}
 
 // Handle orientation changes
 window.addEventListener('orientationchange', () => {
@@ -357,6 +120,162 @@ function getSmoothedValue(currentValue, targetValue, maxChangePercent) {
     if (Math.abs(difference) <= maxChange) return targetValue;
     return currentValue + (Math.sign(difference) * maxChange);
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+    initializeLoadingSequence();
+    // Initialize other components
+    initializeCharts();
+    initializeTabs();
+    addHexagonalBackground();
+    startContinuousUpdates();
+});
+
+// Loading Screen Handler
+function initializeLoadingSequence() {
+    const loadingOverlay = document.querySelector('.loading-overlay');
+    const mainContent = document.querySelector('.main-content');
+    const progressBar = document.querySelector('.progress-bar');
+    const progressPercentage = document.querySelector('.progress-percentage');
+    const statusItems = document.querySelectorAll('.status-item');
+    
+    let progress = 0;
+    const totalSteps = statusItems.length;
+    const timePerStep = 1000; // ms per step
+    
+    // Show loading overlay and hide main content
+    loadingOverlay.style.display = 'flex';
+    mainContent.style.opacity = '0';
+    document.body.classList.add('loading');
+    
+    // Animate each status item with delay
+    statusItems.forEach((item, index) => {
+        setTimeout(() => {
+            item.style.opacity = '1';
+            progress = ((index + 1) / totalSteps) * 100;
+            progressBar.style.width = `${progress}%`;
+            progressPercentage.textContent = `${Math.round(progress)}%`;
+            
+            // Add success indicator when item completes
+            const icon = item.querySelector('i');
+            icon.classList.add('success');
+            
+            // On last item, prepare to show main content
+            if (index === totalSteps - 1) {
+                setTimeout(() => {
+                    // Add final success animation
+                    loadingOverlay.classList.add('completed');
+                    
+                    setTimeout(() => {
+                        loadingOverlay.classList.add('fade-out');
+                        mainContent.style.opacity = '1';
+                        document.body.classList.remove('loading');
+                        
+                        // Initialize main content after loading
+                        initializeCharts();
+                        startContinuousUpdates();
+                        
+                        // Remove overlay after animation
+                        setTimeout(() => {
+                            loadingOverlay.style.display = 'none';
+                        }, 500);
+                    }, 500);
+                }, timePerStep / 2);
+            }
+        }, index * timePerStep);
+    });
+}
+
+function initializeLoadingStates() {
+    // Hide loading overlay after initialization
+    setTimeout(() => {
+        const loadingOverlay = document.querySelector('.loading-overlay');
+        if (loadingOverlay) {
+            loadingOverlay.classList.add('hidden');
+        }
+    }, 2000);
+
+    // Add loading state to charts
+    document.querySelectorAll('.chart-loading').forEach(loader => {
+        loader.classList.add('active');
+    });
+
+    // Remove loading state after charts are initialized
+    setTimeout(() => {
+        document.querySelectorAll('.chart-loading').forEach(loader => {
+            loader.classList.remove('active');
+        });
+    }, 1500);
+}
+
+// Initialize continuous updates
+function startContinuousUpdates() {
+    // Update network stats every 2 seconds
+    setInterval(() => {
+        updateNetworkStats();
+    }, 2000);
+    
+    // Update charts every 5 seconds
+    setInterval(() => {
+        updateAllCharts();
+    }, 5000);
+}
+
+function updateAllStats() {
+    // Statistics tab ranges
+    const ranges = {
+        'Active Searchers': { min: 2500, max: 10000 },
+        'Active MEV Operations': { min: 100, max: 1232 },
+        'Ongoing Arbitrage': { min: 10, max: 523 },
+        'Ongoing Sandwich': { min: 24, max: 721 }
+    };
+
+    // Update each statistic with animation
+    document.querySelectorAll('.cyber-card .card-content').forEach(card => {
+        const title = card.querySelector('h2')?.textContent;
+        const valueElement = card.querySelector('.stat-value');
+        
+        if (title && valueElement && ranges[title]) {
+            const range = ranges[title];
+            const currentValue = parseInt(valueElement.textContent.replace(/,/g, '')) || 0;
+            
+            // Calculate new value with smaller change
+            const maxChange = Math.floor((range.max - range.min) * 0.1); // Only allow 10% range change
+            const minNewValue = Math.max(currentValue - maxChange, range.min);
+            const maxNewValue = Math.min(currentValue + maxChange, range.max);
+            const newValue = Math.floor(Math.random() * (maxNewValue - minNewValue + 1)) + minNewValue;
+            
+            // Animate the number change
+            animateValue(valueElement, currentValue, newValue, 4000); // 4 second animation
+        }
+    });
+}
+
+function animateValue(element, start, end, duration, formatter = (val) => val) {
+    const startTime = performance.now();
+    const change = end - start;
+    
+    function easeOutQuart(x) {
+        return 1 - Math.pow(1 - x, 4);
+    }
+    
+    function update(currentTime) {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        
+        const easedProgress = easeOutQuart(progress);
+        const current = start + (change * easedProgress);
+        element.textContent = formatter(current);
+        
+        if (progress < 1) {
+            requestAnimationFrame(update);
+        }
+    }
+    
+    requestAnimationFrame(update);
+}
+
+// Update stats every 10 seconds
+setInterval(updateAllStats, 10000);
 
 // Chart optimization
 const chartOptions = {
@@ -653,6 +572,96 @@ function initializeStrategies() {
     }
 }
 
+function initializeTabs() {
+    const tabs = document.querySelectorAll('.cyber-button');
+    const sections = document.querySelectorAll('.content-section');
+
+    // Initially hide all sections except statistics
+    sections.forEach(section => {
+        if (section.classList.contains('statistics-section')) {
+            section.style.display = 'block';
+            section.style.opacity = '1';
+        } else {
+            section.style.display = 'none';
+            section.style.opacity = '0';
+        }
+    });
+
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            const targetSection = tab.getAttribute('data-tab');
+
+            // Update active state of tabs
+            tabs.forEach(t => {
+                t.classList.remove('active');
+            });
+            tab.classList.add('active');
+
+            // Hide all sections
+            sections.forEach(section => {
+                if (section.classList.contains(`${targetSection}-section`)) {
+                    section.style.display = 'block';
+                    setTimeout(() => {
+                        section.style.opacity = '1';
+                    }, 50);
+                } else {
+                    section.style.opacity = '0';
+                    setTimeout(() => {
+                        section.style.display = 'none';
+                    }, 300);
+                }
+            });
+
+            // Initialize content for the selected section
+            switch(targetSection) {
+                case 'statistics':
+                    updateAllStats();
+                    updateAllCharts();
+                    break;
+                case 'ai':
+                    initializeAIDashboard();
+                    break;
+                case 'leaderboard':
+                    initializeLeaderboard();
+                    break;
+                case 'analytics':
+                    initializeAnalytics();
+                    break;
+                case 'alerts':
+                    initializeAlerts();
+                    break;
+                case 'strategy':
+                    initializeStrategies();
+                    break;
+            }
+        });
+    });
+}
+
+function initializeSectionContent(section) {
+    switch(section) {
+        case 'statistics':
+            updateAllStats();
+            updateAllCharts();
+            break;
+        case 'ai':
+            initializeAIDashboard();
+            break;
+        case 'leaderboard':
+            initializeLeaderboard();
+            break;
+        case 'analytics':
+            initializeAnalytics();
+            break;
+        case 'alerts':
+            initializeAlerts();
+            break;
+        case 'strategy':
+            initializeStrategies();
+            break;
+    }
+}
+
 // Add hexagonal background pattern to all sections
 function addHexagonalBackground() {
     const sections = document.querySelectorAll('.content-section');
@@ -671,6 +680,11 @@ function addHexagonalBackground() {
             hexGrid.appendChild(hex);
         }
     });
+}
+
+// Utility functions
+function getRandomData(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
 // Update footer timestamp
@@ -1128,65 +1142,3 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
-
-// Network Status Handler
-function initializeNetworkStatus() {
-    const networkIndicator = document.querySelector('.status-indicator');
-    const networkValue = document.querySelector('.network-value');
-    const protectionValue = document.querySelector('.status-value');
-    
-    // Simulate initial connection attempt
-    updateNetworkStatus('connecting');
-    
-    // Simulate connection after 2 seconds
-    setTimeout(() => {
-        updateNetworkStatus('connected');
-        updateProtectionStatus('active');
-    }, 2000);
-}
-
-function updateNetworkStatus(status) {
-    const networkIndicator = document.querySelector('.status-indicator');
-    const networkValue = document.querySelector('.network-value');
-    
-    switch(status) {
-        case 'connected':
-            networkIndicator.classList.add('connected');
-            networkValue.textContent = 'Connected';
-            networkValue.style.color = 'var(--neon-cyan)';
-            break;
-        case 'disconnected':
-            networkIndicator.classList.remove('connected');
-            networkValue.textContent = 'Disconnected';
-            networkValue.style.color = 'var(--neon-pink)';
-            break;
-        case 'connecting':
-            networkIndicator.classList.remove('connected');
-            networkValue.textContent = 'Connecting...';
-            networkValue.style.color = 'var(--neon-cyan)';
-            break;
-    }
-}
-
-function updateProtectionStatus(status) {
-    const protectionValue = document.querySelector('.status-value');
-    const statusRing = document.querySelector('.status-ring');
-    
-    switch(status) {
-        case 'active':
-            protectionValue.textContent = 'Active';
-            protectionValue.style.color = 'var(--neon-cyan)';
-            statusRing.style.display = 'block';
-            break;
-        case 'inactive':
-            protectionValue.textContent = 'Inactive';
-            protectionValue.style.color = 'var(--neon-pink)';
-            statusRing.style.display = 'none';
-            break;
-        case 'initializing':
-            protectionValue.textContent = 'Initializing...';
-            protectionValue.style.color = 'var(--neon-cyan)';
-            statusRing.style.display = 'block';
-            break;
-    }
-}

@@ -13,7 +13,12 @@
 <body>
     <!-- Enhanced Loading Screen -->
     <div class="loading-overlay">
+        <div class="cyber-grid"></div>
         <div class="loading-content">
+            <div class="loading-logo">
+                <div class="logo-hexagon"></div>
+                <span class="logo-text">JitoX</span>
+            </div>
             <div class="loading-text">Initializing JitoX</div>
             <div class="loading-status">
                 <div class="status-item">
@@ -42,23 +47,41 @@
             <!-- Header Section -->
             <header class="dashboard-header">
                 <div class="header-left">
-                    <img src="assets/logo.png" alt="JitoX Logo" class="header-logo">
-                    <h1 class="cyber-title">JitoX</h1>
+                    <div class="logo-container">
+                        <div class="logo-hexagon">
+                            <img src="assets/logo.png" alt="JitoX Logo" class="logo">
+                            <div class="network-pulse"></div>
+                        </div>
+                        <h1 class="cyber-title">JitoX</h1>
+                    </div>
                 </div>
                 
                 <div class="header-right">
-                    <div class="network-status">
-                        <div class="status-indicator"></div>
-                        <span class="network-label">Network Status:</span>
-                        <span class="network-value">Connecting...</span>
-                    </div>
                     <div class="security-status">
                         <div class="status-container">
                             <div class="status-ring">
                                 <div class="status-circle"></div>
                             </div>
-                            <span class="status-label">MEV Protection</span>
-                            <span class="status-value">Initializing...</span>
+                            <span class="status-label">MEV Protection Active</span>
+                        </div>
+
+                    </div>
+
+                    <div class="network-quality">
+                        <div class="quality-bars">
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                        </div>
+                        <span>Network Quality</span>
+                    </div>
+
+                    <div class="connection-status">
+                        <div class="connection-indicator"></div>
+                        <div class="connection-details">
+                            <span class="status-text connected">Connected to Solana</span>
+                            <span class="latency">Latency: 12ms</span>
                         </div>
                     </div>
                 </div>
@@ -67,20 +90,20 @@
             <!-- Navigation -->
             <nav class="cyber-nav">
                 <div class="nav-container">
-                    <button class="cyber-button active" data-tab="statistics">
+                    <button class="cyber-button active">
                         <i class="fas fa-chart-line"></i>
                         Dashboard
                     </button>
-                    <button class="cyber-button" data-tab="ai">
+                    <button class="cyber-button">
                         <i class="fas fa-brain"></i>
                         AI Dashboard
                     </button>
-                    <button class="cyber-button" data-tab="alerts">
+                    <button class="cyber-button">
                         <i class="fas fa-bell"></i>
                         Alerts
                         <span class="notification-badge">3</span>
                     </button>
-                    <button class="cyber-button" data-tab="profile">
+                    <button class="cyber-button">
                         <i class="fas fa-user"></i>
                         Profile
                     </button>
@@ -135,55 +158,123 @@
                                 <h2>Ongoing Sandwich</h2>
                                 <div class="trend up">
                                     <i class="fas fa-arrow-up"></i>
-                                    <span>+5.7%</span>
+                                    <span>+15.7%</span>
                                 </div>
                             </div>
-                            <div class="stat-value">250</div>
+                            <div class="stat-value">200</div>
                             <div class="stat-chart mini"></div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Network Stats -->
-                <div class="stats-grid">
-                    <div class="cyber-card" data-stat="Network Security">
-                        <div class="card-content">
-                            <h2>Network Security</h2>
-                            <div class="stat-value">98%</div>
+                <div class="advanced-metrics">
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <i class="fas fa-bolt"></i>
+                            <h3>MEV Performance</h3>
+                        </div>
+                        <div class="metric-grid">
+                            <div class="metric-item">
+                                <div class="metric-value">98.7%</div>
+                                <div class="metric-label">Success Rate</div>
+                                <div class="metric-trend up">+2.3%</div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-value">0.85 SOL</div>
+                                <div class="metric-label">Avg Profit</div>
+                                <div class="metric-trend up">+0.12 SOL</div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-value">12ms</div>
+                                <div class="metric-label">Latency</div>
+                                <div class="metric-trend down">-3ms</div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-value">247</div>
+                                <div class="metric-label">Patterns Found</div>
+                                <div class="metric-trend up">+18</div>
+                            </div>
                         </div>
                     </div>
-                    <div class="cyber-card" data-stat="MEV Protection">
-                        <div class="card-content">
-                            <h2>MEV Protection</h2>
-                            <div class="stat-value">95%</div>
+                    
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <i class="fas fa-shield-alt"></i>
+                            <h3>Network Security</h3>
                         </div>
-                    </div>
-                    <div class="cyber-card" data-stat="Active Validators">
-                        <div class="card-content">
-                            <h2>Active Validators</h2>
-                            <div class="stat-value">1,750</div>
+                        <div class="security-metrics">
+                            <div class="security-gauge">
+                                <div class="gauge-ring">
+                                    <div class="gauge-fill" style="transform: rotate(320deg)"></div>
+                                    <div class="gauge-center">
+                                        <span class="gauge-value">98%</span>
+                                        <span class="gauge-label">Protected</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="security-stats">
+                                <div class="security-stat">
+                                    <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
+                                    <div class="stat-info">
+                                        <div class="stat-value">2,547</div>
+                                        <div class="stat-label">Threats Blocked</div>
+                                    </div>
+                                </div>
+                                <div class="security-stat">
+                                    <div class="stat-icon"><i class="fas fa-shield-alt"></i></div>
+                                    <div class="stat-info">
+                                        <div class="stat-value">99.9%</div>
+                                        <div class="stat-label">Uptime</div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- MEV Performance -->
-                <div class="stats-grid">
-                    <div class="cyber-card" data-stat="Total MEV Extracted">
-                        <div class="card-content">
-                            <h2>Total MEV Extracted</h2>
-                            <div class="stat-value">$1,500,000</div>
+                <div class="charts-grid">
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3 class="chart-title">MEV Activity Distribution</h3>
+                            <div class="chart-legend">
+                                <span class="legend-item"><i class="fas fa-circle arbitrage"></i> Arbitrage</span>
+                                <span class="legend-item"><i class="fas fa-circle sandwich"></i> Sandwich</span>
+                                <span class="legend-item"><i class="fas fa-circle liquidation"></i> Liquidation</span>
+                            </div>
                         </div>
-                    </div>
-                    <div class="cyber-card" data-stat="Average Block Profit">
-                        <div class="card-content">
-                            <h2>Average Block Profit</h2>
-                            <div class="stat-value">$1,200</div>
+                        <canvas id="mevDistributionChart"></canvas>
+                        <div class="chart-footer">
+                            <div class="chart-stat">
+                                <div class="stat-value">1,247</div>
+                                <div class="stat-label">Total Operations</div>
+                            </div>
+                            <div class="chart-stat">
+                                <div class="stat-value">+18.5%</div>
+                                <div class="stat-label">Growth Rate</div>
+                            </div>
                         </div>
+
                     </div>
-                    <div class="cyber-card" data-stat="Protection Success Rate">
-                        <div class="card-content">
-                            <h2>Protection Success Rate</h2>
-                            <div class="stat-value">97%</div>
+
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3 class="chart-title">Profit Analysis</h3>
+                            <div class="time-filter">
+                                <button class="time-btn active">24H</button>
+                                <button class="time-btn">7D</button>
+                                <button class="time-btn">30D</button>
+                            </div>
+                        </div>
+                        <canvas id="profitAnalysisChart"></canvas>
+                        <div class="chart-footer">
+                            <div class="chart-stat">
+                                <div class="stat-value">245.8 SOL</div>
+                                <div class="stat-label">Total Profit</div>
+                            </div>
+                            <div class="chart-stat">
+                                <div class="stat-value">+22.3%</div>
+                                <div class="stat-label">Efficiency</div>
+                            </div>
                         </div>
                     </div>
                 </div>
