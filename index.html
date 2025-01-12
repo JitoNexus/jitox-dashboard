@@ -51,15 +51,31 @@
                         <h1 class="cyber-title">JitoX</h1>
                         <div class="network-pulse"></div>
                     </div>
+                    <div class="network-stats">
+                        <div class="stat-chip">
+                            <i class="fas fa-broadcast-tower"></i>
+                            <span class="stat-label">Network TPS</span>
+                            <span class="stat-value" id="networkTPS">4,325</span>
+                        </div>
+                        <div class="stat-chip">
+                            <i class="fas fa-cube"></i>
+                            <span class="stat-label">Block Height</span>
+                            <span class="stat-value" id="blockHeight">219,584,932</span>
+                        </div>
+                        <div class="stat-chip">
+                            <i class="fas fa-gas-pump"></i>
+                            <span class="stat-label">Gas Price</span>
+                            <span class="stat-value" id="gasPrice">0.000001</span>
+                        </div>
+                    </div>
                 </div>
-                
                 <div class="header-right">
-                    <div class="top-row">
+                    <div class="security-status">
                         <div class="status-container">
                             <div class="status-ring">
                                 <div class="status-circle"></div>
                             </div>
-                            <span class="status-label">MEV Protection</span>
+                            <span class="status-label">MEV Protection Active</span>
                         </div>
                         <div class="network-quality">
                             <div class="quality-bars">
@@ -68,35 +84,17 @@
                                 <div class="bar"></div>
                                 <div class="bar"></div>
                             </div>
-                            <span>Network</span>
+                            <span>Network Quality</span>
                         </div>
                     </div>
-
-                    <div class="connection-row">
-                        <div class="connection-status">
-                            <div class="connection-indicator">
-                                <div class="pulse-ring"></div>
-                                <span class="status-dot"></span>
-                            </div>
-                            <div class="connection-details">
-                                <span class="status-text">Connected</span>
-                                <span class="latency">12ms</span>
-                            </div>
+                    <div class="connection-status">
+                        <div class="connection-indicator">
+                            <div class="pulse-ring"></div>
+                            <span class="status-dot"></span>
                         </div>
-                    </div>
-
-                    <div class="network-stats">
-                        <div class="stat-chip">
-                            <i class="fas fa-broadcast-tower"></i>
-                            <span class="stat-value" id="networkTPS">4,325</span>
-                        </div>
-                        <div class="stat-chip">
-                            <i class="fas fa-cube"></i>
-                            <span class="stat-value" id="blockHeight">219M</span>
-                        </div>
-                        <div class="stat-chip">
-                            <i class="fas fa-gas-pump"></i>
-                            <span class="stat-value" id="gasPrice">0.001</span>
+                        <div class="connection-details">
+                            <span class="status-text">Connected to Solana</span>
+                            <span class="latency">Latency: <span id="networkLatency">12ms</span></span>
                         </div>
                     </div>
                 </div>
