@@ -14,88 +14,6 @@ const MAX_CHANGE_PERCENT = 0.05;
 let isUpdating = false;
 let scrollTimeout;
 
-// Mobile optimization for animations
-const isMobile = window.innerWidth <= 768;
-
-// Update network quality bars animation
-function updateNetworkQuality() {
-    const bars = document.querySelectorAll('.quality-bars .bar');
-    const quality = Math.floor(Math.random() * 4) + 1; // 1-4 bars
-    
-    bars.forEach((bar, index) => {
-        if (index < quality) {
-            bar.classList.add('active');
-        } else {
-            bar.classList.remove('active');
-        }
-    });
-}
-
-// Smooth status updates
-function updateStatus() {
-    const statusCircle = document.querySelector('.status-circle');
-    const connectionIndicator = document.querySelector('.connection-indicator');
-    
-    // Simulate status changes
-    const isProtectionActive = Math.random() > 0.1;
-    const isConnected = Math.random() > 0.05;
-    
-    statusCircle.classList.toggle('active', isProtectionActive);
-    connectionIndicator.classList.toggle('connected', isConnected);
-    
-    // Update latency
-    const latency = Math.floor(Math.random() * 20) + 8;
-    document.querySelector('.latency').textContent = `Latency: ${latency}ms`;
-}
-
-// Initialize mobile-optimized animations
-function initializeMobileAnimations() {
-    if (isMobile) {
-        // Reduce animation frequency on mobile
-        setInterval(updateNetworkQuality, 3000);
-        setInterval(updateStatus, 5000);
-        
-        // Add touch feedback
-        const buttons = document.querySelectorAll('.cyber-button');
-        buttons.forEach(button => {
-            button.addEventListener('touchstart', () => {
-                button.classList.add('touched');
-            });
-            button.addEventListener('touchend', () => {
-                button.classList.remove('touched');
-            });
-        });
-        
-        // Optimize scroll performance
-        let scrollTimeout;
-        const content = document.querySelector('.content-section');
-        content.addEventListener('scroll', () => {
-            if (!content.classList.contains('scrolling')) {
-                content.classList.add('scrolling');
-            }
-            clearTimeout(scrollTimeout);
-            scrollTimeout = setTimeout(() => {
-                content.classList.remove('scrolling');
-            }, 150);
-        }, { passive: true });
-    }
-}
-
-// Initialize everything
-document.addEventListener('DOMContentLoaded', () => {
-    initializeMobileAnimations();
-    updateNetworkQuality();
-    updateStatus();
-});
-
-// Handle orientation changes
-window.addEventListener('orientationchange', () => {
-    setTimeout(() => {
-        updateNetworkQuality();
-        updateStatus();
-    }, 300);
-});
-
 // Throttle scroll events
 function throttleScroll(callback) {
     if (!isUpdating) {
@@ -130,7 +48,6 @@ document.addEventListener('DOMContentLoaded', () => {
     startContinuousUpdates();
 });
 
-// Loading Screen Handler
 function initializeLoadingSequence() {
     const loadingOverlay = document.querySelector('.loading-overlay');
     const mainContent = document.querySelector('.main-content');
@@ -139,50 +56,26 @@ function initializeLoadingSequence() {
     const statusItems = document.querySelectorAll('.status-item');
     
     let progress = 0;
-    const totalSteps = statusItems.length;
-    const timePerStep = 1000; // ms per step
-    
-    // Show loading overlay and hide main content
-    loadingOverlay.style.display = 'flex';
-    mainContent.style.opacity = '0';
-    document.body.classList.add('loading');
-    
-    // Animate each status item with delay
-    statusItems.forEach((item, index) => {
-        setTimeout(() => {
-            item.style.opacity = '1';
-            progress = ((index + 1) / totalSteps) * 100;
-            progressBar.style.width = `${progress}%`;
-            progressPercentage.textContent = `${Math.round(progress)}%`;
-            
-            // Add success indicator when item completes
-            const icon = item.querySelector('i');
-            icon.classList.add('success');
-            
-            // On last item, prepare to show main content
-            if (index === totalSteps - 1) {
-                setTimeout(() => {
-                    // Add final success animation
-                    loadingOverlay.classList.add('completed');
-                    
-                    setTimeout(() => {
-                        loadingOverlay.classList.add('fade-out');
-                        mainContent.style.opacity = '1';
-                        document.body.classList.remove('loading');
-                        
-                        // Initialize main content after loading
-                        initializeCharts();
-                        startContinuousUpdates();
-                        
-                        // Remove overlay after animation
-                        setTimeout(() => {
-                            loadingOverlay.style.display = 'none';
-                        }, 500);
-                    }, 500);
-                }, timePerStep / 2);
-            }
-        }, index * timePerStep);
-    });
+    const progressInterval = setInterval(() => {
+        progress += 1;
+        if (progressPercentage) {
+            progressPercentage.textContent = `${progress}%`;
+        }
+        
+        // Update status items based on progress
+        if (progress >= 30) statusItems[0].classList.add('completed');
+        if (progress >= 60) statusItems[1].classList.add('completed');
+        if (progress >= 90) statusItems[2].classList.add('completed');
+        
+        if (progress >= 100) {
+            clearInterval(progressInterval);
+            setTimeout(() => {
+                document.body.classList.remove('loading');
+                loadingOverlay.classList.add('hidden');
+                mainContent.classList.add('visible');
+            }, 500);
+        }
+    }, 30); // Adjust timing as needed
 }
 
 function initializeLoadingStates() {
@@ -207,17 +100,14 @@ function initializeLoadingStates() {
     }, 1500);
 }
 
-// Initialize continuous updates
 function startContinuousUpdates() {
-    // Update network stats every 2 seconds
     setInterval(() => {
-        updateNetworkStats();
+        const activeSection = document.querySelector('.content-section[style*="display: block"]');
+        if (activeSection) {
+            const sectionType = activeSection.classList[1].replace('-section', '');
+            initializeSectionContent(sectionType);
+        }
     }, 2000);
-    
-    // Update charts every 5 seconds
-    setInterval(() => {
-        updateAllCharts();
-    }, 5000);
 }
 
 function updateAllStats() {
@@ -250,28 +140,28 @@ function updateAllStats() {
     });
 }
 
-function animateValue(element, start, end, duration, formatter = (val) => val) {
+function animateValue(element, start, end, duration) {
+    const range = end - start;
     const startTime = performance.now();
-    const change = end - start;
     
     function easeOutQuart(x) {
         return 1 - Math.pow(1 - x, 4);
     }
     
-    function update(currentTime) {
+    function updateNumber(currentTime) {
         const elapsed = currentTime - startTime;
         const progress = Math.min(elapsed / duration, 1);
         
         const easedProgress = easeOutQuart(progress);
-        const current = start + (change * easedProgress);
-        element.textContent = formatter(current);
+        const current = Math.floor(start + (range * easedProgress));
+        element.textContent = current.toLocaleString();
         
         if (progress < 1) {
-            requestAnimationFrame(update);
+            requestAnimationFrame(updateNumber);
         }
     }
     
-    requestAnimationFrame(update);
+    requestAnimationFrame(updateNumber);
 }
 
 // Update stats every 10 seconds
@@ -902,43 +792,18 @@ document.addEventListener('DOMContentLoaded', () => {
     setInterval(updateConnectionStatus, 5000);
 });
 
-// Network Stats Update with smooth transitions
+// Network Stats Update
 function updateNetworkStats() {
-    const stats = {
-        networkTPS: {
-            elem: document.getElementById('networkTPS'),
-            min: 4000,
-            max: 5000,
-            format: (val) => val.toLocaleString()
-        },
-        blockHeight: {
-            elem: document.getElementById('blockHeight'),
-            min: 219584932,
-            max: 219585032,
-            format: (val) => val.toLocaleString()
-        },
-        gasPrice: {
-            elem: document.getElementById('gasPrice'),
-            min: 0.000001,
-            max: 0.000002,
-            format: (val) => val.toFixed(6)
-        },
-        networkLatency: {
-            elem: document.getElementById('networkLatency'),
-            min: 10,
-            max: 15,
-            format: (val) => `${val}ms`
-        }
-    };
+    const tps = document.getElementById('networkTPS');
+    const blockHeight = document.getElementById('blockHeight');
+    const gasPrice = document.getElementById('gasPrice');
+    const latency = document.getElementById('networkLatency');
 
-    Object.entries(stats).forEach(([key, stat]) => {
-        if (stat.elem) {
-            const currentValue = parseFloat(stat.elem.textContent.replace(/[^0-9.-]+/g, ""));
-            const targetValue = stat.min + Math.random() * (stat.max - stat.min);
-            
-            animateValue(stat.elem, currentValue, targetValue, 2000, stat.format);
-        }
-    });
+    // Simulate real-time updates
+    if (tps) tps.textContent = (4000 + Math.floor(Math.random() * 1000)).toLocaleString();
+    if (blockHeight) blockHeight.textContent = (219584932 + Math.floor(Math.random() * 100)).toLocaleString();
+    if (gasPrice) gasPrice.textContent = (0.000001 + Math.random() * 0.000001).toFixed(6);
+    if (latency) latency.textContent = (10 + Math.floor(Math.random() * 5)) + 'ms';
 }
 
 // Mini Charts for Stats
