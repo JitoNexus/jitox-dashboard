@@ -588,14 +588,39 @@ function updateFooterTimestamp() {
     }
 }
 
-// Loading Screen Animation
-document.addEventListener('DOMContentLoaded', () => {
+// Wait for both DOM and all resources to load
+window.addEventListener('load', () => {
+    console.log('All resources loaded');
     initializeLoadingScreen();
 });
 
 function initializeLoadingScreen() {
-    // Initialize particles
-    if (window.particlesJS) {
+    console.log('Initializing loading screen');
+    const loadingContainer = document.querySelector('.loading-container');
+    const mainContent = document.querySelector('.main-content');
+    
+    if (!loadingContainer || !mainContent) {
+        console.error('Required elements not found');
+        return;
+    }
+
+    // Force initial states
+    loadingContainer.style.display = 'flex';
+    loadingContainer.style.opacity = '1';
+    loadingContainer.style.visibility = 'visible';
+    mainContent.style.display = 'none';
+    mainContent.style.opacity = '0';
+    mainContent.style.visibility = 'hidden';
+
+    // Initialize components
+    initializeParticles();
+    initializeAnimations();
+    startProgressBar();
+}
+
+function initializeParticles() {
+    console.log('Initializing particles');
+    if (window.particlesJS && document.getElementById('particles')) {
         particlesJS('particles', {
             particles: {
                 number: { value: 30 },
@@ -618,31 +643,29 @@ function initializeLoadingScreen() {
                 }
             }
         });
-    }
-
-    // Start animations
-    animateWallet();
-    animateCoins();
-    startProgressBar();
-}
-
-function animateWallet() {
-    const wallet = document.querySelector('.wallet-body');
-    if (wallet && window.gsap) {
-        gsap.to(wallet, {
-            rotationY: 10,
-            rotationX: 5,
-            duration: 2,
-            repeat: -1,
-            yoyo: true,
-            ease: "power1.inOut"
-        });
+    } else {
+        console.warn('ParticlesJS not available or particles container not found');
     }
 }
 
-function animateCoins() {
-    const coins = document.querySelectorAll('.coin');
-    if (coins.length && window.gsap) {
+function initializeAnimations() {
+    console.log('Initializing animations');
+    if (window.gsap) {
+        // Wallet animation
+        const wallet = document.querySelector('.wallet-body');
+        if (wallet) {
+            gsap.to(wallet, {
+                rotationY: 10,
+                rotationX: 5,
+                duration: 2,
+                repeat: -1,
+                yoyo: true,
+                ease: "power1.inOut"
+            });
+        }
+
+        // Coins animation
+        const coins = document.querySelectorAll('.coin');
         coins.forEach((coin, index) => {
             gsap.to(coin, {
                 y: -20,
@@ -654,12 +677,18 @@ function animateCoins() {
                 ease: "power1.inOut"
             });
         });
+    } else {
+        console.warn('GSAP not available');
     }
 }
 
 function startProgressBar() {
+    console.log('Starting progress bar');
     const progress = document.querySelector('.progress');
-    if (!progress) return;
+    if (!progress) {
+        console.error('Progress bar not found');
+        return;
+    }
 
     let width = 0;
     const interval = setInterval(() => {
@@ -674,21 +703,34 @@ function startProgressBar() {
 }
 
 function hideLoadingScreen() {
+    console.log('Hiding loading screen');
     const loadingContainer = document.querySelector('.loading-container');
     const mainContent = document.querySelector('.main-content');
     
-    if (!loadingContainer || !mainContent) return;
+    if (!loadingContainer || !mainContent) {
+        console.error('Required elements not found for hiding');
+        return;
+    }
 
-    // Add a small delay before transitioning
+    // Show main content first
+    mainContent.style.display = 'block';
+    
+    // Force a reflow
+    void mainContent.offsetHeight;
+
+    // Add transitions
     setTimeout(() => {
-        loadingContainer.classList.add('hidden');
-        mainContent.classList.add('visible');
+        loadingContainer.style.opacity = '0';
+        loadingContainer.style.visibility = 'hidden';
+        mainContent.style.opacity = '1';
+        mainContent.style.visibility = 'visible';
         
-        // Clean up loading screen after transition
+        // Remove loading container from DOM after transition
         setTimeout(() => {
             loadingContainer.style.display = 'none';
+            console.log('Loading screen removed');
         }, 500);
-    }, 500);
+    }, 100);
 }
 
 function startUpdates() {
