@@ -44,31 +44,18 @@
     <!-- Main Content -->
     <div class="main-content">
         <div class="cyber-frame">
+            <!-- Header Section -->
             <header class="dashboard-header">
                 <div class="header-left">
                     <div class="logo-container">
-                        <div class="logo-hexagon"></div>
+                        <div class="logo-hexagon">
+                            <img src="assets/logo.png" alt="JitoX Logo" class="logo">
+                            <div class="network-pulse"></div>
+                        </div>
                         <h1 class="cyber-title">JitoX</h1>
-                        <div class="network-pulse"></div>
-                    </div>
-                    <div class="network-stats">
-                        <div class="stat-chip">
-                            <i class="fas fa-broadcast-tower"></i>
-                            <span class="stat-label">Network TPS</span>
-                            <span class="stat-value" id="networkTPS">4,325</span>
-                        </div>
-                        <div class="stat-chip">
-                            <i class="fas fa-cube"></i>
-                            <span class="stat-label">Block Height</span>
-                            <span class="stat-value" id="blockHeight">219,584,932</span>
-                        </div>
-                        <div class="stat-chip">
-                            <i class="fas fa-gas-pump"></i>
-                            <span class="stat-label">Gas Price</span>
-                            <span class="stat-value" id="gasPrice">0.000001</span>
-                        </div>
                     </div>
                 </div>
+                
                 <div class="header-right">
                     <div class="security-status">
                         <div class="status-container">
@@ -77,52 +64,48 @@
                             </div>
                             <span class="status-label">MEV Protection Active</span>
                         </div>
-                        <div class="network-quality">
-                            <div class="quality-bars">
-                                <div class="bar"></div>
-                                <div class="bar"></div>
-                                <div class="bar"></div>
-                                <div class="bar"></div>
-                            </div>
-                            <span>Network Quality</span>
-                        </div>
+
                     </div>
-                    <div class="connection-status">
-                        <div class="connection-indicator">
-                            <div class="pulse-ring"></div>
-                            <span class="status-dot"></span>
+
+                    <div class="network-quality">
+                        <div class="quality-bars">
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                            <div class="bar"></div>
                         </div>
+                        <span>Network Quality</span>
+                    </div>
+
+                    <div class="connection-status">
+                        <div class="connection-indicator"></div>
                         <div class="connection-details">
-                            <span class="status-text">Connected to Solana</span>
-                            <span class="latency">Latency: <span id="networkLatency">12ms</span></span>
+                            <span class="status-text connected">Connected to Solana</span>
+                            <span class="latency">Latency: 12ms</span>
                         </div>
                     </div>
                 </div>
             </header>
-            
+
             <!-- Navigation -->
             <nav class="cyber-nav">
                 <div class="nav-container">
-                    <button class="cyber-button active" data-tab="statistics">
+                    <button class="cyber-button active">
                         <i class="fas fa-chart-line"></i>
-                        <span>Statistics</span>
-                        <div class="button-glow"></div>
+                        Dashboard
                     </button>
-                    <button class="cyber-button" data-tab="ai">
+                    <button class="cyber-button">
                         <i class="fas fa-brain"></i>
-                        <span>AI Dashboard</span>
-                        <div class="button-glow"></div>
+                        AI Dashboard
                     </button>
-                    <button class="cyber-button" data-tab="alerts">
+                    <button class="cyber-button">
                         <i class="fas fa-bell"></i>
-                        <span>Live Alerts</span>
-                        <div class="notification-badge">3</div>
-                        <div class="button-glow"></div>
+                        Alerts
+                        <span class="notification-badge">3</span>
                     </button>
-                    <button class="cyber-button" data-tab="user">
+                    <button class="cyber-button">
                         <i class="fas fa-user"></i>
-                        <span>Profile</span>
-                        <div class="button-glow"></div>
+                        Profile
                     </button>
                 </div>
             </nav>
@@ -270,6 +253,7 @@
                                 <div class="stat-label">Growth Rate</div>
                             </div>
                         </div>
+
                     </div>
 
                     <div class="chart-card">

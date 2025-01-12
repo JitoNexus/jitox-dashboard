@@ -14,6 +14,88 @@ const MAX_CHANGE_PERCENT = 0.05;
 let isUpdating = false;
 let scrollTimeout;
 
+// Mobile optimization for animations
+const isMobile = window.innerWidth <= 768;
+
+// Update network quality bars animation
+function updateNetworkQuality() {
+    const bars = document.querySelectorAll('.quality-bars .bar');
+    const quality = Math.floor(Math.random() * 4) + 1; // 1-4 bars
+    
+    bars.forEach((bar, index) => {
+        if (index < quality) {
+            bar.classList.add('active');
+        } else {
+            bar.classList.remove('active');
+        }
+    });
+}
+
+// Smooth status updates
+function updateStatus() {
+    const statusCircle = document.querySelector('.status-circle');
+    const connectionIndicator = document.querySelector('.connection-indicator');
+    
+    // Simulate status changes
+    const isProtectionActive = Math.random() > 0.1;
+    const isConnected = Math.random() > 0.05;
+    
+    statusCircle.classList.toggle('active', isProtectionActive);
+    connectionIndicator.classList.toggle('connected', isConnected);
+    
+    // Update latency
+    const latency = Math.floor(Math.random() * 20) + 8;
+    document.querySelector('.latency').textContent = `Latency: ${latency}ms`;
+}
+
+// Initialize mobile-optimized animations
+function initializeMobileAnimations() {
+    if (isMobile) {
+        // Reduce animation frequency on mobile
+        setInterval(updateNetworkQuality, 3000);
+        setInterval(updateStatus, 5000);
+        
+        // Add touch feedback
+        const buttons = document.querySelectorAll('.cyber-button');
+        buttons.forEach(button => {
+            button.addEventListener('touchstart', () => {
+                button.classList.add('touched');
+            });
+            button.addEventListener('touchend', () => {
+                button.classList.remove('touched');
+            });
+        });
+        
+        // Optimize scroll performance
+        let scrollTimeout;
+        const content = document.querySelector('.content-section');
+        content.addEventListener('scroll', () => {
+            if (!content.classList.contains('scrolling')) {
+                content.classList.add('scrolling');
+            }
+            clearTimeout(scrollTimeout);
+            scrollTimeout = setTimeout(() => {
+                content.classList.remove('scrolling');
+            }, 150);
+        }, { passive: true });
+    }
+}
+
+// Initialize everything
+document.addEventListener('DOMContentLoaded', () => {
+    initializeMobileAnimations();
+    updateNetworkQuality();
+    updateStatus();
+});
+
+// Handle orientation changes
+window.addEventListener('orientationchange', () => {
+    setTimeout(() => {
+        updateNetworkQuality();
+        updateStatus();
+    }, 300);
+});
+
 // Throttle scroll events
 function throttleScroll(callback) {
     if (!isUpdating) {
@@ -39,78 +121,69 @@ function getSmoothedValue(currentValue, targetValue, maxChangePercent) {
     return currentValue + (Math.sign(difference) * maxChange);
 }
 
-// Initialize loading screen and main content
+document.addEventListener('DOMContentLoaded', () => {
+    initializeLoadingSequence();
+    // Initialize other components
+    initializeCharts();
+    initializeTabs();
+    addHexagonalBackground();
+    startContinuousUpdates();
+});
+
+// Loading Screen Handler
 function initializeLoadingSequence() {
-    console.log('Initializing loading screen');
     const loadingOverlay = document.querySelector('.loading-overlay');
     const mainContent = document.querySelector('.main-content');
     const progressBar = document.querySelector('.progress-bar');
-    const progressText = document.querySelector('.progress-percentage');
+    const progressPercentage = document.querySelector('.progress-percentage');
     const statusItems = document.querySelectorAll('.status-item');
     
-    if (!loadingOverlay || !mainContent) {
-        console.error('Required elements not found');
-        // Show main content if loading screen is not available
-        if (mainContent) {
-            mainContent.style.display = 'block';
-            mainContent.classList.add('visible');
-            initializeCharts();
-            startContinuousUpdates();
-        }
-        return;
-    }
-
-    // Show loading screen
-    document.body.classList.add('loading');
+    let progress = 0;
+    const totalSteps = statusItems.length;
+    const timePerStep = 1000; // ms per step
+    
+    // Show loading overlay and hide main content
     loadingOverlay.style.display = 'flex';
-    mainContent.style.display = 'none';
-
-    // Make status items visible one by one
+    mainContent.style.opacity = '0';
+    document.body.classList.add('loading');
+    
+    // Animate each status item with delay
     statusItems.forEach((item, index) => {
         setTimeout(() => {
-            item.classList.add('visible');
-        }, index * 500);
-    });
-
-    // Simulate loading progress
-    let progress = 0;
-    const progressInterval = setInterval(() => {
-        progress += 5;
-        if (progressBar) progressBar.style.width = `${progress}%`;
-        if (progressText) progressText.textContent = `${progress}%`;
-        
-        if (progress >= 100) {
-            clearInterval(progressInterval);
-            // Hide loading screen and show main content
-            setTimeout(() => {
-                loadingOverlay.classList.add('fade-out');
-                document.body.classList.remove('loading');
-                mainContent.style.display = 'block';
-                mainContent.classList.add('visible');
-                
-                // Remove loading overlay after animation
+            item.style.opacity = '1';
+            progress = ((index + 1) / totalSteps) * 100;
+            progressBar.style.width = `${progress}%`;
+            progressPercentage.textContent = `${Math.round(progress)}%`;
+            
+            // Add success indicator when item completes
+            const icon = item.querySelector('i');
+            icon.classList.add('success');
+            
+            // On last item, prepare to show main content
+            if (index === totalSteps - 1) {
                 setTimeout(() => {
-                    loadingOverlay.style.display = 'none';
-                }, 500);
-
-                // Initialize other components
-                initializeCharts();
-                startContinuousUpdates();
-            }, 500);
-        }
-    }, 50);
+                    // Add final success animation
+                    loadingOverlay.classList.add('completed');
+                    
+                    setTimeout(() => {
+                        loadingOverlay.classList.add('fade-out');
+                        mainContent.style.opacity = '1';
+                        document.body.classList.remove('loading');
+                        
+                        // Initialize main content after loading
+                        initializeCharts();
+                        startContinuousUpdates();
+                        
+                        // Remove overlay after animation
+                        setTimeout(() => {
+                            loadingOverlay.style.display = 'none';
+                        }, 500);
+                    }, 500);
+                }, timePerStep / 2);
+            }
+        }, index * timePerStep);
+    });
 }
-
-// Document ready handler
-document.addEventListener('DOMContentLoaded', () => {
-    console.log('DOM Content Loaded');
-    initializeLoadingSequence();
-    initializeTabs();
-    addHexagonalBackground();
-    
-    // Initialize connection status with a slight delay
-    setTimeout(updateConnectionStatus, 1000);
-});
 
 function initializeLoadingStates() {
     // Hide loading overlay after initialization
@@ -806,19 +879,18 @@ function updateSecurityStatus() {
 
 // Connection Status Updates
 function updateConnectionStatus() {
-    const statusIndicator = document.querySelector('.status-dot');
+    const statusIndicator = document.querySelector('.status-indicator');
     const statusText = document.querySelector('.status-text');
     
-    if (!statusIndicator || !statusText) {
-        console.warn('Connection status elements not found');
-        return;
+    if (window.solana && window.solana.isConnected) {
+        statusIndicator.style.background = '#00ff00';
+        statusIndicator.style.boxShadow = '0 0 10px #00ff00';
+        statusText.textContent = 'Connected to Solana';
+    } else {
+        statusIndicator.style.background = '#ff0000';
+        statusIndicator.style.boxShadow = '0 0 10px #ff0000';
+        statusText.textContent = 'Disconnected';
     }
-    
-    const isConnected = window.solana && window.solana.isConnected;
-    
-    statusIndicator.style.background = isConnected ? '#00ff00' : '#ff0000';
-    statusIndicator.style.boxShadow = `0 0 10px ${isConnected ? '#00ff00' : '#ff0000'}`;
-    statusText.textContent = isConnected ? 'Connected to Solana' : 'Disconnected';
 }
 
 // Initialize Security Features
@@ -1069,53 +1141,4 @@ document.addEventListener('DOMContentLoaded', function() {
             // ... (implement time range filtering logic)
         });
     });
-});
-
-// Automatic Git Push Function
-async function gitAutoPush() {
-    try {
-        // Add all changes
-        await fetch('/git/add', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ command: 'git add .' })
-        });
-
-        // Create commit with timestamp
-        const timestamp = new Date().toISOString();
-        await fetch('/git/commit', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                command: `git commit -m "Auto-update: ${timestamp}"`
-            })
-        });
-
-        // Push changes
-        await fetch('/git/push', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ command: 'git push origin main' })
-        });
-
-        console.log('Successfully pushed changes to git');
-    } catch (error) {
-        console.error('Error pushing to git:', error);
-    }
-}
-
-// Set up auto-push interval (every 5 minutes)
-setInterval(gitAutoPush, 300000);
-
-// Also push when significant changes occur
-document.addEventListener('visibilitychange', () => {
-    if (!document.hidden) {
-        gitAutoPush();
-    }
 });

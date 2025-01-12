@@ -199,17 +199,19 @@ body {
     left: 0;
     width: 100vw;
     height: 100vh;
-    background: var(--deep-blue);
-    display: none;
+    background: linear-gradient(135deg, var(--deep-blue) 0%, #000022 100%);
+    display: flex;
     justify-content: center;
     align-items: center;
     z-index: 9999;
     opacity: 1;
-    transition: opacity 0.5s ease-out;
+    visibility: visible;
+    transition: opacity 0.5s ease-out, visibility 0.5s ease-out;
 }
 
 .loading-overlay.fade-out {
     opacity: 0;
+    visibility: hidden;
 }
 
 .loading-content {
@@ -1907,7 +1909,7 @@ body {
     box-sizing: border-box;
 }
 
-/* Mobile Optimization */
+/* Mobile Profile Adjustments */
 @media (max-width: 768px) {
     .stats-grid {
         grid-template-columns: repeat(2, 1fr);
@@ -2688,82 +2690,244 @@ body {
     }
 }
 
-/* Loading Screen */
-.loading-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: var(--deep-blue);
-    display: none;
-    justify-content: center;
-    align-items: center;
-    z-index: 9999;
-    opacity: 1;
-    transition: opacity 0.5s ease-out;
+/* Mobile Header Optimizations */
+@media (max-width: 768px) {
+    .dashboard-header {
+        padding: 10px;
+        margin-bottom: 10px;
+    }
+
+    .header-left {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+    }
+
+    .logo-container {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .logo-hexagon {
+        width: 32px;
+        height: 32px;
+    }
+
+    .cyber-title {
+        font-size: 20px;
+        margin: 0;
+    }
+
+    .network-pulse {
+        width: 8px;
+        height: 8px;
+        right: -4px;
+        top: -4px;
+    }
+
+    /* Network Stats for Mobile */
+    .network-stats {
+        display: none; /* Hide detailed stats on mobile */
+    }
+
+    /* Status Indicators for Mobile */
+    .header-right {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .security-status {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .status-container {
+        gap: 6px;
+    }
+
+    .status-ring {
+        width: 20px;
+        height: 20px;
+    }
+
+    .status-circle {
+        width: 10px;
+        height: 10px;
+    }
+
+    .status-label {
+        font-size: 12px;
+        white-space: nowrap;
+    }
+
+    .network-quality {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .quality-bars {
+        height: 16px;
+        gap: 2px;
+    }
+
+    .quality-bars .bar {
+        width: 3px;
+    }
+
+    .network-quality span {
+        font-size: 11px;
+        white-space: nowrap;
+    }
+
+    .connection-status {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .connection-indicator {
+        width: 20px;
+        height: 20px;
+    }
+
+    .connection-details {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+
+    .status-text {
+        font-size: 11px;
+        white-space: nowrap;
+    }
+
+    .latency {
+        font-size: 10px;
+    }
+
+    /* Navigation Adjustments */
+    .cyber-nav {
+        padding: 8px 5px;
+        margin: 5px 0;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+
+    .cyber-nav::-webkit-scrollbar {
+        display: none;
+    }
+
+    .nav-container {
+        gap: 8px;
+        padding: 0 5px;
+    }
+
+    .cyber-button {
+        padding: 8px 12px;
+        font-size: 12px;
+        min-width: auto;
+    }
+
+    .cyber-button i {
+        font-size: 14px;
+    }
+
+    .notification-badge {
+        font-size: 9px;
+        padding: 1px 4px;
+        min-width: 14px;
+        height: 14px;
+        right: -4px;
+        top: -4px;
+    }
 }
 
-.loading-overlay.fade-out {
-    opacity: 0;
+/* Content Section Adjustments for Mobile */
+@media (max-width: 768px) {
+    .content-section {
+        padding: 10px 5px;
+        margin: 0;
+        height: calc(100vh - 140px);
+    }
+
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+        padding: 5px;
+        margin: 5px 0;
+    }
+
+    .cyber-card {
+        padding: 10px;
+        margin: 0;
+    }
+
+    .card-content h2 {
+        font-size: 12px;
+        margin-bottom: 4px;
+    }
+
+    .stat-value {
+        font-size: 16px;
+    }
+
+    .trend {
+        font-size: 10px;
+        padding: 1px 4px;
+    }
 }
 
-/* Main Content */
-.main-content {
-    display: none;
-    opacity: 0;
-    transition: opacity 0.5s ease-in;
-}
-
-.main-content.visible {
-    opacity: 1;
-}
-
-/* Loading Progress Bar */
-.loading-progress {
+/* Fix Container Overflow */
+.cyber-frame {
     width: 100%;
-    height: 4px;
-    background: rgba(0, 255, 255, 0.1);
-    border-radius: 2px;
+    max-width: 100%;
+    margin: 0;
+    padding: 8px;
+    box-sizing: border-box;
     overflow: hidden;
-    margin-top: 20px;
 }
 
-.progress-bar {
-    width: 0%;
-    height: 100%;
-    background: linear-gradient(90deg, var(--neon-cyan), var(--neon-pink));
-    transition: width 0.3s ease-out;
+/* Ensure proper spacing */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
-.progress-percentage {
+/* Prevent body scroll when not needed */
+body {
+    overflow-x: hidden;
+    position: relative;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Status text colors */
+.status-text, .latency {
     color: var(--neon-cyan);
-    font-size: 14px;
-    margin-top: 8px;
-    text-align: right;
 }
 
-/* Loading Status Items */
-.loading-status {
-    margin-top: 30px;
+.status-text.connected {
+    color: #00ff00;
 }
 
-.status-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    color: var(--neon-cyan);
-    margin-bottom: 15px;
-    opacity: 0;
-    transform: translateY(10px);
-    transition: opacity 0.3s ease-out, transform 0.3s ease-out;
-}
-
-.status-item i {
-    color: var(--neon-pink);
-}
-
-.status-item.visible {
-    opacity: 1;
-    transform: translateY(0);
+/* Enhanced mobile performance */
+@media (max-width: 768px) {
+    * {
+        transform: translateZ(0);
+        backface-visibility: hidden;
+        -webkit-backface-visibility: hidden;
+        perspective: 1000;
+        -webkit-perspective: 1000;
+    }
 }
