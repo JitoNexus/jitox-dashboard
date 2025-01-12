@@ -44,9 +44,19 @@ function initializeLoadingSequence() {
     console.log('Initializing loading screen');
     const loadingOverlay = document.querySelector('.loading-overlay');
     const mainContent = document.querySelector('.main-content');
+    const progressBar = document.querySelector('.progress-bar');
+    const progressText = document.querySelector('.progress-percentage');
+    const statusItems = document.querySelectorAll('.status-item');
     
     if (!loadingOverlay || !mainContent) {
         console.error('Required elements not found');
+        // Show main content if loading screen is not available
+        if (mainContent) {
+            mainContent.style.display = 'block';
+            mainContent.classList.add('visible');
+            initializeCharts();
+            startContinuousUpdates();
+        }
         return;
     }
 
@@ -55,21 +65,19 @@ function initializeLoadingSequence() {
     loadingOverlay.style.display = 'flex';
     mainContent.style.display = 'none';
 
+    // Make status items visible one by one
+    statusItems.forEach((item, index) => {
+        setTimeout(() => {
+            item.classList.add('visible');
+        }, index * 500);
+    });
+
     // Simulate loading progress
     let progress = 0;
-    const progressBar = loadingOverlay.querySelector('.progress-bar');
-    const progressText = loadingOverlay.querySelector('.progress-percentage');
-    
-    const updateProgress = () => {
-        if (progressBar && progressText) {
-            progressBar.style.width = `${progress}%`;
-            progressText.textContent = `${progress}%`;
-        }
-    };
-
     const progressInterval = setInterval(() => {
         progress += 5;
-        updateProgress();
+        if (progressBar) progressBar.style.width = `${progress}%`;
+        if (progressText) progressText.textContent = `${progress}%`;
         
         if (progress >= 100) {
             clearInterval(progressInterval);
@@ -99,6 +107,9 @@ document.addEventListener('DOMContentLoaded', () => {
     initializeLoadingSequence();
     initializeTabs();
     addHexagonalBackground();
+    
+    // Initialize connection status with a slight delay
+    setTimeout(updateConnectionStatus, 1000);
 });
 
 function initializeLoadingStates() {
@@ -795,20 +806,19 @@ function updateSecurityStatus() {
 
 // Connection Status Updates
 function updateConnectionStatus() {
-    const statusIndicator = document.querySelector('.status-indicator');
+    const statusIndicator = document.querySelector('.status-dot');
     const statusText = document.querySelector('.status-text');
     
-    if (!statusIndicator || !statusText) return; // Exit if elements don't exist
-    
-    if (window.solana && window.solana.isConnected) {
-        statusIndicator.style.background = '#00ff00';
-        statusIndicator.style.boxShadow = '0 0 10px #00ff00';
-        statusText.textContent = 'Connected to Solana';
-    } else {
-        statusIndicator.style.background = '#ff0000';
-        statusIndicator.style.boxShadow = '0 0 10px #ff0000';
-        statusText.textContent = 'Disconnected';
+    if (!statusIndicator || !statusText) {
+        console.warn('Connection status elements not found');
+        return;
     }
+    
+    const isConnected = window.solana && window.solana.isConnected;
+    
+    statusIndicator.style.background = isConnected ? '#00ff00' : '#ff0000';
+    statusIndicator.style.boxShadow = `0 0 10px ${isConnected ? '#00ff00' : '#ff0000'}`;
+    statusText.textContent = isConnected ? 'Connected to Solana' : 'Disconnected';
 }
 
 // Initialize Security Features
