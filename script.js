@@ -149,7 +149,7 @@ function updateAllStats() {
     });
 }
 
-function animateValue(element, start, end, duration, formatter = (val) => val) {
+function animateValue(element, start, end, duration, formatter = (val) => Math.round(val).toLocaleString()) {
     const startTime = performance.now();
     const change = end - start;
     
@@ -162,7 +162,7 @@ function animateValue(element, start, end, duration, formatter = (val) => val) {
         const progress = Math.min(elapsed / duration, 1);
         
         const easedProgress = easeOutQuart(progress);
-        const current = start + (change * easedProgress);
+        const current = Math.round(start + (change * easedProgress));
         element.textContent = formatter(current);
         
         if (progress < 1) {
@@ -841,13 +841,13 @@ function updateNetworkStats() {
             elem: document.getElementById('networkTPS'),
             min: 4000,
             max: 5000,
-            format: (val) => val.toLocaleString()
+            format: (val) => Math.round(val).toLocaleString()
         },
         blockHeight: {
             elem: document.getElementById('blockHeight'),
             min: 219584932,
             max: 219585032,
-            format: (val) => val.toLocaleString()
+            format: (val) => Math.round(val).toLocaleString()
         },
         gasPrice: {
             elem: document.getElementById('gasPrice'),
@@ -859,7 +859,7 @@ function updateNetworkStats() {
             elem: document.getElementById('networkLatency'),
             min: 10,
             max: 15,
-            format: (val) => `${val}ms`
+            format: (val) => `${Math.round(val)}ms`
         }
     };
 
