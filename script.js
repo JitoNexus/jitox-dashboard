@@ -39,168 +39,68 @@ function getSmoothedValue(currentValue, targetValue, maxChangePercent) {
     return currentValue + (Math.sign(difference) * maxChange);
 }
 
-// Main initialization
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('DOM Content Loaded');
-    initializeLoadingScreen();
+    initializeLoadingSequence();
+    // Initialize other components
+    initializeCharts();
+    initializeTabs();
+    addHexagonalBackground();
+    startContinuousUpdates();
 });
 
-function initializeLoadingScreen() {
-    console.log('Initializing loading screen');
-    const loadingContainer = document.querySelector('.loading-container');
+// Loading Screen Handler
+function initializeLoadingSequence() {
+    const loadingOverlay = document.querySelector('.loading-overlay');
     const mainContent = document.querySelector('.main-content');
+    const progressBar = document.querySelector('.progress-bar');
+    const progressPercentage = document.querySelector('.progress-percentage');
+    const statusItems = document.querySelectorAll('.status-item');
     
-    if (!loadingContainer || !mainContent) {
-        console.error('Required elements not found');
-        return;
-    }
-
-    // Show loading screen for 2 seconds then fade out
-    setTimeout(() => {
-        loadingContainer.style.opacity = '0';
-        mainContent.style.display = 'block';
-        mainContent.style.opacity = '1';
-        
-        // Remove loading screen from DOM after fade
+    let progress = 0;
+    const totalSteps = statusItems.length;
+    const timePerStep = 1000; // ms per step
+    
+    // Show loading overlay and hide main content
+    loadingOverlay.style.display = 'flex';
+    mainContent.style.opacity = '0';
+    document.body.classList.add('loading');
+    
+    // Animate each status item with delay
+    statusItems.forEach((item, index) => {
         setTimeout(() => {
-            loadingContainer.remove();
-        }, 500);
-    }, 2000);
-}
-
-function initializeParticles() {
-    if (!window.particlesJS || !document.getElementById('particles')) {
-        console.warn('ParticlesJS not available or particles container not found');
-        return;
-    }
-
-    particlesJS('particles', {
-        particles: {
-            number: { value: 30 },
-            color: { value: '#ffffff' },
-            shape: { type: 'circle' },
-            opacity: {
-                value: 0.5,
-                random: true
-            },
-            size: {
-                value: 3,
-                random: true
-            },
-            move: {
-                enable: true,
-                speed: 2,
-                direction: 'none',
-                random: true,
-                out_mode: 'out'
-            }
-        }
-    });
-}
-
-function initializeAnimations() {
-    if (!window.gsap) {
-        console.warn('GSAP not available');
-        return;
-    }
-
-    const wallet = document.querySelector('.wallet-body');
-    if (wallet) {
-        gsap.to(wallet, {
-            rotationY: 10,
-            rotationX: 5,
-            duration: 2,
-            repeat: -1,
-            yoyo: true,
-            ease: "power1.inOut"
-        });
-    }
-
-    const coins = document.querySelectorAll('.coin');
-    coins.forEach((coin, index) => {
-        gsap.to(coin, {
-            y: -20,
-            rotation: index === 0 ? 10 : -10,
-            duration: 2,
-            delay: index * 0.2,
-            repeat: -1,
-            yoyo: true,
-            ease: "power1.inOut"
-        });
-    });
-}
-
-function startProgressBar() {
-    const progress = document.querySelector('.progress');
-    if (!progress) {
-        console.error('Progress bar not found');
-        hideLoadingScreen();
-        return;
-    }
-
-    let width = 0;
-    const interval = setInterval(() => {
-        if (width >= 100) {
-            clearInterval(interval);
-            hideLoadingScreen();
-        } else {
-            width += 1;
-            progress.style.width = width + '%';
-        }
-    }, 30);
-}
-
-function hideLoadingScreen() {
-    console.log('Hiding loading screen');
-    const loadingContainer = document.querySelector('.loading-container');
-    const mainContent = document.querySelector('.main-content');
-    
-    if (!loadingContainer || !mainContent) {
-        console.error('Required elements not found for hiding');
-        return;
-    }
-
-    try {
-        // Show main content first
-        mainContent.style.display = 'block';
-        
-        // Force a reflow
-        void mainContent.offsetHeight;
-
-        // Add transitions
-        requestAnimationFrame(() => {
-            loadingContainer.style.opacity = '0';
-            loadingContainer.style.visibility = 'hidden';
-            mainContent.style.opacity = '1';
-            mainContent.style.visibility = 'visible';
+            item.style.opacity = '1';
+            progress = ((index + 1) / totalSteps) * 100;
+            progressBar.style.width = `${progress}%`;
+            progressPercentage.textContent = `${Math.round(progress)}%`;
             
-            // Remove loading container after transition
-            setTimeout(() => {
-                if (loadingContainer.parentNode) {
-                    loadingContainer.parentNode.removeChild(loadingContainer);
-                }
-                console.log('Loading screen removed');
-            }, 500);
-        });
-    } catch (error) {
-        console.error('Error hiding loading screen:', error);
-        // Fallback: force remove loading screen
-        if (loadingContainer.parentNode) {
-            loadingContainer.parentNode.removeChild(loadingContainer);
-        }
-        mainContent.style.display = 'block';
-        mainContent.style.opacity = '1';
-        mainContent.style.visibility = 'visible';
-    }
-}
-
-// Remove or comment out the updateConnectionStatus function if not needed
-// function updateConnectionStatus() { ... }
-
-// Start your other initializations after the loading screen is gone
-function initializeApp() {
-    // Your other initialization code here
-    console.log('App initialized');
+            // Add success indicator when item completes
+            const icon = item.querySelector('i');
+            icon.classList.add('success');
+            
+            // On last item, prepare to show main content
+            if (index === totalSteps - 1) {
+                setTimeout(() => {
+                    // Add final success animation
+                    loadingOverlay.classList.add('completed');
+                    
+                    setTimeout(() => {
+                        loadingOverlay.classList.add('fade-out');
+                        mainContent.style.opacity = '1';
+                        document.body.classList.remove('loading');
+                        
+                        // Initialize main content after loading
+                        initializeCharts();
+                        startContinuousUpdates();
+                        
+                        // Remove overlay after animation
+                        setTimeout(() => {
+                            loadingOverlay.style.display = 'none';
+                        }, 500);
+                    }, 500);
+                }, timePerStep / 2);
+            }
+        }, index * timePerStep);
+    });
 }
 
 function initializeLoadingStates() {
@@ -225,14 +125,17 @@ function initializeLoadingStates() {
     }, 1500);
 }
 
+// Initialize continuous updates
 function startContinuousUpdates() {
+    // Update network stats every 2 seconds
     setInterval(() => {
-        const activeSection = document.querySelector('.content-section[style*="display: block"]');
-        if (activeSection) {
-            const sectionType = activeSection.classList[1].replace('-section', '');
-            initializeSectionContent(sectionType);
-        }
+        updateNetworkStats();
     }, 2000);
+    
+    // Update charts every 5 seconds
+    setInterval(() => {
+        updateAllCharts();
+    }, 5000);
 }
 
 function updateAllStats() {
@@ -265,28 +168,28 @@ function updateAllStats() {
     });
 }
 
-function animateValue(element, start, end, duration) {
-    const range = end - start;
+function animateValue(element, start, end, duration, formatter = (val) => val) {
     const startTime = performance.now();
+    const change = end - start;
     
     function easeOutQuart(x) {
         return 1 - Math.pow(1 - x, 4);
     }
     
-    function updateNumber(currentTime) {
+    function update(currentTime) {
         const elapsed = currentTime - startTime;
         const progress = Math.min(elapsed / duration, 1);
         
         const easedProgress = easeOutQuart(progress);
-        const current = Math.floor(start + (range * easedProgress));
-        element.textContent = current.toLocaleString();
+        const current = start + (change * easedProgress);
+        element.textContent = formatter(current);
         
         if (progress < 1) {
-            requestAnimationFrame(updateNumber);
+            requestAnimationFrame(update);
         }
     }
     
-    requestAnimationFrame(updateNumber);
+    requestAnimationFrame(update);
 }
 
 // Update stats every 10 seconds
@@ -713,149 +616,38 @@ function updateFooterTimestamp() {
     }
 }
 
-// Wait for both DOM and all resources to load
-window.addEventListener('load', () => {
-    console.log('All resources loaded');
-    initializeLoadingScreen();
-});
-
-function initializeLoadingScreen() {
-    console.log('Initializing loading screen');
-    const loadingContainer = document.querySelector('.loading-container');
+// Loading Screen Handler
+document.addEventListener('DOMContentLoaded', () => {
+    const loadingOverlay = document.querySelector('.loading-overlay');
     const mainContent = document.querySelector('.main-content');
-    
-    if (!loadingContainer || !mainContent) {
-        console.error('Required elements not found');
-        return;
-    }
+    const spinnerCube = document.createElement('div');
+    spinnerCube.className = 'spinner-cube';
+    document.querySelector('.cyber-spinner').appendChild(spinnerCube);
 
-    // Show loading screen for 2 seconds then fade out
+    // Add cyber grid
+    const cyberGrid = document.createElement('div');
+    cyberGrid.className = 'cyber-grid';
+    loadingOverlay.appendChild(cyberGrid);
+
+    // Initialize loading screen
+    document.body.classList.add('loading');
+
+    // Simulate loading progress
     setTimeout(() => {
-        loadingContainer.style.opacity = '0';
-        mainContent.style.display = 'block';
-        mainContent.style.opacity = '1';
+        loadingOverlay.classList.add('fade-out');
+        document.body.classList.remove('loading');
+        mainContent.classList.add('visible');
         
-        // Remove loading screen from DOM after fade
+        // Remove loading overlay after animation
         setTimeout(() => {
-            loadingContainer.remove();
+            loadingOverlay.style.display = 'none';
         }, 500);
+
+        // Initialize charts and start updates
+        initializeCharts();
+        startUpdates();
     }, 2000);
-}
-
-function initializeParticles() {
-    console.log('Initializing particles');
-    if (window.particlesJS && document.getElementById('particles')) {
-        particlesJS('particles', {
-            particles: {
-                number: { value: 30 },
-                color: { value: '#ffffff' },
-                shape: { type: 'circle' },
-                opacity: {
-                    value: 0.5,
-                    random: true
-                },
-                size: {
-                    value: 3,
-                    random: true
-                },
-                move: {
-                    enable: true,
-                    speed: 2,
-                    direction: 'none',
-                    random: true,
-                    out_mode: 'out'
-                }
-            }
-        });
-    } else {
-        console.warn('ParticlesJS not available or particles container not found');
-    }
-}
-
-function initializeAnimations() {
-    console.log('Initializing animations');
-    if (window.gsap) {
-        // Wallet animation
-        const wallet = document.querySelector('.wallet-body');
-        if (wallet) {
-            gsap.to(wallet, {
-                rotationY: 10,
-                rotationX: 5,
-                duration: 2,
-                repeat: -1,
-                yoyo: true,
-                ease: "power1.inOut"
-            });
-        }
-
-        // Coins animation
-        const coins = document.querySelectorAll('.coin');
-        coins.forEach((coin, index) => {
-            gsap.to(coin, {
-                y: -20,
-                rotation: index === 0 ? 10 : -10,
-                duration: 2,
-                delay: index * 0.2,
-                repeat: -1,
-                yoyo: true,
-                ease: "power1.inOut"
-            });
-        });
-    } else {
-        console.warn('GSAP not available');
-    }
-}
-
-function startProgressBar() {
-    console.log('Starting progress bar');
-    const progress = document.querySelector('.progress');
-    if (!progress) {
-        console.error('Progress bar not found');
-        return;
-    }
-
-    let width = 0;
-    const interval = setInterval(() => {
-        if (width >= 100) {
-            clearInterval(interval);
-            hideLoadingScreen();
-        } else {
-            width += 1;
-            progress.style.width = width + '%';
-        }
-    }, 30);
-}
-
-function hideLoadingScreen() {
-    console.log('Hiding loading screen');
-    const loadingContainer = document.querySelector('.loading-container');
-    const mainContent = document.querySelector('.main-content');
-    
-    if (!loadingContainer || !mainContent) {
-        console.error('Required elements not found for hiding');
-        return;
-    }
-
-    // Show main content first
-    mainContent.style.display = 'block';
-    
-    // Force a reflow
-    void mainContent.offsetHeight;
-
-    // Add transitions
-    setTimeout(() => {
-        loadingContainer.style.opacity = '0';
-        loadingContainer.style.visibility = 'hidden';
-        mainContent.style.opacity = '1';
-        mainContent.style.visibility = 'visible';
-        
-        // Remove loading container from DOM after transition
-        setTimeout(() => {
-            loadingContainer.style.display = 'none';
-            console.log('Loading screen removed');
-        }, 500);
-    }, 100);
-}
+});
 
 function startUpdates() {
     // Update stats and charts every 2 seconds
@@ -1028,18 +820,43 @@ document.addEventListener('DOMContentLoaded', () => {
     setInterval(updateConnectionStatus, 5000);
 });
 
-// Network Stats Update
+// Network Stats Update with smooth transitions
 function updateNetworkStats() {
-    const tps = document.getElementById('networkTPS');
-    const blockHeight = document.getElementById('blockHeight');
-    const gasPrice = document.getElementById('gasPrice');
-    const latency = document.getElementById('networkLatency');
+    const stats = {
+        networkTPS: {
+            elem: document.getElementById('networkTPS'),
+            min: 4000,
+            max: 5000,
+            format: (val) => val.toLocaleString()
+        },
+        blockHeight: {
+            elem: document.getElementById('blockHeight'),
+            min: 219584932,
+            max: 219585032,
+            format: (val) => val.toLocaleString()
+        },
+        gasPrice: {
+            elem: document.getElementById('gasPrice'),
+            min: 0.000001,
+            max: 0.000002,
+            format: (val) => val.toFixed(6)
+        },
+        networkLatency: {
+            elem: document.getElementById('networkLatency'),
+            min: 10,
+            max: 15,
+            format: (val) => `${val}ms`
+        }
+    };
 
-    // Simulate real-time updates
-    if (tps) tps.textContent = (4000 + Math.floor(Math.random() * 1000)).toLocaleString();
-    if (blockHeight) blockHeight.textContent = (219584932 + Math.floor(Math.random() * 100)).toLocaleString();
-    if (gasPrice) gasPrice.textContent = (0.000001 + Math.random() * 0.000001).toFixed(6);
-    if (latency) latency.textContent = (10 + Math.floor(Math.random() * 5)) + 'ms';
+    Object.entries(stats).forEach(([key, stat]) => {
+        if (stat.elem) {
+            const currentValue = parseFloat(stat.elem.textContent.replace(/[^0-9.-]+/g, ""));
+            const targetValue = stat.min + Math.random() * (stat.max - stat.min);
+            
+            animateValue(stat.elem, currentValue, targetValue, 2000, stat.format);
+        }
+    });
 }
 
 // Mini Charts for Stats

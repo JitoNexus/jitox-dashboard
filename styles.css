@@ -199,7 +199,7 @@ body {
     left: 0;
     width: 100vw;
     height: 100vh;
-    background: var(--deep-blue);
+    background: linear-gradient(135deg, var(--deep-blue) 0%, #000022 100%);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -209,7 +209,7 @@ body {
     transition: opacity 0.5s ease-out, visibility 0.5s ease-out;
 }
 
-.loading-overlay.hidden {
+.loading-overlay.fade-out {
     opacity: 0;
     visibility: hidden;
 }
@@ -221,6 +221,9 @@ body {
     gap: 30px;
     position: relative;
     z-index: 2;
+    padding: 40px;
+    max-width: 90%;
+    width: 400px;
 }
 
 .loading-logo {
@@ -228,6 +231,7 @@ body {
     width: 120px;
     height: 120px;
     margin-bottom: 20px;
+    animation: float 3s ease-in-out infinite;
 }
 
 .logo-hexagon {
@@ -236,7 +240,7 @@ body {
     height: 100%;
     background: linear-gradient(45deg, var(--neon-cyan), var(--neon-pink));
     clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
-    animation: rotate 4s linear infinite, pulse 2s ease-in-out infinite alternate;
+    animation: rotate 8s linear infinite, glow 2s ease-in-out infinite alternate;
 }
 
 .logo-text {
@@ -244,121 +248,100 @@ body {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    font-size: 24px;
+    color: #fff;
+    font-size: 28px;
     font-weight: bold;
-    color: var(--deep-blue);
-    text-shadow: 0 0 10px var(--neon-cyan);
-    z-index: 1;
+    text-shadow: 0 0 15px var(--neon-cyan);
+    animation: textPulse 2s ease-in-out infinite alternate;
 }
 
 .loading-text {
-    font-size: 32px;
-    font-weight: bold;
-    color: var(--neon-cyan);
+    font-size: 28px;
+    color: #fff;
     text-transform: uppercase;
     letter-spacing: 3px;
-    text-shadow: 0 0 10px var(--neon-cyan);
-    animation: glitch 3s infinite;
+    text-shadow: 0 0 15px var(--neon-cyan);
+    animation: textPulse 2s ease-in-out infinite alternate;
+    margin-bottom: 10px;
 }
 
 .loading-status {
+    width: 100%;
     display: flex;
     flex-direction: column;
-    gap: 15px;
-    width: 300px;
+    gap: 20px;
 }
 
 .status-item {
     display: flex;
     align-items: center;
     gap: 15px;
-    color: var(--neon-cyan);
-    font-size: 14px;
+    color: #fff;
+    font-size: 16px;
     opacity: 0;
-    animation: fadeInUp 0.5s ease forwards;
+    transform: translateY(10px);
+    animation: fadeInUp 0.5s ease-out forwards;
 }
 
-.status-item:nth-child(1) { animation-delay: 0.5s; }
-.status-item:nth-child(2) { animation-delay: 1s; }
-.status-item:nth-child(3) { animation-delay: 1.5s; }
-
 .status-item i {
+    color: var(--neon-cyan);
     font-size: 18px;
-    color: var(--neon-pink);
-    animation: pulse 1.5s ease-in-out infinite;
+    animation: iconPulse 1.5s ease-in-out infinite;
 }
 
 .loading-progress {
-    width: 300px;
-    height: 4px;
+    width: 100%;
+    height: 6px;
     background: rgba(0, 255, 255, 0.1);
-    border-radius: 4px;
+    border-radius: 3px;
     overflow: hidden;
     position: relative;
+    margin-top: 20px;
 }
 
 .progress-bar {
-    position: absolute;
-    left: 0;
-    top: 0;
     height: 100%;
-    width: 0%;
     background: linear-gradient(90deg, var(--neon-cyan), var(--neon-pink));
-    box-shadow: 0 0 20px var(--neon-cyan);
-    animation: progress 3s ease-in-out forwards;
+    width: 0%;
+    animation: progressFill 2.5s ease-out forwards;
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
 }
 
 .progress-percentage {
     position: absolute;
-    top: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-    color: var(--neon-cyan);
-    font-size: 12px;
-    animation: updatePercentage 3s linear forwards;
+    top: -25px;
+    right: 0;
+    color: #fff;
+    font-size: 14px;
+    animation: fadeIn 0.5s ease-out;
 }
 
-.cyber-grid {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: 
-        linear-gradient(90deg, var(--grid-line) 1px, transparent 1px) 0 0,
-        linear-gradient(0deg, var(--grid-line) 1px, transparent 1px) 0 0;
-    background-size: 50px 50px;
-    animation: grid-move 20s linear infinite;
-    opacity: 0.2;
+/* Enhanced Loading Animations */
+@keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0px); }
 }
 
-/* Main Content Visibility */
-.main-content {
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.5s ease-out, visibility 0.5s ease-out;
-}
-
-.main-content.visible {
-    opacity: 1;
-    visibility: visible;
-}
-
-/* Loading Animations */
 @keyframes rotate {
     from { transform: rotate(0deg); }
     to { transform: rotate(360deg); }
 }
 
-@keyframes pulse {
-    from { opacity: 0.5; transform: scale(0.95); }
-    to { opacity: 1; transform: scale(1.05); }
+@keyframes glow {
+    from { filter: brightness(1) drop-shadow(0 0 10px var(--neon-cyan)); }
+    to { filter: brightness(1.3) drop-shadow(0 0 20px var(--neon-pink)); }
+}
+
+@keyframes textPulse {
+    from { opacity: 0.8; text-shadow: 0 0 10px var(--neon-cyan); }
+    to { opacity: 1; text-shadow: 0 0 20px var(--neon-cyan), 0 0 30px var(--neon-pink); }
 }
 
 @keyframes fadeInUp {
     from { 
         opacity: 0;
-        transform: translateY(20px);
+        transform: translateY(10px);
     }
     to {
         opacity: 1;
@@ -366,45 +349,45 @@ body {
     }
 }
 
-@keyframes progress {
-    from { width: 0%; }
-    to { width: 100%; }
+@keyframes progressFill {
+    0% { width: 0%; }
+    50% { width: 70%; }
+    100% { width: 100%; }
 }
 
-@keyframes updatePercentage {
-    0% { content: "0%"; }
-    100% { content: "100%"; }
+@keyframes iconPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
 }
 
-@keyframes grid-move {
-    from { transform: translateY(0); }
-    to { transform: translateY(50px); }
-}
-
-/* Loading State Control */
-body.loading {
-    overflow: hidden;
-}
-
-body:not(.loading) .loading-overlay {
-    opacity: 0;
-    visibility: hidden;
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
 }
 
 /* Mobile Optimization */
 @media (max-width: 768px) {
+    .loading-content {
+        padding: 20px;
+        gap: 20px;
+    }
+
+    .loading-logo {
+        width: 100px;
+        height: 100px;
+    }
+
     .loading-text {
-        font-size: 32px;
-        letter-spacing: 2px;
+        font-size: 24px;
     }
 
-    .cyber-spinner {
-        width: 80px;
-        height: 80px;
+    .status-item {
+        font-size: 14px;
     }
 
-    .loading-progress {
-        width: 200px;
+    .status-item i {
+        font-size: 16px;
     }
 }
 
@@ -1926,7 +1909,7 @@ body {
     box-sizing: border-box;
 }
 
-/* Mobile Profile Adjustments */
+/* Mobile Optimization */
 @media (max-width: 768px) {
     .stats-grid {
         grid-template-columns: repeat(2, 1fr);
@@ -2706,164 +2689,3 @@ body {
         flex-wrap: wrap;
     }
 }
-
-/* Loading Screen Styles */
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&display=swap');
-
-:root {
-    --primary-color: #6E56CF;
-    --secondary-color: #00ff88;
-    --wallet-color: #2B2640;
-    --sol-color: #00ff88;
-    --eth-color: #6E56CF;
-}
-
-.loading-container {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: 2rem;
-    background-color: var(--background);
-    z-index: 9999;
-    opacity: 1;
-    visibility: visible;
-    transition: opacity 0.5s ease, visibility 0.5s ease;
-}
-
-.loading-container.hidden {
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
-}
-
-.main-content {
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.5s ease;
-}
-
-.main-content.visible {
-    opacity: 1;
-    visibility: visible;
-}
-
-/* Ensure coins are visible and animated */
-.coin {
-    position: absolute;
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-weight: bold;
-    font-size: 0.9rem;
-    transform-style: preserve-3d;
-    will-change: transform;
-    backface-visibility: hidden;
-}
-
-.coin-inner {
-    background: rgba(255, 255, 255, 0.9);
-    padding: 8px;
-    border-radius: 50%;
-    box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
-}
-
-.sol {
-    background: var(--sol-color);
-    left: -20px;
-    top: 20px;
-    animation-delay: 0.2s;
-}
-
-.eth {
-    background: var(--eth-color);
-    right: -20px;
-    top: 20px;
-    animation-delay: 0.4s;
-}
-
-/* Enhanced wallet styles */
-.wallet {
-    position: relative;
-    width: 200px;
-    height: 150px;
-    perspective: 1000px;
-    transform-style: preserve-3d;
-    will-change: transform;
-}
-
-.wallet-body {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    transform-style: preserve-3d;
-    transition: transform 0.5s ease;
-    will-change: transform;
-}
-
-/* Ensure particles are visible */
-.particles {
-    position: absolute;
-    width: 100vw;
-    height: 100vh;
-    top: 0;
-    left: 0;
-    pointer-events: none;
-    z-index: 1;
-}
-
-/* Progress bar styles */
-.progress-bar {
-    width: 200px;
-    height: 4px;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 2px;
-    margin-top: 1rem;
-    overflow: hidden;
-}
-
-.progress {
-    width: 0%;
-    height: 100%;
-    background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
-    border-radius: 2px;
-    transition: width 0.3s ease;
-    will-change: width;
-}
-
-/* Basic loading screen */
-.loading-container {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100vh;
-    background-color: #1a1a1a;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 9999;
-    transition: opacity 0.5s ease;
-}
-
-.loading-text {
-    color: #ffffff;
-    font-size: 1.5rem;
-    text-align: center;
-}
-
-.main-content {
-    display: none;
-    opacity: 0;
-    transition: opacity 0.5s ease;
-}
-
-/* ... rest of your existing styles ... */
