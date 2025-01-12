@@ -1,0 +1,190 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&display=swap');
+
+:root {
+    --primary-color: #6E56CF;
+    --secondary-color: #00ff88;
+    --background: #13111C;
+    --wallet-color: #2B2640;
+    --sol-color: #00ff88;
+    --eth-color: #6E56CF;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--background);
+    font-family: 'Space Grotesk', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+.loading-container {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 2rem;
+}
+
+.wallet {
+    position: relative;
+    width: 200px;
+    height: 150px;
+    perspective: 1000px;
+}
+
+.wallet-body {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+    transition: transform 0.5s ease;
+}
+
+.wallet-front,
+.wallet-middle,
+.wallet-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: var(--wallet-color);
+    border-radius: 15px;
+    box-shadow: 0 0 30px rgba(110, 86, 207, 0.15);
+}
+
+.wallet-front {
+    transform: translateZ(10px);
+    background: linear-gradient(45deg, var(--wallet-color), #3D355A);
+}
+
+.wallet-middle {
+    transform: translateZ(0);
+}
+
+.wallet-back {
+    transform: translateZ(-10px);
+}
+
+.coins-container {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+}
+
+.coin {
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    font-size: 0.9rem;
+    transform-style: preserve-3d;
+    animation: float 3s ease-in-out infinite;
+}
+
+.coin-inner {
+    background: rgba(255, 255, 255, 0.9);
+    padding: 8px;
+    border-radius: 50%;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+}
+
+.sol {
+    background: var(--sol-color);
+    left: -20px;
+    top: 20px;
+    animation-delay: 0.2s;
+}
+
+.eth {
+    background: var(--eth-color);
+    right: -20px;
+    top: 20px;
+    animation-delay: 0.4s;
+}
+
+.particles {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.loading-text {
+    text-align: center;
+    margin-top: 2rem;
+}
+
+.text-gradient {
+    background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    opacity: 0.9;
+}
+
+.progress-bar {
+    width: 200px;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+    margin-top: 1rem;
+    overflow: hidden;
+}
+
+.progress {
+    width: 0%;
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+    border-radius: 2px;
+    transition: width 0.3s ease;
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0) rotate(0deg);
+    }
+    50% {
+        transform: translateY(-20px) rotate(10deg);
+    }
+}
+
+/* Glowing effect */
+.wallet-body::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(110, 86, 207, 0.1) 0%, transparent 70%);
+    animation: pulse 4s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 0.5;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1.1);
+    }
+} 
