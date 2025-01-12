@@ -589,13 +589,83 @@ function updateFooterTimestamp() {
 }
 
 // Loading Screen Animation
-function animateProgress(onComplete) {
+document.addEventListener('DOMContentLoaded', () => {
+    initializeLoadingScreen();
+});
+
+function initializeLoadingScreen() {
+    // Initialize particles
+    if (window.particlesJS) {
+        particlesJS('particles', {
+            particles: {
+                number: { value: 30 },
+                color: { value: '#ffffff' },
+                shape: { type: 'circle' },
+                opacity: {
+                    value: 0.5,
+                    random: true
+                },
+                size: {
+                    value: 3,
+                    random: true
+                },
+                move: {
+                    enable: true,
+                    speed: 2,
+                    direction: 'none',
+                    random: true,
+                    out_mode: 'out'
+                }
+            }
+        });
+    }
+
+    // Start animations
+    animateWallet();
+    animateCoins();
+    startProgressBar();
+}
+
+function animateWallet() {
+    const wallet = document.querySelector('.wallet-body');
+    if (wallet && window.gsap) {
+        gsap.to(wallet, {
+            rotationY: 10,
+            rotationX: 5,
+            duration: 2,
+            repeat: -1,
+            yoyo: true,
+            ease: "power1.inOut"
+        });
+    }
+}
+
+function animateCoins() {
+    const coins = document.querySelectorAll('.coin');
+    if (coins.length && window.gsap) {
+        coins.forEach((coin, index) => {
+            gsap.to(coin, {
+                y: -20,
+                rotation: index === 0 ? 10 : -10,
+                duration: 2,
+                delay: index * 0.2,
+                repeat: -1,
+                yoyo: true,
+                ease: "power1.inOut"
+            });
+        });
+    }
+}
+
+function startProgressBar() {
     const progress = document.querySelector('.progress');
+    if (!progress) return;
+
     let width = 0;
     const interval = setInterval(() => {
         if (width >= 100) {
             clearInterval(interval);
-            if (onComplete) onComplete();
+            hideLoadingScreen();
         } else {
             width += 1;
             progress.style.width = width + '%';
@@ -607,59 +677,19 @@ function hideLoadingScreen() {
     const loadingContainer = document.querySelector('.loading-container');
     const mainContent = document.querySelector('.main-content');
     
-    loadingContainer.classList.add('hidden');
-    mainContent.classList.add('visible');
+    if (!loadingContainer || !mainContent) return;
+
+    // Add a small delay before transitioning
+    setTimeout(() => {
+        loadingContainer.classList.add('hidden');
+        mainContent.classList.add('visible');
+        
+        // Clean up loading screen after transition
+        setTimeout(() => {
+            loadingContainer.style.display = 'none';
+        }, 500);
+    }, 500);
 }
-
-// Initialize loading screen
-window.addEventListener('load', () => {
-    // Start progress bar animation
-    animateProgress(() => {
-        // After progress completes, wait a bit then hide loading screen
-        setTimeout(hideLoadingScreen, 500);
-    });
-
-    // Wallet animation
-    const wallet = document.querySelector('.wallet-body');
-    wallet.style.transform = 'rotateY(10deg) rotateX(5deg)';
-
-    // Coin animations
-    const coins = document.querySelectorAll('.coin');
-    coins.forEach(coin => {
-        gsap.to(coin, {
-            y: -20,
-            rotation: 10,
-            duration: 2,
-            repeat: -1,
-            yoyo: true,
-            ease: "power1.inOut"
-        });
-    });
-
-    // Particle effects
-    particlesJS('particles', {
-        particles: {
-            number: { value: 50 },
-            color: { value: '#ffffff' },
-            shape: { type: 'circle' },
-            opacity: {
-                value: 0.5,
-                random: true
-            },
-            size: {
-                value: 3,
-                random: true
-            },
-            move: {
-                enable: true,
-                speed: 2,
-                direction: 'none',
-                random: true,
-                out_mode: 'out'
-            }
-        }
-    });
-});
 
 function startUpdates() {
     // Update stats and charts every 2 seconds
