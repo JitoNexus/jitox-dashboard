@@ -2781,3 +2781,140 @@ body {
         flex-wrap: wrap;
     }
 }
+
+/* Mobile Header Optimization */
+@media (max-width: 768px) {
+    .dashboard-header {
+        flex-direction: column;
+        gap: 12px;
+        padding: 10px;
+        margin-bottom: 10px;
+    }
+
+    .header-left {
+        width: 100%;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .logo-container {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        width: 100%;
+    }
+
+    .cyber-title {
+        font-size: 20px;
+        margin: 0;
+    }
+
+    .header-right {
+        width: 100%;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .security-status {
+        width: 100%;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+    }
+
+    .status-container {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px;
+        background: rgba(0, 255, 255, 0.05);
+        border-radius: 6px;
+        border: 1px solid rgba(0, 255, 255, 0.1);
+    }
+
+    .status-ring {
+        width: 20px;
+        height: 20px;
+    }
+
+    .status-label {
+        font-size: 11px;
+        white-space: nowrap;
+    }
+
+    .network-quality {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px;
+        background: rgba(0, 255, 255, 0.05);
+        border-radius: 6px;
+        border: 1px solid rgba(0, 255, 255, 0.1);
+    }
+
+    .quality-bars {
+        height: 16px;
+    }
+
+    .quality-bars .bar {
+        width: 3px;
+        margin: 0 1px;
+    }
+
+    .connection-status {
+        width: 100%;
+        padding: 8px;
+        background: rgba(0, 255, 255, 0.05);
+        border-radius: 6px;
+        border: 1px solid rgba(0, 255, 255, 0.1);
+        justify-content: flex-start;
+    }
+
+    .connection-indicator {
+        width: 20px;
+        height: 20px;
+    }
+
+    .connection-details {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 8px;
+        font-size: 11px;
+    }
+
+    .status-text, .latency {
+        white-space: nowrap;
+    }
+
+    .network-stats {
+        width: 100%;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+        margin-top: 8px;
+    }
+
+    .stat-chip {
+        width: 100%;
+        padding: 8px;
+        background: rgba(0, 255, 255, 0.05);
+        border-radius: 6px;
+        border: 1px solid rgba(0, 255, 255, 0.1);
+        font-size: 11px;
+        justify-content: space-between;
+    }
+
+    .stat-chip i {
+        font-size: 12px;
+    }
+
+    .stat-chip .stat-label {
+        display: none;
+    }
+
+    .stat-chip .stat-value {
+        font-size: 11px;
+        margin: 0;
+    }
+}
