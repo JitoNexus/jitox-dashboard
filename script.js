@@ -98,13 +98,15 @@ document.addEventListener('DOMContentLoaded', () => {
         tab.addEventListener('click', () => {
             const targetTab = tab.dataset.tab;
             
-            // Update button states
             document.querySelectorAll('.cyber-button[data-tab]').forEach(t => t.classList.remove('active'));
             tab.classList.add('active');
             
-            // Update section visibility
             document.querySelectorAll('.content-section').forEach(section => {
-                section.style.display = section.id === targetTab ? 'block' : 'none';
+                if (section.id === targetTab) {
+                    section.style.display = 'block';
+                } else {
+                    section.style.display = 'none';
+                }
             });
             
             // Refresh stats when switching to stats tab
@@ -114,14 +116,9 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Initialize sections visibility
-    document.querySelectorAll('.content-section').forEach(section => {
-        section.style.display = section.id === 'stats' ? 'block' : 'none';
-    });
-
     // Simulate loading progress
     const interval = setInterval(() => {
-        progress += 2;
+        progress += 5;
         progressBar.style.width = `${progress}%`;
         progressPercentage.textContent = `${progress}%`;
 
@@ -142,5 +139,5 @@ document.addEventListener('DOMContentLoaded', () => {
                 setInterval(updateStats, 5000);
             }, 500);
         }
-    }, 50);
+    }, 100);
 });
