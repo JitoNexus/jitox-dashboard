@@ -39,175 +39,43 @@ function getSmoothedValue(currentValue, targetValue, maxChangePercent) {
     return currentValue + (Math.sign(difference) * maxChange);
 }
 
-// Main initialization
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('DOM Content Loaded');
-    initializeLoadingScreen();
+    initializeLoadingSequence();
+    // Initialize other components
+    initializeCharts();
+    initializeTabs();
+    addHexagonalBackground();
+    startContinuousUpdates();
 });
 
-function initializeLoadingScreen() {
-    console.log('Initializing loading screen');
-    const loadingContainer = document.querySelector('.loading-container');
+function initializeLoadingSequence() {
+    const loadingOverlay = document.querySelector('.loading-overlay');
     const mainContent = document.querySelector('.main-content');
+    const progressBar = document.querySelector('.progress-bar');
+    const progressPercentage = document.querySelector('.progress-percentage');
+    const statusItems = document.querySelectorAll('.status-item');
     
-    if (!loadingContainer || !mainContent) {
-        console.error('Required elements not found');
-        return;
-    }
-
-    // Force initial states
-    loadingContainer.style.display = 'flex';
-    loadingContainer.style.opacity = '1';
-    loadingContainer.style.visibility = 'visible';
-    mainContent.style.display = 'none';
-    mainContent.style.opacity = '0';
-    mainContent.style.visibility = 'hidden';
-
-    // Initialize components
-    try {
-        initializeParticles();
-        initializeAnimations();
-        startProgressBar();
-    } catch (error) {
-        console.error('Error during initialization:', error);
-        // Fallback to hide loading screen if something fails
-        hideLoadingScreen();
-    }
-}
-
-function initializeParticles() {
-    if (!window.particlesJS || !document.getElementById('particles')) {
-        console.warn('ParticlesJS not available or particles container not found');
-        return;
-    }
-
-    particlesJS('particles', {
-        particles: {
-            number: { value: 30 },
-            color: { value: '#ffffff' },
-            shape: { type: 'circle' },
-            opacity: {
-                value: 0.5,
-                random: true
-            },
-            size: {
-                value: 3,
-                random: true
-            },
-            move: {
-                enable: true,
-                speed: 2,
-                direction: 'none',
-                random: true,
-                out_mode: 'out'
-            }
+    let progress = 0;
+    const progressInterval = setInterval(() => {
+        progress += 1;
+        if (progressPercentage) {
+            progressPercentage.textContent = `${progress}%`;
         }
-    });
-}
-
-function initializeAnimations() {
-    if (!window.gsap) {
-        console.warn('GSAP not available');
-        return;
-    }
-
-    const wallet = document.querySelector('.wallet-body');
-    if (wallet) {
-        gsap.to(wallet, {
-            rotationY: 10,
-            rotationX: 5,
-            duration: 2,
-            repeat: -1,
-            yoyo: true,
-            ease: "power1.inOut"
-        });
-    }
-
-    const coins = document.querySelectorAll('.coin');
-    coins.forEach((coin, index) => {
-        gsap.to(coin, {
-            y: -20,
-            rotation: index === 0 ? 10 : -10,
-            duration: 2,
-            delay: index * 0.2,
-            repeat: -1,
-            yoyo: true,
-            ease: "power1.inOut"
-        });
-    });
-}
-
-function startProgressBar() {
-    const progress = document.querySelector('.progress');
-    if (!progress) {
-        console.error('Progress bar not found');
-        hideLoadingScreen();
-        return;
-    }
-
-    let width = 0;
-    const interval = setInterval(() => {
-        if (width >= 100) {
-            clearInterval(interval);
-            hideLoadingScreen();
-        } else {
-            width += 1;
-            progress.style.width = width + '%';
-        }
-    }, 30);
-}
-
-function hideLoadingScreen() {
-    console.log('Hiding loading screen');
-    const loadingContainer = document.querySelector('.loading-container');
-    const mainContent = document.querySelector('.main-content');
-    
-    if (!loadingContainer || !mainContent) {
-        console.error('Required elements not found for hiding');
-        return;
-    }
-
-    try {
-        // Show main content first
-        mainContent.style.display = 'block';
         
-        // Force a reflow
-        void mainContent.offsetHeight;
-
-        // Add transitions
-        requestAnimationFrame(() => {
-            loadingContainer.style.opacity = '0';
-            loadingContainer.style.visibility = 'hidden';
-            mainContent.style.opacity = '1';
-            mainContent.style.visibility = 'visible';
-            
-            // Remove loading container after transition
+        // Update status items based on progress
+        if (progress >= 30) statusItems[0].classList.add('completed');
+        if (progress >= 60) statusItems[1].classList.add('completed');
+        if (progress >= 90) statusItems[2].classList.add('completed');
+        
+        if (progress >= 100) {
+            clearInterval(progressInterval);
             setTimeout(() => {
-                if (loadingContainer.parentNode) {
-                    loadingContainer.parentNode.removeChild(loadingContainer);
-                }
-                console.log('Loading screen removed');
+                document.body.classList.remove('loading');
+                loadingOverlay.classList.add('hidden');
+                mainContent.classList.add('visible');
             }, 500);
-        });
-    } catch (error) {
-        console.error('Error hiding loading screen:', error);
-        // Fallback: force remove loading screen
-        if (loadingContainer.parentNode) {
-            loadingContainer.parentNode.removeChild(loadingContainer);
         }
-        mainContent.style.display = 'block';
-        mainContent.style.opacity = '1';
-        mainContent.style.visibility = 'visible';
-    }
-}
-
-// Remove or comment out the updateConnectionStatus function if not needed
-// function updateConnectionStatus() { ... }
-
-// Start your other initializations after the loading screen is gone
-function initializeApp() {
-    // Your other initialization code here
-    console.log('App initialized');
+    }, 30); // Adjust timing as needed
 }
 
 function initializeLoadingStates() {
@@ -301,9 +169,9 @@ setInterval(updateAllStats, 10000);
 
 // Chart optimization
 const chartOptions = {
-            responsive: true,
-            maintainAspectRatio: false,
-            animation: {
+    responsive: true,
+    maintainAspectRatio: false,
+    animation: {
         duration: 0 // Disable animations for better performance
     },
     elements: {
@@ -317,28 +185,28 @@ const chartOptions = {
     plugins: {
         legend: {
             display: false // Hide legend for better performance
-                }
+        }
+    },
+    scales: {
+        y: {
+            beginAtZero: true,
+            grid: {
+                display: false // Hide grid for better performance
             },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    grid: { 
-                display: false // Hide grid for better performance
-                    },
-                    ticks: { 
+            ticks: {
                 maxTicksLimit: 5 // Limit number of ticks for better performance
-                    }
-                },
-                x: {
-                    grid: { 
-                display: false // Hide grid for better performance
-                    },
-                    ticks: {
-                maxTicksLimit: 6 // Limit number of ticks for better performance
-                    }
-                }
             }
-        };
+        },
+        x: {
+            grid: {
+                display: false // Hide grid for better performance
+            },
+            ticks: {
+                maxTicksLimit: 6 // Limit number of ticks for better performance
+            }
+        }
+    }
+};
 
 // Optimize chart updates
 function updateAllCharts() {
@@ -720,150 +588,38 @@ function updateFooterTimestamp() {
     }
 }
 
-// Wait for both DOM and all resources to load
-window.addEventListener('load', () => {
-    console.log('All resources loaded');
-    initializeLoadingScreen();
-});
-
-function initializeLoadingScreen() {
-    console.log('Initializing loading screen');
-    const loadingContainer = document.querySelector('.loading-container');
+// Loading Screen Handler
+document.addEventListener('DOMContentLoaded', () => {
+    const loadingOverlay = document.querySelector('.loading-overlay');
     const mainContent = document.querySelector('.main-content');
-    
-    if (!loadingContainer || !mainContent) {
-        console.error('Required elements not found');
-        return;
-    }
+    const spinnerCube = document.createElement('div');
+    spinnerCube.className = 'spinner-cube';
+    document.querySelector('.cyber-spinner').appendChild(spinnerCube);
 
-    // Force initial states
-    loadingContainer.style.display = 'flex';
-    loadingContainer.style.opacity = '1';
-    loadingContainer.style.visibility = 'visible';
-    mainContent.style.display = 'none';
-    mainContent.style.opacity = '0';
-    mainContent.style.visibility = 'hidden';
+    // Add cyber grid
+    const cyberGrid = document.createElement('div');
+    cyberGrid.className = 'cyber-grid';
+    loadingOverlay.appendChild(cyberGrid);
 
-    // Initialize components
-    initializeParticles();
-    initializeAnimations();
-    startProgressBar();
-}
+    // Initialize loading screen
+    document.body.classList.add('loading');
 
-function initializeParticles() {
-    console.log('Initializing particles');
-    if (window.particlesJS && document.getElementById('particles')) {
-        particlesJS('particles', {
-            particles: {
-                number: { value: 30 },
-                color: { value: '#ffffff' },
-                shape: { type: 'circle' },
-                opacity: {
-                    value: 0.5,
-                    random: true
-                },
-                size: {
-                    value: 3,
-                    random: true
-                },
-                move: {
-                    enable: true,
-                    speed: 2,
-                    direction: 'none',
-                    random: true,
-                    out_mode: 'out'
-                }
-            }
-        });
-    } else {
-        console.warn('ParticlesJS not available or particles container not found');
-    }
-}
-
-function initializeAnimations() {
-    console.log('Initializing animations');
-    if (window.gsap) {
-        // Wallet animation
-        const wallet = document.querySelector('.wallet-body');
-        if (wallet) {
-            gsap.to(wallet, {
-                rotationY: 10,
-                rotationX: 5,
-                duration: 2,
-                repeat: -1,
-                yoyo: true,
-                ease: "power1.inOut"
-            });
-        }
-
-        // Coins animation
-        const coins = document.querySelectorAll('.coin');
-        coins.forEach((coin, index) => {
-            gsap.to(coin, {
-                y: -20,
-                rotation: index === 0 ? 10 : -10,
-                duration: 2,
-                delay: index * 0.2,
-                repeat: -1,
-                yoyo: true,
-                ease: "power1.inOut"
-            });
-        });
-    } else {
-        console.warn('GSAP not available');
-    }
-}
-
-function startProgressBar() {
-    console.log('Starting progress bar');
-    const progress = document.querySelector('.progress');
-    if (!progress) {
-        console.error('Progress bar not found');
-        return;
-    }
-
-    let width = 0;
-    const interval = setInterval(() => {
-        if (width >= 100) {
-            clearInterval(interval);
-            hideLoadingScreen();
-        } else {
-            width += 1;
-            progress.style.width = width + '%';
-        }
-    }, 30);
-}
-
-function hideLoadingScreen() {
-    console.log('Hiding loading screen');
-    const loadingContainer = document.querySelector('.loading-container');
-    const mainContent = document.querySelector('.main-content');
-    
-    if (!loadingContainer || !mainContent) {
-        console.error('Required elements not found for hiding');
-        return;
-    }
-
-    // Show main content first
-    mainContent.style.display = 'block';
-    
-    // Force a reflow
-    void mainContent.offsetHeight;
-
-    // Add transitions
+    // Simulate loading progress
     setTimeout(() => {
-        loadingContainer.style.opacity = '0';
-        loadingContainer.style.visibility = 'hidden';
-        mainContent.style.opacity = '1';
-        mainContent.style.visibility = 'visible';
+        loadingOverlay.classList.add('fade-out');
+        document.body.classList.remove('loading');
+        mainContent.classList.add('visible');
         
-        // Remove loading container from DOM after transition
+        // Remove loading overlay after animation
         setTimeout(() => {
-            loadingContainer.style.display = 'none';
-            console.log('Loading screen removed');
+            loadingOverlay.style.display = 'none';
         }, 500);
-    }, 100);
-}
+
+        // Initialize charts and start updates
+        initializeCharts();
+        startUpdates();
+    }, 2000);
+});
 
 function startUpdates() {
     // Update stats and charts every 2 seconds
@@ -872,6 +628,7 @@ function startUpdates() {
         updateAllCharts();
     }, 2000);
 }
+
 // Generate random SOL profit between 0.05 and 14.92
 function getRandomProfit() {
     return (Math.random() * (14.92 - 0.05) + 0.05).toFixed(2);
@@ -1033,220 +790,4 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Update connection status periodically
     setInterval(updateConnectionStatus, 5000);
-});
-
-// Network Stats Update
-function updateNetworkStats() {
-    const tps = document.getElementById('networkTPS');
-    const blockHeight = document.getElementById('blockHeight');
-    const gasPrice = document.getElementById('gasPrice');
-    const latency = document.getElementById('networkLatency');
-
-    // Simulate real-time updates
-    if (tps) tps.textContent = (4000 + Math.floor(Math.random() * 1000)).toLocaleString();
-    if (blockHeight) blockHeight.textContent = (219584932 + Math.floor(Math.random() * 100)).toLocaleString();
-    if (gasPrice) gasPrice.textContent = (0.000001 + Math.random() * 0.000001).toFixed(6);
-    if (latency) latency.textContent = (10 + Math.floor(Math.random() * 5)) + 'ms';
-}
-
-// Mini Charts for Stats
-function initializeMiniCharts() {
-    document.querySelectorAll('.stat-chart.mini').forEach(chart => {
-        const ctx = document.createElement('canvas');
-        chart.appendChild(ctx);
-        
-        new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: Array(10).fill(''),
-                datasets: [{
-                    data: Array(10).fill(0).map(() => Math.random() * 100),
-                    borderColor: 'rgba(0, 255, 255, 0.5)',
-                    borderWidth: 1,
-                    fill: true,
-                    backgroundColor: 'rgba(0, 255, 255, 0.1)',
-                    tension: 0.4,
-                    pointRadius: 0
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
-                scales: {
-                    x: { display: false },
-                    y: { display: false }
-                },
-                animation: false
-            }
-        });
-    });
-}
-
-// MEV Distribution Chart
-function initializeMEVDistributionChart() {
-    const ctx = document.getElementById('mevDistributionChart');
-    if (!ctx) return;
-
-    return new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: Array(24).fill('').map((_, i) => `${23-i}h`),
-            datasets: [
-                {
-                    label: 'Arbitrage',
-                    data: Array(24).fill(0).map(() => Math.random() * 100),
-                    borderColor: 'rgba(0, 255, 255, 1)',
-                    backgroundColor: 'rgba(0, 255, 255, 0.1)',
-                    tension: 0.4
-                },
-                {
-                    label: 'Sandwich',
-                    data: Array(24).fill(0).map(() => Math.random() * 100),
-                    borderColor: 'rgba(255, 0, 255, 1)',
-                    backgroundColor: 'rgba(255, 0, 255, 0.1)',
-                    tension: 0.4
-                },
-                {
-                    label: 'Liquidation',
-                    data: Array(24).fill(0).map(() => Math.random() * 100),
-                    borderColor: 'rgba(255, 255, 0, 1)',
-                    backgroundColor: 'rgba(255, 255, 0, 0.1)',
-                    tension: 0.4
-                }
-            ]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            interaction: {
-                intersect: false,
-                mode: 'index'
-            },
-            plugins: {
-                legend: { display: false },
-                tooltip: {
-                    backgroundColor: 'rgba(0, 0, 51, 0.9)',
-                    borderColor: 'rgba(0, 255, 255, 0.5)',
-                    borderWidth: 1,
-                    titleColor: '#00ffff',
-                    bodyColor: '#fff',
-                    callbacks: {
-                        label: function(context) {
-                            return `${context.dataset.label}: ${context.raw.toFixed(1)} ops`;
-                        }
-                    }
-                }
-            },
-            scales: {
-                x: {
-                    grid: {
-                        color: 'rgba(0, 255, 255, 0.1)',
-                        borderColor: 'rgba(0, 255, 255, 0.5)'
-                    },
-                    ticks: { color: '#00ffff' }
-                },
-                y: {
-                    grid: {
-                        color: 'rgba(0, 255, 255, 0.1)',
-                        borderColor: 'rgba(0, 255, 255, 0.5)'
-                    },
-                    ticks: { color: '#00ffff' }
-                }
-            }
-        }
-    });
-}
-
-// Profit Analysis Chart
-function initializeProfitAnalysisChart() {
-    const ctx = document.getElementById('profitAnalysisChart');
-    if (!ctx) return;
-
-    return new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: Array(24).fill('').map((_, i) => `${23-i}h`),
-            datasets: [{
-                label: 'Profit (SOL)',
-                data: Array(24).fill(0).map(() => Math.random() * 20),
-                backgroundColor: 'rgba(0, 255, 255, 0.3)',
-                borderColor: 'rgba(0, 255, 255, 1)',
-                borderWidth: 1
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { display: false },
-                tooltip: {
-                    backgroundColor: 'rgba(0, 0, 51, 0.9)',
-                    borderColor: 'rgba(0, 255, 255, 0.5)',
-                    borderWidth: 1,
-                    titleColor: '#00ffff',
-                    bodyColor: '#fff',
-                    callbacks: {
-                        label: function(context) {
-                            return `Profit: ${context.raw.toFixed(2)} SOL`;
-                        }
-                    }
-                }
-            },
-            scales: {
-                x: {
-                    grid: {
-                        color: 'rgba(0, 255, 255, 0.1)',
-                        borderColor: 'rgba(0, 255, 255, 0.5)'
-                    },
-                    ticks: { color: '#00ffff' }
-                },
-                y: {
-                    grid: {
-                        color: 'rgba(0, 255, 255, 0.1)',
-                        borderColor: 'rgba(0, 255, 255, 0.5)'
-                    },
-                    ticks: { 
-                        color: '#00ffff',
-                        callback: function(value) {
-                            return value.toFixed(1) + ' SOL';
-                        }
-                    }
-                }
-            }
-        }
-    });
-}
-
-// Initialize all charts
-document.addEventListener('DOMContentLoaded', function() {
-    initializeMiniCharts();
-    const mevChart = initializeMEVDistributionChart();
-    const profitChart = initializeProfitAnalysisChart();
-
-    // Update network stats every 2 seconds
-    setInterval(updateNetworkStats, 2000);
-
-    // Update charts every 5 seconds
-    setInterval(() => {
-        if (mevChart && profitChart) {
-            mevChart.data.datasets.forEach(dataset => {
-                dataset.data = dataset.data.map(() => Math.random() * 100);
-            });
-            profitChart.data.datasets[0].data = profitChart.data.datasets[0].data.map(() => Math.random() * 20);
-            
-            mevChart.update('none');
-            profitChart.update('none');
-        }
-    }, 5000);
-
-    // Time filter functionality
-    document.querySelectorAll('.time-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-            document.querySelectorAll('.time-btn').forEach(b => b.classList.remove('active'));
-            this.classList.add('active');
-            // Update chart data based on selected time range
-            // ... (implement time range filtering logic)
-        });
-    });
 });
