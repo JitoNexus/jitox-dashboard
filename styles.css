@@ -250,10 +250,10 @@ body {
 }
 
 .loading-text {
-    color: var(--neon-blue);
+    color: var(--neon-cyan);
     font-size: 24px;
     font-weight: bold;
-    text-shadow: 0 0 10px var(--neon-blue);
+    text-shadow: 0 0 10px var(--neon-cyan);
     margin-bottom: 20px;
 }
 
@@ -280,7 +280,7 @@ body {
 }
 
 .status-item i {
-    color: var(--neon-blue);
+    color: var(--neon-cyan);
 }
 
 .loading-progress {
@@ -295,10 +295,10 @@ body {
 
 .progress-bar {
     height: 100%;
-    background: var(--neon-blue);
+    background: var(--neon-cyan);
     width: 0;
     transition: width 0.3s ease-in-out;
-    box-shadow: 0 0 10px var(--neon-blue);
+    box-shadow: 0 0 10px var(--neon-cyan);
 }
 
 .progress-percentage {
@@ -703,6 +703,7 @@ html, body {
 
 /* Content Sections */
 .content-section {
+    display: none;
     height: calc(100vh - 150px);
     padding: 10px;
     margin: 0;
@@ -712,8 +713,8 @@ html, body {
     background: var(--deep-blue);
 }
 
-.content-section:not(.active) {
-    display: none;
+.content-section.active {
+    display: block;
 }
 
 /* Stats Grid */
