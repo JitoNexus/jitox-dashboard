@@ -48,15 +48,16 @@ function createParticles() {
     }
 }
 
-// Progress bar animation
-function animateProgress() {
+// Progress bar animation with callback
+function animateProgress(onComplete) {
     const progress = document.querySelector('.progress');
     gsap.to(progress, {
         width: '100%',
         duration: 3,
         ease: 'power1.inOut',
-        repeat: -1,
-        yoyo: true
+        onComplete: () => {
+            if (onComplete) onComplete();
+        }
     });
 }
 
@@ -104,11 +105,26 @@ function animateText() {
     });
 }
 
+// Hide loading screen
+function hideLoadingScreen() {
+    const loadingContainer = document.querySelector('.loading-container');
+    const mainContent = document.querySelector('.main-content');
+    
+    loadingContainer.classList.add('hidden');
+    if (mainContent) {
+        mainContent.classList.add('visible');
+    }
+}
+
 // Initialize all animations
 window.addEventListener('load', () => {
     createParticles();
-    animateProgress();
     animateCoins();
     pulseWallet();
     animateText();
+    
+    // Start progress bar animation and hide loading screen when complete
+    animateProgress(() => {
+        setTimeout(hideLoadingScreen, 500); // Add a small delay for smoother transition
+    });
 }); 
