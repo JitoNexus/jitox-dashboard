@@ -14,6 +14,25 @@ const MAX_CHANGE_PERCENT = 0.05;
 let isUpdating = false;
 let scrollTimeout;
 
+// Wait for document to be fully loaded
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize loading sequence
+    initializeLoadingSequence();
+    
+    // Initialize other components
+    initializeCharts();
+    initializeTabs();
+    addHexagonalBackground();
+    startContinuousUpdates();
+    
+    // Add scroll event listener
+    document.addEventListener('scroll', () => {
+        throttleScroll(() => {
+            // Add any scroll-based animations or updates here
+        });
+    }, { passive: true });
+});
+
 // Throttle scroll events
 function throttleScroll(callback) {
     if (!isUpdating) {
@@ -25,28 +44,12 @@ function throttleScroll(callback) {
     }
 }
 
-// Handle scroll events
-document.addEventListener('scroll', () => {
-    throttleScroll(() => {
-        // Add any scroll-based animations or updates here
-    });
-}, { passive: true });
-
 function getSmoothedValue(currentValue, targetValue, maxChangePercent) {
     const difference = targetValue - currentValue;
     const maxChange = Math.abs(currentValue * maxChangePercent);
     if (Math.abs(difference) <= maxChange) return targetValue;
     return currentValue + (Math.sign(difference) * maxChange);
 }
-
-document.addEventListener('DOMContentLoaded', () => {
-    initializeLoadingSequence();
-    // Initialize other components
-    initializeCharts();
-    initializeTabs();
-    addHexagonalBackground();
-    startContinuousUpdates();
-});
 
 function initializeLoadingSequence() {
     const loadingOverlay = document.querySelector('.loading-overlay');
@@ -55,17 +58,20 @@ function initializeLoadingSequence() {
     const progressPercentage = document.querySelector('.progress-percentage');
     const statusItems = document.querySelectorAll('.status-item');
     
+    if (!loadingOverlay || !mainContent || !progressBar || !progressPercentage) {
+        console.error('Required elements not found');
+        return;
+    }
+    
     let progress = 0;
     const progressInterval = setInterval(() => {
         progress += 1;
-        if (progressPercentage) {
-            progressPercentage.textContent = `${progress}%`;
-        }
+        progressPercentage.textContent = `${progress}%`;
         
         // Update status items based on progress
-        if (progress >= 30) statusItems[0].classList.add('completed');
-        if (progress >= 60) statusItems[1].classList.add('completed');
-        if (progress >= 90) statusItems[2].classList.add('completed');
+        if (statusItems.length > 0 && progress >= 30) statusItems[0].classList.add('completed');
+        if (statusItems.length > 1 && progress >= 60) statusItems[1].classList.add('completed');
+        if (statusItems.length > 2 && progress >= 90) statusItems[2].classList.add('completed');
         
         if (progress >= 100) {
             clearInterval(progressInterval);
@@ -75,7 +81,7 @@ function initializeLoadingSequence() {
                 mainContent.classList.add('visible');
             }, 500);
         }
-    }, 30); // Adjust timing as needed
+    }, 30);
 }
 
 function initializeLoadingStates() {
