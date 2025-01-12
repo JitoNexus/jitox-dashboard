@@ -2839,4 +2839,31 @@ body {
     will-change: width;
 }
 
+/* Basic loading screen */
+.loading-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background-color: #1a1a1a;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    transition: opacity 0.5s ease;
+}
+
+.loading-text {
+    color: #ffffff;
+    font-size: 1.5rem;
+    text-align: center;
+}
+
+.main-content {
+    display: none;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
 /* ... rest of your existing styles ... */

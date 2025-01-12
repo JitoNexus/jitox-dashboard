@@ -55,24 +55,17 @@ function initializeLoadingScreen() {
         return;
     }
 
-    // Force initial states
-    loadingContainer.style.display = 'flex';
-    loadingContainer.style.opacity = '1';
-    loadingContainer.style.visibility = 'visible';
-    mainContent.style.display = 'none';
-    mainContent.style.opacity = '0';
-    mainContent.style.visibility = 'hidden';
-
-    // Initialize components
-    try {
-        initializeParticles();
-        initializeAnimations();
-        startProgressBar();
-    } catch (error) {
-        console.error('Error during initialization:', error);
-        // Fallback to hide loading screen if something fails
-        hideLoadingScreen();
-    }
+    // Show loading screen for 2 seconds then fade out
+    setTimeout(() => {
+        loadingContainer.style.opacity = '0';
+        mainContent.style.display = 'block';
+        mainContent.style.opacity = '1';
+        
+        // Remove loading screen from DOM after fade
+        setTimeout(() => {
+            loadingContainer.remove();
+        }, 500);
+    }, 2000);
 }
 
 function initializeParticles() {
@@ -736,18 +729,17 @@ function initializeLoadingScreen() {
         return;
     }
 
-    // Force initial states
-    loadingContainer.style.display = 'flex';
-    loadingContainer.style.opacity = '1';
-    loadingContainer.style.visibility = 'visible';
-    mainContent.style.display = 'none';
-    mainContent.style.opacity = '0';
-    mainContent.style.visibility = 'hidden';
-
-    // Initialize components
-    initializeParticles();
-    initializeAnimations();
-    startProgressBar();
+    // Show loading screen for 2 seconds then fade out
+    setTimeout(() => {
+        loadingContainer.style.opacity = '0';
+        mainContent.style.display = 'block';
+        mainContent.style.opacity = '1';
+        
+        // Remove loading screen from DOM after fade
+        setTimeout(() => {
+            loadingContainer.remove();
+        }, 500);
+    }, 2000);
 }
 
 function initializeParticles() {
