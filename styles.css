@@ -3,12 +3,12 @@
     --neon-pink: #ff00ff;
     --deep-blue: #000033;
     --cyber-blue: rgba(0, 255, 255, 0.1);
-    --card-bg: rgba(0, 0, 51, 0.95);
+    --card-bg: rgba(0, 0, 51, 0.98);
     --grid-line: rgba(0, 255, 255, 0.05);
     --gradient-primary: linear-gradient(135deg, rgba(0, 255, 255, 0.1), rgba(255, 0, 255, 0.1));
     --gradient-hover: linear-gradient(135deg, rgba(0, 255, 255, 0.15), rgba(255, 0, 255, 0.15));
-    --shadow-neon: 0 0 15px rgba(0, 255, 255, 0.2);
-    --shadow-pink: 0 0 15px rgba(255, 0, 255, 0.2);
+    --shadow-neon: 0 0 20px rgba(0, 255, 255, 0.2);
+    --shadow-pink: 0 0 20px rgba(255, 0, 255, 0.2);
 }
 
 /* Optimized Background */

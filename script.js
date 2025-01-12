@@ -39,66 +39,37 @@ function getSmoothedValue(currentValue, targetValue, maxChangePercent) {
     return currentValue + (Math.sign(difference) * maxChange);
 }
 
-// Initialize loading screen and main content
+// Initialize loading sequence
 function initializeLoadingSequence() {
-    console.log('Initializing loading screen');
     const loadingOverlay = document.querySelector('.loading-overlay');
     const mainContent = document.querySelector('.main-content');
-    const progressBar = document.querySelector('.progress-bar');
-    const progressText = document.querySelector('.progress-percentage');
     const statusItems = document.querySelectorAll('.status-item');
+    const progressBar = document.querySelector('.progress-bar');
+    const progressPercentage = document.querySelector('.progress-percentage');
     
-    if (!loadingOverlay || !mainContent) {
-        console.error('Required elements not found');
-        // Show main content if loading screen is not available
-        if (mainContent) {
-            mainContent.style.display = 'block';
-            mainContent.classList.add('visible');
-            initializeCharts();
-            startContinuousUpdates();
-        }
-        return;
-    }
-
-    // Show loading screen
-    document.body.classList.add('loading');
-    loadingOverlay.style.display = 'flex';
-    mainContent.style.display = 'none';
-
-    // Make status items visible one by one
-    statusItems.forEach((item, index) => {
-        setTimeout(() => {
-            item.classList.add('visible');
-        }, index * 500);
-    });
-
-    // Simulate loading progress
-    let progress = 0;
-    const progressInterval = setInterval(() => {
-        progress += 5;
-        if (progressBar) progressBar.style.width = `${progress}%`;
-        if (progressText) progressText.textContent = `${progress}%`;
-        
-        if (progress >= 100) {
-            clearInterval(progressInterval);
-            // Hide loading screen and show main content
+    mainContent.style.opacity = '0';
+    let currentStep = 0;
+    
+    function showNextStatus() {
+        if (currentStep < statusItems.length) {
+            statusItems[currentStep].style.opacity = '1';
+            statusItems[currentStep].style.transform = 'translateY(0)';
+            const progress = ((currentStep + 1) / statusItems.length) * 100;
+            progressBar.style.width = `${progress}%`;
+            progressPercentage.textContent = `${Math.round(progress)}%`;
+            currentStep++;
+            setTimeout(showNextStatus, 800);
+        } else {
             setTimeout(() => {
                 loadingOverlay.classList.add('fade-out');
-                document.body.classList.remove('loading');
-                mainContent.style.display = 'block';
-                mainContent.classList.add('visible');
-                
-                // Remove loading overlay after animation
-                setTimeout(() => {
-                    loadingOverlay.style.display = 'none';
-                }, 500);
-
-                // Initialize other components
+                mainContent.style.opacity = '1';
                 initializeCharts();
                 startContinuousUpdates();
             }, 500);
         }
-    }, 50);
+    }
+    
+    showNextStatus();
 }
 
 // Document ready handler
@@ -136,14 +107,15 @@ function initializeLoadingStates() {
 
 // Initialize continuous updates
 function startContinuousUpdates() {
-    // Update network stats every 2 seconds
-    setInterval(() => {
-        updateNetworkStats();
-    }, 2000);
-    
     // Update charts every 5 seconds
     setInterval(() => {
-        updateAllCharts();
+        const charts = Chart.getChart('mevDistributionChart');
+        if (charts) {
+            charts.data.datasets.forEach(dataset => {
+                dataset.data = dataset.data.map(() => Math.floor(Math.random() * 100));
+            });
+            charts.update();
+        }
     }, 5000);
 }
 
@@ -259,79 +231,111 @@ function updateAllCharts() {
 
 // Optimize chart initialization
 function initializeCharts() {
-    try {
-        // SOL Gained Chart
-        const solCtx = document.getElementById('solGainedChart');
-        if (solCtx) {
-            solChart = new Chart(solCtx, {
-                type: 'line',
-                data: {
-                    labels: Array(12).fill('').map((_, i) => `${11-i}h`),
-                    datasets: [{
-                        data: Array(12).fill(0).map(() => getRandomData(100, 1000)),
-                        borderColor: '#ff00ff',
-                        backgroundColor: 'rgba(255, 0, 255, 0.1)',
-                        fill: true
-                    }]
-                },
-                options: chartOptions
-            });
-        }
-
-        // MEV Operations Chart
-        const mevCtx = document.getElementById('mevOpsChart');
-        if (mevCtx) {
-            mevChart = new Chart(mevCtx, {
-                type: 'bar',
-                data: {
-                    labels: ['Arb', 'Sand', 'Liq', 'Other'],
-                    datasets: [{
-                        data: [
-                            getRandomData(10, 500),
-                            getRandomData(24, 700),
-                            getRandomData(10, 300),
-                            getRandomData(5, 200)
-                        ],
-                        backgroundColor: [
-                            'rgba(0, 255, 255, 0.7)',
-                            'rgba(255, 0, 255, 0.7)',
-                            'rgba(255, 255, 0, 0.7)',
-                            'rgba(0, 255, 0, 0.7)'
-                        ]
-                    }]
-                },
-                options: chartOptions
-            });
-        }
-
-        // Sandwich Opportunities Chart
-        const sandwichCtx = document.getElementById('sandwichChart');
-        if (sandwichCtx) {
-            sandwichChart = new Chart(sandwichCtx, {
-                type: 'doughnut',
-                data: {
-                    labels: ['High', 'Med', 'Low'],
-                    datasets: [{
-                        data: [35, 45, 20],
-                        backgroundColor: [
-                            'rgba(255, 0, 255, 0.8)',
-                            'rgba(0, 255, 255, 0.8)',
-                            'rgba(255, 255, 0, 0.8)'
-                        ]
-                    }]
-                },
-                options: {
-                    ...chartOptions,
-                    cutout: '60%',
-                    radius: '90%'
+    // MEV Distribution Chart
+    const mevCtx = document.getElementById('mevDistributionChart').getContext('2d');
+    new Chart(mevCtx, {
+        type: 'line',
+        data: {
+            labels: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00'],
+            datasets: [{
+                label: 'Arbitrage',
+                data: [65, 75, 85, 95, 80, 90],
+                borderColor: '#00ffff',
+                backgroundColor: 'rgba(0, 255, 255, 0.1)',
+                tension: 0.4
+            }, {
+                label: 'Sandwich',
+                data: [45, 55, 65, 75, 60, 70],
+                borderColor: '#ff00ff',
+                backgroundColor: 'rgba(255, 0, 255, 0.1)',
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'top',
+                    labels: {
+                        color: '#00ffff',
+                        font: {
+                            family: "'Courier New', monospace"
+                        }
+                    }
                 }
-            });
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        color: 'rgba(0, 255, 255, 0.1)'
+                    },
+                    ticks: {
+                        color: '#00ffff'
+                    }
+                },
+                x: {
+                    grid: {
+                        color: 'rgba(0, 255, 255, 0.1)'
+                    },
+                    ticks: {
+                        color: '#00ffff'
+                    }
+                }
+            }
         }
+    });
 
-        console.log('Charts initialized with optimized settings');
-    } catch (error) {
-        console.error('Error initializing charts:', error);
-    }
+    // Profit Analysis Chart
+    const profitCtx = document.getElementById('profitAnalysisChart').getContext('2d');
+    new Chart(profitCtx, {
+        type: 'bar',
+        data: {
+            labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+            datasets: [{
+                label: 'Daily Profit (SOL)',
+                data: [12, 19, 15, 17, 14, 16, 18],
+                backgroundColor: 'rgba(0, 255, 255, 0.2)',
+                borderColor: '#00ffff',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'top',
+                    labels: {
+                        color: '#00ffff',
+                        font: {
+                            family: "'Courier New', monospace"
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        color: 'rgba(0, 255, 255, 0.1)'
+                    },
+                    ticks: {
+                        color: '#00ffff'
+                    }
+                },
+                x: {
+                    grid: {
+                        color: 'rgba(0, 255, 255, 0.1)'
+                    },
+                    ticks: {
+                        color: '#00ffff'
+                    }
+                }
+            }
+        }
+    });
 }
 
 // Optimize performance with throttling
@@ -1118,4 +1122,18 @@ document.addEventListener('visibilitychange', () => {
     if (!document.hidden) {
         gitAutoPush();
     }
+});
+
+// Handle tab switching
+document.querySelectorAll('.cyber-button').forEach(button => {
+    button.addEventListener('click', () => {
+        const targetId = button.getAttribute('data-target');
+        
+        // Update active states
+        document.querySelectorAll('.cyber-button').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.content-section').forEach(section => section.classList.remove('active'));
+        
+        button.classList.add('active');
+        document.getElementById(targetId).classList.add('active');
+    });
 });
