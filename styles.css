@@ -644,6 +644,7 @@ html, body {
     background: rgba(0, 255, 255, 0.05);
     border-radius: 12px;
     border: 1px solid rgba(0, 255, 255, 0.1);
+    min-width: 120px;
 }
 
 .status-dot {
@@ -653,14 +654,14 @@ html, body {
     border-radius: 50%;
     box-shadow: 0 0 8px #00ff00;
     flex-shrink: 0;
-    margin-right: 2px;
+    margin-right: 4px;
 }
 
-.latency {
-    font-size: 12px;
+.status-label {
     color: var(--neon-cyan);
+    font-size: 11px;
     white-space: nowrap;
-    line-height: 1;
+    margin-left: 4px;
 }
 
 @media (max-width: 768px) {
@@ -2335,6 +2336,7 @@ body {
     background: rgba(0, 255, 255, 0.05);
     border-radius: 12px;
     border: 1px solid rgba(0, 255, 255, 0.1);
+    min-width: 120px;
 }
 
 .status-dot {
@@ -2344,20 +2346,14 @@ body {
     border-radius: 50%;
     box-shadow: 0 0 8px #00ff00;
     flex-shrink: 0;
-    margin-right: 2px;
-}
-
-.latency {
-    font-size: 12px;
-    color: var(--neon-cyan);
-    white-space: nowrap;
-    line-height: 1;
+    margin-right: 4px;
 }
 
 .status-label {
     color: var(--neon-cyan);
     font-size: 11px;
     white-space: nowrap;
+    margin-left: 4px;
 }
 
 .security-info {

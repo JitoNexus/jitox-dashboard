@@ -1,11 +1,109 @@
 // Global variables for charts and previous values
 let solChart, mevChart, sandwichChart, aiPerformanceChart;
-let previousStats = {
-    'Active Searchers': 5000,
-    'Active MEV Operations': 500,
-    'Ongoing Arbitrage': 100,
-    'Ongoing Sandwich': 200
+let previousStats = JSON.parse(localStorage.getItem('dashboardStats')) || {
+    activeSearchers: Math.floor(Math.random() * 500) + 200,
+    activeMEV: Math.floor(Math.random() * 2000) + 1000,
+    ongoingArbitrage: Math.floor(Math.random() * 200) + 100,
+    ongoingSandwich: Math.floor(Math.random() * 150) + 50,
+    successRate: 98.7,
+    avgProfit: Math.floor(Math.random() * 5) + 2,
+    avgLatency: 0.12,
+    patternsFound: Math.floor(Math.random() * 1000) + 500,
+    threatsBlocked: Math.floor(Math.random() * 100) + 50,
+    uptime: 99.99
 };
+
+// Save stats to localStorage
+localStorage.setItem('dashboardStats', JSON.stringify(previousStats));
+
+// Function to format numbers without decimals
+function formatNumber(value) {
+    return Math.round(value).toLocaleString();
+}
+
+// Function to animate value changes
+function animateValue(element, start, end, duration, formatter = formatNumber) {
+    const range = end - start;
+    const increment = range / (duration / 16);
+    let current = start;
+    
+    const animate = () => {
+        current += increment;
+        if ((increment >= 0 && current >= end) || (increment < 0 && current <= end)) {
+            element.textContent = formatter(end);
+            return;
+        }
+        element.textContent = formatter(current);
+        requestAnimationFrame(animate);
+    };
+    
+    animate();
+}
+
+// Function to update stats
+function updateStats() {
+    // Update active searchers (random fluctuation ±5%)
+    const fluctuation = 0.05;
+    Object.keys(previousStats).forEach(key => {
+        if (typeof previousStats[key] === 'number') {
+            const baseValue = previousStats[key];
+            const randomChange = (Math.random() * 2 - 1) * fluctuation;
+            previousStats[key] = Math.max(0, baseValue * (1 + randomChange));
+        }
+    });
+    
+    // Update DOM elements
+    document.querySelectorAll('[data-stat]').forEach(element => {
+        const statKey = element.dataset.stat;
+        if (previousStats[statKey] !== undefined) {
+            const value = previousStats[statKey];
+            animateValue(element, parseFloat(element.textContent.replace(/,/g, '')), value, 1000);
+        }
+    });
+    
+    // Save updated stats
+    localStorage.setItem('dashboardStats', JSON.stringify(previousStats));
+}
+
+// Initialize stats display
+document.addEventListener('DOMContentLoaded', () => {
+    // Initial stats display
+    document.querySelectorAll('[data-stat]').forEach(element => {
+        const statKey = element.dataset.stat;
+        if (previousStats[statKey] !== undefined) {
+            element.textContent = formatNumber(previousStats[statKey]);
+        }
+    });
+    
+    // Start periodic updates
+    setInterval(updateStats, 5000);
+});
+
+// Handle tab switching
+document.querySelectorAll('.cyber-button').forEach(button => {
+    button.addEventListener('click', () => {
+        const targetId = button.getAttribute('data-target');
+        document.querySelectorAll('.content-section').forEach(section => {
+            section.style.display = section.id === targetId ? 'block' : 'none';
+        });
+        
+        // Update active state
+        document.querySelectorAll('.cyber-button').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        button.classList.add('active');
+        
+        // Ensure stats are visible when switching back
+        if (targetId === 'stats') {
+            document.querySelectorAll('[data-stat]').forEach(element => {
+                const statKey = element.dataset.stat;
+                if (previousStats[statKey] !== undefined) {
+                    element.textContent = formatNumber(previousStats[statKey]);
+                }
+            });
+        }
+    });
+});
 
 // Maximum allowed change per update (as percentage of range)
 const MAX_CHANGE_PERCENT = 0.05;
@@ -135,35 +233,34 @@ function updateAllStats() {
         
         if (title && valueElement && ranges[title]) {
             const range = ranges[title];
-            const currentValue = parseInt(valueElement.textContent.replace(/,/g, '')) || 0;
+            const currentValue = parseInt(previousStats[title]) || range.min;
             
             // Calculate new value with smaller change
-            const maxChange = Math.floor((range.max - range.min) * 0.1); // Only allow 10% range change
+            const maxChange = Math.floor((range.max - range.min) * 0.1);
             const minNewValue = Math.max(currentValue - maxChange, range.min);
             const maxNewValue = Math.min(currentValue + maxChange, range.max);
             const newValue = Math.floor(Math.random() * (maxNewValue - minNewValue + 1)) + minNewValue;
             
+            // Store the new value
+            previousStats[title] = newValue;
+            localStorage.setItem('previousStats', JSON.stringify(previousStats));
+            
             // Animate the number change
-            animateValue(valueElement, currentValue, newValue, 4000); // 4 second animation
+            animateValue(valueElement, currentValue, newValue, 4000);
         }
     });
 }
 
-function animateValue(element, start, end, duration, formatter = (val) => Math.round(val).toLocaleString()) {
+function animateValue(element, start, end, duration) {
     const startTime = performance.now();
     const change = end - start;
-    
-    function easeOutQuart(x) {
-        return 1 - Math.pow(1 - x, 4);
-    }
     
     function update(currentTime) {
         const elapsed = currentTime - startTime;
         const progress = Math.min(elapsed / duration, 1);
         
-        const easedProgress = easeOutQuart(progress);
-        const current = Math.round(start + (change * easedProgress));
-        element.textContent = formatter(current);
+        const current = Math.round(start + (change * progress));
+        element.textContent = Math.round(current).toLocaleString();
         
         if (progress < 1) {
             requestAnimationFrame(update);
@@ -851,9 +948,9 @@ function updateNetworkStats() {
         },
         gasPrice: {
             elem: document.getElementById('gasPrice'),
-            min: 0.000001,
-            max: 0.000002,
-            format: (val) => val.toFixed(6)
+            min: 1,
+            max: 2,
+            format: (val) => Math.round(val).toLocaleString()
         },
         networkLatency: {
             elem: document.getElementById('networkLatency'),
@@ -867,7 +964,6 @@ function updateNetworkStats() {
         if (stat.elem) {
             const currentValue = parseFloat(stat.elem.textContent.replace(/[^0-9.-]+/g, ""));
             const targetValue = stat.min + Math.random() * (stat.max - stat.min);
-            
             animateValue(stat.elem, currentValue, targetValue, 2000, stat.format);
         }
     });

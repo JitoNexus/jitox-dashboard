@@ -90,119 +90,90 @@
             <!-- Statistics Section -->
             <section class="content-section statistics-section">
                 <div class="stats-grid">
-                    <div class="cyber-card highlight">
+                    <div class="cyber-card">
                         <div class="card-content">
                             <div class="card-header">
-                                <h2>Active Searchers</h2>
-                                <div class="trend up">
-                                    <i class="fas fa-arrow-up"></i>
-                                    <span>+12.5%</span>
-                                </div>
+                                <h3>Active Searchers</h3>
+                                <i class="fas fa-users"></i>
                             </div>
-                            <div class="stat-value">5,000</div>
-                            <div class="stat-chart mini"></div>
-                        </div>
-                    </div>
-                    <div class="cyber-card highlight">
-                        <div class="card-content">
-                            <div class="card-header">
-                                <h2>Active MEV Operations</h2>
-                                <div class="trend up">
-                                    <i class="fas fa-arrow-up"></i>
-                                    <span>+8.3%</span>
-                                </div>
-                            </div>
-                            <div class="stat-value">500</div>
-                            <div class="stat-chart mini"></div>
+                            <div class="stat-value" data-stat="activeSearchers">247</div>
+                            <div class="trend up">+5.2% from last hour</div>
                         </div>
                     </div>
                     <div class="cyber-card">
                         <div class="card-content">
                             <div class="card-header">
-                                <h2>Ongoing Arbitrage</h2>
-                                <div class="trend down">
-                                    <i class="fas fa-arrow-down"></i>
-                                    <span>-3.2%</span>
-                                </div>
+                                <h3>Active MEV Operations</h3>
+                                <i class="fas fa-robot"></i>
                             </div>
-                            <div class="stat-value">100</div>
-                            <div class="stat-chart mini"></div>
+                            <div class="stat-value" data-stat="activeMEV">1,893</div>
+                            <div class="trend up">+3.8% from last hour</div>
                         </div>
                     </div>
                     <div class="cyber-card">
                         <div class="card-content">
                             <div class="card-header">
-                                <h2>Ongoing Sandwich</h2>
-                                <div class="trend up">
-                                    <i class="fas fa-arrow-up"></i>
-                                    <span>+15.7%</span>
-                                </div>
+                                <h3>Ongoing Arbitrage</h3>
+                                <i class="fas fa-exchange-alt"></i>
                             </div>
-                            <div class="stat-value">200</div>
-                            <div class="stat-chart mini"></div>
+                            <div class="stat-value" data-stat="ongoingArbitrage">156</div>
+                            <div class="trend up">+2.1% from last hour</div>
+                        </div>
+                    </div>
+                    <div class="cyber-card">
+                        <div class="card-content">
+                            <div class="card-header">
+                                <h3>Ongoing Sandwich</h3>
+                                <i class="fas fa-layer-group"></i>
+                            </div>
+                            <div class="stat-value" data-stat="ongoingSandwich">89</div>
+                            <div class="trend down">-1.4% from last hour</div>
                         </div>
                     </div>
                 </div>
 
                 <div class="advanced-metrics">
-                    <div class="metric-card">
-                        <div class="metric-header">
-                            <i class="fas fa-bolt"></i>
-                            <h3>MEV Performance</h3>
-                        </div>
-                        <div class="metric-grid">
-                            <div class="metric-item">
-                                <div class="metric-value">98.7%</div>
-                                <div class="metric-label">Success Rate</div>
-                                <div class="metric-trend up">+2.3%</div>
+                    <div class="cyber-card">
+                        <div class="card-content">
+                            <div class="card-header">
+                                <h3>MEV Performance</h3>
+                                <i class="fas fa-chart-line"></i>
                             </div>
-                            <div class="metric-item">
-                                <div class="metric-value">0.85 SOL</div>
-                                <div class="metric-label">Avg Profit</div>
-                                <div class="metric-trend up">+0.12 SOL</div>
-                            </div>
-                            <div class="metric-item">
-                                <div class="metric-value">12ms</div>
-                                <div class="metric-label">Latency</div>
-                                <div class="metric-trend down">-3ms</div>
-                            </div>
-                            <div class="metric-item">
-                                <div class="metric-value">247</div>
-                                <div class="metric-label">Patterns Found</div>
-                                <div class="metric-trend up">+18</div>
+                            <div class="metric-grid">
+                                <div class="metric-item">
+                                    <span class="metric-label">Success Rate</span>
+                                    <span class="metric-value" data-stat="successRate">98.7%</span>
+                                </div>
+                                <div class="metric-item">
+                                    <span class="metric-label">Avg. Profit</span>
+                                    <span class="metric-value" data-stat="avgProfit">2.8 SOL</span>
+                                </div>
+                                <div class="metric-item">
+                                    <span class="metric-label">Avg. Latency</span>
+                                    <span class="metric-value" data-stat="avgLatency">0.12s</span>
+                                </div>
                             </div>
                         </div>
                     </div>
                     
-                    <div class="metric-card">
-                        <div class="metric-header">
-                            <i class="fas fa-shield-alt"></i>
-                            <h3>Network Security</h3>
-                        </div>
-                        <div class="security-metrics">
-                            <div class="security-gauge">
-                                <div class="gauge-ring">
-                                    <div class="gauge-fill" style="transform: rotate(320deg)"></div>
-                                    <div class="gauge-center">
-                                        <span class="gauge-value">98%</span>
-                                        <span class="gauge-label">Protected</span>
-                                    </div>
-                                </div>
+                    <div class="cyber-card">
+                        <div class="card-content">
+                            <div class="card-header">
+                                <h3>Network Security</h3>
+                                <i class="fas fa-shield-alt"></i>
                             </div>
-                            <div class="security-stats">
-                                <div class="security-stat">
-                                    <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
-                                    <div class="stat-info">
-                                        <div class="stat-value">2,547</div>
-                                        <div class="stat-label">Threats Blocked</div>
-                                    </div>
+                            <div class="metric-grid">
+                                <div class="metric-item">
+                                    <span class="metric-label">Patterns Found</span>
+                                    <span class="metric-value" data-stat="patternsFound">742</span>
                                 </div>
-                                <div class="security-stat">
-                                    <div class="stat-icon"><i class="fas fa-shield-alt"></i></div>
-                                    <div class="stat-info">
-                                        <div class="stat-value">99.9%</div>
-                                        <div class="stat-label">Uptime</div>
-                                    </div>
+                                <div class="metric-item">
+                                    <span class="metric-label">Threats Blocked</span>
+                                    <span class="metric-value" data-stat="threatsBlocked">89</span>
+                                </div>
+                                <div class="metric-item">
+                                    <span class="metric-label">Uptime</span>
+                                    <span class="metric-value" data-stat="uptime">99.99%</span>
                                 </div>
                             </div>
                         </div>
