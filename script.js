@@ -39,44 +39,78 @@ function getSmoothedValue(currentValue, targetValue, maxChangePercent) {
     return currentValue + (Math.sign(difference) * maxChange);
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    initializeLoadingSequence();
-    // Initialize other components
-    initializeCharts();
-    initializeTabs();
-    addHexagonalBackground();
-    startContinuousUpdates();
-});
-
+// Initialize loading screen and main content
 function initializeLoadingSequence() {
+    console.log('Initializing loading screen');
     const loadingOverlay = document.querySelector('.loading-overlay');
     const mainContent = document.querySelector('.main-content');
     const progressBar = document.querySelector('.progress-bar');
-    const progressPercentage = document.querySelector('.progress-percentage');
+    const progressText = document.querySelector('.progress-percentage');
     const statusItems = document.querySelectorAll('.status-item');
     
+    if (!loadingOverlay || !mainContent) {
+        console.error('Required elements not found');
+        // Show main content if loading screen is not available
+        if (mainContent) {
+            mainContent.style.display = 'block';
+            mainContent.classList.add('visible');
+            initializeCharts();
+            startContinuousUpdates();
+        }
+        return;
+    }
+
+    // Show loading screen
+    document.body.classList.add('loading');
+    loadingOverlay.style.display = 'flex';
+    mainContent.style.display = 'none';
+
+    // Make status items visible one by one
+    statusItems.forEach((item, index) => {
+        setTimeout(() => {
+            item.classList.add('visible');
+        }, index * 500);
+    });
+
+    // Simulate loading progress
     let progress = 0;
     const progressInterval = setInterval(() => {
-        progress += 1;
-        if (progressPercentage) {
-            progressPercentage.textContent = `${progress}%`;
-        }
-        
-        // Update status items based on progress
-        if (progress >= 30) statusItems[0].classList.add('completed');
-        if (progress >= 60) statusItems[1].classList.add('completed');
-        if (progress >= 90) statusItems[2].classList.add('completed');
+        progress += 5;
+        if (progressBar) progressBar.style.width = `${progress}%`;
+        if (progressText) progressText.textContent = `${progress}%`;
         
         if (progress >= 100) {
             clearInterval(progressInterval);
+            // Hide loading screen and show main content
             setTimeout(() => {
+                loadingOverlay.classList.add('fade-out');
                 document.body.classList.remove('loading');
-                loadingOverlay.classList.add('hidden');
+                mainContent.style.display = 'block';
                 mainContent.classList.add('visible');
+                
+                // Remove loading overlay after animation
+                setTimeout(() => {
+                    loadingOverlay.style.display = 'none';
+                }, 500);
+
+                // Initialize other components
+                initializeCharts();
+                startContinuousUpdates();
             }, 500);
         }
-    }, 30); // Adjust timing as needed
+    }, 50);
 }
+
+// Document ready handler
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('DOM Content Loaded');
+    initializeLoadingSequence();
+    initializeTabs();
+    addHexagonalBackground();
+    
+    // Initialize connection status with a slight delay
+    setTimeout(updateConnectionStatus, 1000);
+});
 
 function initializeLoadingStates() {
     // Hide loading overlay after initialization
@@ -100,14 +134,17 @@ function initializeLoadingStates() {
     }, 1500);
 }
 
+// Initialize continuous updates
 function startContinuousUpdates() {
+    // Update network stats every 2 seconds
     setInterval(() => {
-        const activeSection = document.querySelector('.content-section[style*="display: block"]');
-        if (activeSection) {
-            const sectionType = activeSection.classList[1].replace('-section', '');
-            initializeSectionContent(sectionType);
-        }
+        updateNetworkStats();
     }, 2000);
+    
+    // Update charts every 5 seconds
+    setInterval(() => {
+        updateAllCharts();
+    }, 5000);
 }
 
 function updateAllStats() {
@@ -140,28 +177,28 @@ function updateAllStats() {
     });
 }
 
-function animateValue(element, start, end, duration) {
-    const range = end - start;
+function animateValue(element, start, end, duration, formatter = (val) => val) {
     const startTime = performance.now();
+    const change = end - start;
     
     function easeOutQuart(x) {
         return 1 - Math.pow(1 - x, 4);
     }
     
-    function updateNumber(currentTime) {
+    function update(currentTime) {
         const elapsed = currentTime - startTime;
         const progress = Math.min(elapsed / duration, 1);
         
         const easedProgress = easeOutQuart(progress);
-        const current = Math.floor(start + (range * easedProgress));
-        element.textContent = current.toLocaleString();
+        const current = start + (change * easedProgress);
+        element.textContent = formatter(current);
         
         if (progress < 1) {
-            requestAnimationFrame(updateNumber);
+            requestAnimationFrame(update);
         }
     }
     
-    requestAnimationFrame(updateNumber);
+    requestAnimationFrame(update);
 }
 
 // Update stats every 10 seconds
@@ -769,18 +806,19 @@ function updateSecurityStatus() {
 
 // Connection Status Updates
 function updateConnectionStatus() {
-    const statusIndicator = document.querySelector('.status-indicator');
+    const statusIndicator = document.querySelector('.status-dot');
     const statusText = document.querySelector('.status-text');
     
-    if (window.solana && window.solana.isConnected) {
-        statusIndicator.style.background = '#00ff00';
-        statusIndicator.style.boxShadow = '0 0 10px #00ff00';
-        statusText.textContent = 'Connected to Solana';
-    } else {
-        statusIndicator.style.background = '#ff0000';
-        statusIndicator.style.boxShadow = '0 0 10px #ff0000';
-        statusText.textContent = 'Disconnected';
+    if (!statusIndicator || !statusText) {
+        console.warn('Connection status elements not found');
+        return;
     }
+    
+    const isConnected = window.solana && window.solana.isConnected;
+    
+    statusIndicator.style.background = isConnected ? '#00ff00' : '#ff0000';
+    statusIndicator.style.boxShadow = `0 0 10px ${isConnected ? '#00ff00' : '#ff0000'}`;
+    statusText.textContent = isConnected ? 'Connected to Solana' : 'Disconnected';
 }
 
 // Initialize Security Features
@@ -790,4 +828,294 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Update connection status periodically
     setInterval(updateConnectionStatus, 5000);
+});
+
+// Network Stats Update with smooth transitions
+function updateNetworkStats() {
+    const stats = {
+        networkTPS: {
+            elem: document.getElementById('networkTPS'),
+            min: 4000,
+            max: 5000,
+            format: (val) => val.toLocaleString()
+        },
+        blockHeight: {
+            elem: document.getElementById('blockHeight'),
+            min: 219584932,
+            max: 219585032,
+            format: (val) => val.toLocaleString()
+        },
+        gasPrice: {
+            elem: document.getElementById('gasPrice'),
+            min: 0.000001,
+            max: 0.000002,
+            format: (val) => val.toFixed(6)
+        },
+        networkLatency: {
+            elem: document.getElementById('networkLatency'),
+            min: 10,
+            max: 15,
+            format: (val) => `${val}ms`
+        }
+    };
+
+    Object.entries(stats).forEach(([key, stat]) => {
+        if (stat.elem) {
+            const currentValue = parseFloat(stat.elem.textContent.replace(/[^0-9.-]+/g, ""));
+            const targetValue = stat.min + Math.random() * (stat.max - stat.min);
+            
+            animateValue(stat.elem, currentValue, targetValue, 2000, stat.format);
+        }
+    });
+}
+
+// Mini Charts for Stats
+function initializeMiniCharts() {
+    document.querySelectorAll('.stat-chart.mini').forEach(chart => {
+        const ctx = document.createElement('canvas');
+        chart.appendChild(ctx);
+        
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: Array(10).fill(''),
+                datasets: [{
+                    data: Array(10).fill(0).map(() => Math.random() * 100),
+                    borderColor: 'rgba(0, 255, 255, 0.5)',
+                    borderWidth: 1,
+                    fill: true,
+                    backgroundColor: 'rgba(0, 255, 255, 0.1)',
+                    tension: 0.4,
+                    pointRadius: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: { display: false },
+                    y: { display: false }
+                },
+                animation: false
+            }
+        });
+    });
+}
+
+// MEV Distribution Chart
+function initializeMEVDistributionChart() {
+    const ctx = document.getElementById('mevDistributionChart');
+    if (!ctx) return;
+
+    return new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: Array(24).fill('').map((_, i) => `${23-i}h`),
+            datasets: [
+                {
+                    label: 'Arbitrage',
+                    data: Array(24).fill(0).map(() => Math.random() * 100),
+                    borderColor: 'rgba(0, 255, 255, 1)',
+                    backgroundColor: 'rgba(0, 255, 255, 0.1)',
+                    tension: 0.4
+                },
+                {
+                    label: 'Sandwich',
+                    data: Array(24).fill(0).map(() => Math.random() * 100),
+                    borderColor: 'rgba(255, 0, 255, 1)',
+                    backgroundColor: 'rgba(255, 0, 255, 0.1)',
+                    tension: 0.4
+                },
+                {
+                    label: 'Liquidation',
+                    data: Array(24).fill(0).map(() => Math.random() * 100),
+                    borderColor: 'rgba(255, 255, 0, 1)',
+                    backgroundColor: 'rgba(255, 255, 0, 0.1)',
+                    tension: 0.4
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: {
+                intersect: false,
+                mode: 'index'
+            },
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: 'rgba(0, 0, 51, 0.9)',
+                    borderColor: 'rgba(0, 255, 255, 0.5)',
+                    borderWidth: 1,
+                    titleColor: '#00ffff',
+                    bodyColor: '#fff',
+                    callbacks: {
+                        label: function(context) {
+                            return `${context.dataset.label}: ${context.raw.toFixed(1)} ops`;
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    grid: {
+                        color: 'rgba(0, 255, 255, 0.1)',
+                        borderColor: 'rgba(0, 255, 255, 0.5)'
+                    },
+                    ticks: { color: '#00ffff' }
+                },
+                y: {
+                    grid: {
+                        color: 'rgba(0, 255, 255, 0.1)',
+                        borderColor: 'rgba(0, 255, 255, 0.5)'
+                    },
+                    ticks: { color: '#00ffff' }
+                }
+            }
+        }
+    });
+}
+
+// Profit Analysis Chart
+function initializeProfitAnalysisChart() {
+    const ctx = document.getElementById('profitAnalysisChart');
+    if (!ctx) return;
+
+    return new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: Array(24).fill('').map((_, i) => `${23-i}h`),
+            datasets: [{
+                label: 'Profit (SOL)',
+                data: Array(24).fill(0).map(() => Math.random() * 20),
+                backgroundColor: 'rgba(0, 255, 255, 0.3)',
+                borderColor: 'rgba(0, 255, 255, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: 'rgba(0, 0, 51, 0.9)',
+                    borderColor: 'rgba(0, 255, 255, 0.5)',
+                    borderWidth: 1,
+                    titleColor: '#00ffff',
+                    bodyColor: '#fff',
+                    callbacks: {
+                        label: function(context) {
+                            return `Profit: ${context.raw.toFixed(2)} SOL`;
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    grid: {
+                        color: 'rgba(0, 255, 255, 0.1)',
+                        borderColor: 'rgba(0, 255, 255, 0.5)'
+                    },
+                    ticks: { color: '#00ffff' }
+                },
+                y: {
+                    grid: {
+                        color: 'rgba(0, 255, 255, 0.1)',
+                        borderColor: 'rgba(0, 255, 255, 0.5)'
+                    },
+                    ticks: { 
+                        color: '#00ffff',
+                        callback: function(value) {
+                            return value.toFixed(1) + ' SOL';
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
+// Initialize all charts
+document.addEventListener('DOMContentLoaded', function() {
+    initializeMiniCharts();
+    const mevChart = initializeMEVDistributionChart();
+    const profitChart = initializeProfitAnalysisChart();
+
+    // Update network stats every 2 seconds
+    setInterval(updateNetworkStats, 2000);
+
+    // Update charts every 5 seconds
+    setInterval(() => {
+        if (mevChart && profitChart) {
+            mevChart.data.datasets.forEach(dataset => {
+                dataset.data = dataset.data.map(() => Math.random() * 100);
+            });
+            profitChart.data.datasets[0].data = profitChart.data.datasets[0].data.map(() => Math.random() * 20);
+            
+            mevChart.update('none');
+            profitChart.update('none');
+        }
+    }, 5000);
+
+    // Time filter functionality
+    document.querySelectorAll('.time-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('.time-btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            // Update chart data based on selected time range
+            // ... (implement time range filtering logic)
+        });
+    });
+});
+
+// Automatic Git Push Function
+async function gitAutoPush() {
+    try {
+        // Add all changes
+        await fetch('/git/add', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ command: 'git add .' })
+        });
+
+        // Create commit with timestamp
+        const timestamp = new Date().toISOString();
+        await fetch('/git/commit', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                command: `git commit -m "Auto-update: ${timestamp}"`
+            })
+        });
+
+        // Push changes
+        await fetch('/git/push', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ command: 'git push origin main' })
+        });
+
+        console.log('Successfully pushed changes to git');
+    } catch (error) {
+        console.error('Error pushing to git:', error);
+    }
+}
+
+// Set up auto-push interval (every 5 minutes)
+setInterval(gitAutoPush, 300000);
+
+// Also push when significant changes occur
+document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) {
+        gitAutoPush();
+    }
 });
