@@ -588,38 +588,114 @@ function updateFooterTimestamp() {
     }
 }
 
-// Loading Screen Handler
-document.addEventListener('DOMContentLoaded', () => {
-    const loadingOverlay = document.querySelector('.loading-overlay');
-    const mainContent = document.querySelector('.main-content');
-    const spinnerCube = document.createElement('div');
-    spinnerCube.className = 'spinner-cube';
-    document.querySelector('.cyber-spinner').appendChild(spinnerCube);
+// Loading Screen Animations
+const loadingTl = gsap.timeline({ repeat: -1 });
 
-    // Add cyber grid
-    const cyberGrid = document.createElement('div');
-    cyberGrid.className = 'cyber-grid';
-    loadingOverlay.appendChild(cyberGrid);
-
-    // Initialize loading screen
-    document.body.classList.add('loading');
-
-    // Simulate loading progress
-    setTimeout(() => {
-        loadingOverlay.classList.add('fade-out');
-        document.body.classList.remove('loading');
-        mainContent.classList.add('visible');
-        
-        // Remove loading overlay after animation
-        setTimeout(() => {
-            loadingOverlay.style.display = 'none';
-        }, 500);
-
-        // Initialize charts and start updates
-        initializeCharts();
-        startUpdates();
-    }, 2000);
+// Wallet animation
+loadingTl.to('.wallet-body', {
+    rotateY: 15,
+    rotateX: -10,
+    duration: 2,
+    ease: 'power1.inOut'
+})
+.to('.wallet-body', {
+    rotateY: -15,
+    rotateX: 10,
+    duration: 2,
+    ease: 'power1.inOut'
 });
+
+// Create particles
+function createParticles() {
+    const particles = document.querySelector('.particles');
+    const colors = ['#6E56CF', '#00ff88', '#ffffff'];
+    
+    for (let i = 0; i < 50; i++) {
+        const particle = document.createElement('div');
+        particle.style.position = 'absolute';
+        particle.style.width = '2px';
+        particle.style.height = '2px';
+        particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        particle.style.borderRadius = '50%';
+        particle.style.opacity = '0';
+        particles.appendChild(particle);
+
+        // Random starting position around the wallet
+        const startX = Math.random() * 300 - 150;
+        const startY = Math.random() * 300 - 150;
+
+        // Animate each particle
+        gsap.to(particle, {
+            x: startX,
+            y: startY,
+            opacity: Math.random() * 0.5 + 0.2,
+            duration: Math.random() * 2 + 1,
+            repeat: -1,
+            yoyo: true,
+            ease: 'power1.inOut',
+            delay: Math.random() * 2
+        });
+    }
+}
+
+// Initialize loading animations
+function initLoadingAnimations() {
+    createParticles();
+    
+    // Coin animations
+    gsap.to('.coin.sol', {
+        y: -30,
+        rotation: 10,
+        duration: 2,
+        ease: 'power1.inOut',
+        repeat: -1,
+        yoyo: true
+    });
+
+    gsap.to('.coin.eth', {
+        y: -20,
+        rotation: -10,
+        duration: 2,
+        delay: 0.5,
+        ease: 'power1.inOut',
+        repeat: -1,
+        yoyo: true
+    });
+
+    // Wallet pulse
+    gsap.to('.wallet', {
+        scale: 1.05,
+        duration: 2,
+        ease: 'power1.inOut',
+        repeat: -1,
+        yoyo: true
+    });
+
+    // Text animation
+    gsap.to('.text-gradient', {
+        opacity: 0.7,
+        duration: 1.5,
+        ease: 'power1.inOut',
+        repeat: -1,
+        yoyo: true
+    });
+
+    // Progress bar
+    gsap.to('.progress', {
+        width: '100%',
+        duration: 3,
+        ease: 'power1.inOut',
+        onComplete: () => {
+            setTimeout(() => {
+                const loadingContainer = document.querySelector('.loading-container');
+                loadingContainer.classList.add('hidden');
+            }, 500);
+        }
+    });
+}
+
+// Initialize loading screen when the page loads
+window.addEventListener('load', initLoadingAnimations);
 
 function startUpdates() {
     // Update stats and charts every 2 seconds
