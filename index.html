@@ -54,7 +54,7 @@
                 </div>
                 
                 <div class="header-right">
-                    <div class="top-row">
+                    <div class="status-row">
                         <div class="status-container">
                             <div class="status-ring">
                                 <div class="status-circle"></div>
@@ -72,36 +72,40 @@
                         </div>
                     </div>
 
-                    <div class="connection-row">
-                        <div class="connection-status">
-                            <div class="connection-indicator">
-                                <div class="pulse-ring"></div>
-                                <span class="status-dot"></span>
-                            </div>
-                            <div class="connection-details">
-                                <span class="status-text">Connected</span>
-                                <span class="latency">12ms</span>
-                            </div>
+                    <div class="connection-status">
+                        <div class="connection-indicator">
+                            <div class="pulse-ring"></div>
+                            <span class="status-dot"></span>
                         </div>
-                    </div>
-
-                    <div class="network-stats">
-                        <div class="stat-chip">
-                            <i class="fas fa-broadcast-tower"></i>
-                            <span class="stat-value" id="networkTPS">4,325</span>
-                        </div>
-                        <div class="stat-chip">
-                            <i class="fas fa-cube"></i>
-                            <span class="stat-value" id="blockHeight">219M</span>
-                        </div>
-                        <div class="stat-chip">
-                            <i class="fas fa-gas-pump"></i>
-                            <span class="stat-value" id="gasPrice">0.001</span>
+                        <div class="connection-details">
+                            <span class="status-text">Connected</span>
+                            <span class="latency">12ms</span>
                         </div>
                     </div>
                 </div>
             </header>
-            
+
+            <!-- Network Stats Container -->
+            <div class="network-stats-container">
+                <div class="network-stats">
+                    <div class="stat-chip">
+                        <i class="fas fa-broadcast-tower"></i>
+                        <span class="stat-label">Network TPS</span>
+                        <span class="stat-value" id="networkTPS">4,325</span>
+                    </div>
+                    <div class="stat-chip">
+                        <i class="fas fa-cube"></i>
+                        <span class="stat-label">Block Height</span>
+                        <span class="stat-value" id="blockHeight">219M</span>
+                    </div>
+                    <div class="stat-chip">
+                        <i class="fas fa-gas-pump"></i>
+                        <span class="stat-label">Gas Price</span>
+                        <span class="stat-value" id="gasPrice">0.001</span>
+                    </div>
+                </div>
+            </div>
+
             <!-- Navigation -->
             <nav class="cyber-nav">
                 <div class="nav-container">

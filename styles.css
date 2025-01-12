@@ -2786,6 +2786,11 @@ body {
 @media (max-width: 768px) {
     body {
         background: var(--deep-blue);
+        will-change: transform;
+    }
+
+    .cyber-frame {
+        padding-top: 140px; /* Space for fixed header */
     }
 
     .dashboard-header {
@@ -2798,10 +2803,10 @@ body {
         padding: 8px;
         margin: 0;
         border-bottom: 1px solid rgba(0, 255, 255, 0.1);
-        transform: translateZ(0);
-        -webkit-transform: translateZ(0);
-        backface-visibility: hidden;
-        -webkit-backface-visibility: hidden;
+        height: auto;
+        will-change: transform;
+        transform: translate3d(0,0,0);
+        -webkit-transform: translate3d(0,0,0);
     }
 
     .header-left {
@@ -2829,14 +2834,13 @@ body {
         width: 100%;
     }
 
-    .top-row {
-        display: flex;
+    .status-row {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
         gap: 8px;
-        width: 100%;
     }
 
-    .status-container {
-        flex: 1;
+    .status-container, .network-quality {
         height: 32px;
         display: flex;
         align-items: center;
@@ -2845,27 +2849,9 @@ body {
         background: rgba(0, 255, 255, 0.03);
         border: 1px solid rgba(0, 255, 255, 0.1);
         border-radius: 4px;
-    }
-
-    .network-quality {
-        flex: 1;
-        height: 32px;
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        padding: 0 8px;
-        background: rgba(0, 255, 255, 0.03);
-        border: 1px solid rgba(0, 255, 255, 0.1);
-        border-radius: 4px;
-    }
-
-    .connection-row {
-        display: flex;
-        width: 100%;
     }
 
     .connection-status {
-        flex: 1;
         height: 32px;
         display: flex;
         align-items: center;
@@ -2874,23 +2860,36 @@ body {
         background: rgba(0, 255, 255, 0.03);
         border: 1px solid rgba(0, 255, 255, 0.1);
         border-radius: 4px;
+    }
+
+    /* Move network stats to a floating container */
+    .network-stats-container {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: rgba(0, 0, 51, 0.95);
+        padding: 8px;
+        border-top: 1px solid rgba(0, 255, 255, 0.1);
+        z-index: 1000;
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
     }
 
     .network-stats {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
         gap: 8px;
-        width: 100%;
-        margin-top: 8px;
     }
 
     .stat-chip {
-        height: 32px;
+        height: 40px;
         display: flex;
+        flex-direction: column;
         align-items: center;
         justify-content: center;
-        gap: 6px;
-        padding: 0 8px;
+        gap: 2px;
+        padding: 4px;
         background: rgba(0, 255, 255, 0.03);
         border: 1px solid rgba(0, 255, 255, 0.1);
         border-radius: 4px;
@@ -2899,6 +2898,12 @@ body {
     .stat-chip i {
         font-size: 14px;
         color: var(--neon-cyan);
+    }
+
+    .stat-chip .stat-label {
+        font-size: 10px;
+        color: var(--neon-cyan);
+        opacity: 0.8;
     }
 
     .stat-chip .stat-value {
@@ -2910,27 +2915,32 @@ body {
     /* Navigation */
     .cyber-nav {
         position: fixed;
-        top: 180px;
+        top: 140px;
         left: 0;
         right: 0;
         z-index: 999;
         background: var(--deep-blue);
         padding: 8px;
         border-bottom: 1px solid rgba(0, 255, 255, 0.1);
-        transform: translateZ(0);
-        -webkit-transform: translateZ(0);
+        will-change: transform;
+        transform: translate3d(0,0,0);
+        -webkit-transform: translate3d(0,0,0);
     }
 
     /* Content Section */
     .content-section {
-        margin-top: 230px;
-        padding: 10px 8px;
-        height: calc(100vh - 230px);
+        padding: 8px;
+        padding-bottom: 60px; /* Space for network stats */
+        margin-top: 60px; /* Space for nav */
+        height: calc(100vh - 260px);
         overflow-y: auto;
         -webkit-overflow-scrolling: touch;
         background: var(--deep-blue);
         position: relative;
         z-index: 1;
+        will-change: transform;
+        transform: translate3d(0,0,0);
+        -webkit-transform: translate3d(0,0,0);
     }
 
     /* Status Elements */
