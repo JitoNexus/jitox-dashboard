@@ -273,3 +273,86 @@ function initialize() {
 
 // Single event listener for DOMContentLoaded
 document.addEventListener('DOMContentLoaded', initialize, { once: true });
+
+// Initialize Time Selector
+function initializeTimeSelector() {
+    const timeButtons = document.querySelectorAll('.time-selector button');
+    timeButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            timeButtons.forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+            // Update chart data based on selected time range
+            updateChartData(button.textContent);
+        });
+    });
+}
+
+// Initialize Chart Controls
+function initializeChartControls() {
+    const expandButtons = document.querySelectorAll('.chart-control-btn');
+    expandButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const chartContainer = this.closest('.chart-card');
+            if (chartContainer) {
+                chartContainer.classList.toggle('expanded');
+                // Update chart size when expanded
+                Chart.instances.forEach(chart => chart.resize());
+            }
+        });
+    });
+}
+
+// Start continuous updates
+function startUpdates() {
+    // Update stats and charts every 2 seconds
+    setInterval(() => {
+        updateNetworkStats();
+        updateChartData();
+    }, 2000);
+}
+
+// Update chart data based on time range
+function updateChartData(timeRange = '24H') {
+    try {
+        if (networkChart) {
+            const newData = Array(24).fill(0).map(() => Math.random() * 1000 + 500);
+            networkChart.data.datasets[0].data = newData;
+            networkChart.update('none');
+        }
+        
+        if (volumeChart) {
+            const newData = [
+                Math.random() * 40 + 20,
+                Math.random() * 30 + 10,
+                Math.random() * 20 + 5,
+                Math.random() * 15 + 5,
+                Math.random() * 10 + 5
+            ];
+            volumeChart.data.datasets[0].data = newData;
+            volumeChart.update('none');
+        }
+        
+        if (solChart) {
+            const newData = Array(24).fill(0).map(() => Math.random() * 1000 + 500);
+            solChart.data.datasets[0].data = newData;
+            solChart.update('none');
+        }
+    } catch (error) {
+        console.error('Error updating chart data:', error);
+    }
+}
+
+// Update network stats
+function updateNetworkStats() {
+    const tpsElement = document.getElementById('currentTPS');
+    if (tpsElement) {
+        const newTPS = Math.floor(Math.random() * 500) + 2000;
+        tpsElement.textContent = newTPS.toLocaleString();
+        
+        // Animate the value change
+        tpsElement.style.transform = 'scale(1.1)';
+        setTimeout(() => {
+            tpsElement.style.transform = 'scale(1)';
+        }, 200);
+    }
+}
