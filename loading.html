@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-    <div class="loading-container">
+    <div class="loading-container" id="loadingContainer">
         <!-- Security Status -->
         <div class="security-status">
             <div class="security-badge">
@@ -22,15 +22,8 @@
         </div>
 
         <!-- Cyber Particles -->
-        <div class="cyber-particles">
-            <div class="cyber-particle"></div>
-            <div class="cyber-particle"></div>
-            <div class="cyber-particle"></div>
-            <div class="cyber-particle"></div>
-            <div class="cyber-particle"></div>
-            <div class="cyber-particle"></div>
-            <div class="cyber-particle"></div>
-            <div class="cyber-particle"></div>
+        <div class="cyber-particles" id="cyberParticles">
+            <!-- Particles will be added by JavaScript -->
         </div>
 
         <!-- Wallet Animation -->
@@ -75,38 +68,62 @@
         </div>
     </div>
 
-    <div class="main-content">
+    <div class="main-content" id="mainContent">
         <!-- Your main content here -->
     </div>
 
     <script>
-        // Simulate loading progress
+        // Debug logging
+        console.log('Loading script initialized');
+
+        // Get DOM elements
+        const loadingContainer = document.getElementById('loadingContainer');
         const progress = document.getElementById('loadingProgress');
-        const loadingContainer = document.querySelector('.loading-container');
-        const mainContent = document.querySelector('.main-content');
+        const mainContent = document.getElementById('mainContent');
         const statusItems = document.querySelectorAll('.status-item');
         
+        // Ensure loading container is visible
+        loadingContainer.style.display = 'flex';
+        console.log('Loading container display:', loadingContainer.style.display);
+        
+        // Initialize progress
         let currentProgress = 0;
+        console.log('Starting progress animation');
+        
         const interval = setInterval(() => {
             currentProgress += 1;
             progress.style.width = `${currentProgress}%`;
+            console.log('Progress:', currentProgress + '%');
             
             // Update status items
-            if (currentProgress >= 30) statusItems[0].classList.add('completed');
-            if (currentProgress >= 60) statusItems[1].classList.add('completed');
-            if (currentProgress >= 90) statusItems[2].classList.add('completed');
+            if (currentProgress >= 30) {
+                statusItems[0].classList.add('completed');
+                console.log('First status completed');
+            }
+            if (currentProgress >= 60) {
+                statusItems[1].classList.add('completed');
+                console.log('Second status completed');
+            }
+            if (currentProgress >= 90) {
+                statusItems[2].classList.add('completed');
+                console.log('Third status completed');
+            }
             
             if (currentProgress >= 100) {
                 clearInterval(interval);
+                console.log('Progress complete, hiding loading screen');
                 setTimeout(() => {
                     loadingContainer.classList.add('hidden');
                     mainContent.classList.add('visible');
+                    console.log('Main content shown');
                 }, 500);
             }
         }, 30);
 
-        // Create floating particles
-        const particlesContainer = document.querySelector('.cyber-particles');
+        // Create and animate particles
+        const particlesContainer = document.getElementById('cyberParticles');
+        console.log('Creating particles');
+        
         for (let i = 0; i < 20; i++) {
             const particle = document.createElement('div');
             particle.className = 'cyber-particle';
@@ -115,6 +132,11 @@
             particle.style.animationDelay = `${Math.random() * 10}s`;
             particlesContainer.appendChild(particle);
         }
+        
+        // Log when document is fully loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('Document fully loaded');
+        });
     </script>
 </body>
 </html> 

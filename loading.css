@@ -42,6 +42,7 @@ body {
     visibility: visible;
     transition: opacity 0.5s ease, visibility 0.5s ease;
     overflow: hidden;
+    border: 2px solid red;
 }
 
 .loading-container.hidden {
@@ -55,6 +56,7 @@ body {
     height: 150px;
     perspective: 1000px;
     transform-style: preserve-3d;
+    border: 2px solid blue;
 }
 
 .wallet-body {
@@ -149,29 +151,32 @@ body {
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
-    font-size: 1.5rem;
+    font-size: 2rem;
     font-weight: 700;
     letter-spacing: 1px;
-    opacity: 0.9;
+    opacity: 1;
+    text-shadow: 0 0 10px rgba(110, 86, 207, 0.5);
 }
 
 .progress-bar {
     width: 300px;
-    height: 4px;
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 2px;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
     margin-top: 1rem;
     overflow: hidden;
     position: relative;
+    border: 1px solid var(--primary-color);
 }
 
 .progress {
     width: 0%;
     height: 100%;
     background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
-    border-radius: 2px;
+    border-radius: 3px;
     transition: width 0.3s ease;
     position: relative;
+    box-shadow: 0 0 10px var(--primary-color);
 }
 
 .progress::before {
@@ -223,11 +228,13 @@ body {
 }
 
 .main-content {
+    display: none;
     opacity: 0;
     transition: opacity 0.5s ease;
 }
 
 .main-content.visible {
+    display: block;
     opacity: 1;
 }
 
@@ -302,6 +309,9 @@ body {
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    color: rgba(255, 255, 255, 0.8);
+    font-weight: 500;
+    text-shadow: 0 0 5px rgba(110, 86, 207, 0.3);
 }
 
 .status-dot {
