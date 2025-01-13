@@ -8,13 +8,6 @@ let previousStats = {
     'Ongoing Sandwich': 200
 };
 
-// Maximum allowed change per update (as percentage of range)
-const MAX_CHANGE_PERCENT = 0.05;
-
-// Performance optimizations
-let isUpdating = false;
-let scrollTimeout;
-
 // Chart Configurations
 const chartDefaults = {
     responsive: true,
@@ -38,17 +31,7 @@ const chartDefaults = {
             borderWidth: 1,
             padding: 12,
             boxPadding: 6,
-            usePointStyle: true,
-            callbacks: {
-                label: function(context) {
-                    let label = context.dataset.label || '';
-                    if (label) {
-                        label += ': ';
-                    }
-                    label += context.parsed.y.toFixed(2);
-                    return label;
-                }
-            }
+            usePointStyle: true
         }
     },
     scales: {
@@ -99,9 +82,9 @@ function initializeNetworkChart() {
         
         networkChart = new Chart(ctx, {
             type: 'line',
-                data: {
+            data: {
                 labels: Array(24).fill('').map((_, i) => `${i}:00`),
-                    datasets: [{
+                datasets: [{
                     label: 'Network Activity',
                     data: Array(24).fill(0).map(() => Math.random() * 1000 + 500),
                     borderColor: '#00f0ff',
@@ -110,15 +93,9 @@ function initializeNetworkChart() {
                     pointRadius: 0,
                     fill: true,
                     tension: 0.4
-                    }]
-                },
-                options: {
-                ...chartDefaults,
-                interaction: {
-                    intersect: false,
-                    mode: 'index'
-                }
-            }
+                }]
+            },
+            options: chartDefaults
         });
     } catch (error) {
         console.error('Error initializing network chart:', error);
@@ -175,7 +152,7 @@ function initializeCharts() {
                 data: {
                     labels: Array(24).fill('').map((_, i) => `${23-i}h`),
                     datasets: [{
-                        data: Array(24).fill(0).map(() => getRandomData(100, 1000)),
+                        data: Array(24).fill(0).map(() => Math.random() * 1000 + 500),
                         borderColor: '#ff00ff',
                         backgroundColor: solGradient,
                         fill: true,
@@ -285,16 +262,11 @@ function initializeLoadingScreen() {
     }
 }
 
-// Single event listener for DOMContentLoaded
-document.addEventListener('DOMContentLoaded', () => {
-    // Remove any existing event listeners
-    const oldListeners = document.querySelectorAll('*');
-    oldListeners.forEach(element => {
-        element.replaceWith(element.cloneNode(true));
-    });
-    
-    // Initialize loading screen
+// Initialize everything
+function initialize() {
+    if (isInitialized) return;
     initializeLoadingScreen();
-});
+}
 
-// ... rest of the existing code ...
+// Single event listener for DOMContentLoaded
+document.addEventListener('DOMContentLoaded', initialize, { once: true });
