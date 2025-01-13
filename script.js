@@ -1206,9 +1206,9 @@ function createAlertCard(priority) {
     
     const profit = generateRandomProfit();
     const alertTypes = {
-        'high-priority': 'Large Opportunity',
-        'medium-priority': 'Standard Trade',
-        'low-priority': 'Small Opportunity'
+        'high-priority': 'High Priority Alert',
+        'medium-priority': 'Medium Priority Alert',
+        'low-priority': 'Low Priority Alert'
     };
     
     card.innerHTML = `
@@ -1234,10 +1234,45 @@ function createAlertCard(priority) {
             </div>
         </div>
         <div class="alert-actions">
-            <button class="cyber-button">View Details</button>
-            <button class="cyber-button">Execute</button>
+            <button class="cyber-button track-btn">
+                <i class="fas fa-crosshairs"></i> Track
+            </button>
+            <button class="cyber-button analyze-btn">
+                <i class="fas fa-chart-line"></i> Analyze
+            </button>
+            <button class="cyber-button dismiss-btn">
+                <i class="fas fa-times"></i> Dismiss
+            </button>
         </div>
     `;
+    
+    // Add event listeners for the buttons
+    const trackBtn = card.querySelector('.track-btn');
+    const analyzeBtn = card.querySelector('.analyze-btn');
+    const dismissBtn = card.querySelector('.dismiss-btn');
+    
+    if (trackBtn) {
+        trackBtn.addEventListener('click', () => {
+            trackBtn.classList.toggle('active');
+            trackBtn.innerHTML = trackBtn.classList.contains('active') ? 
+                '<i class="fas fa-stop"></i> Stop' : 
+                '<i class="fas fa-crosshairs"></i> Track';
+        });
+    }
+    
+    if (analyzeBtn) {
+        analyzeBtn.addEventListener('click', () => {
+            // Toggle analysis panel or trigger analysis action
+            analyzeBtn.classList.toggle('active');
+        });
+    }
+    
+    if (dismissBtn) {
+        dismissBtn.addEventListener('click', () => {
+            card.style.opacity = '0';
+            setTimeout(() => card.remove(), 300);
+        });
+    }
     
     return card;
 }
