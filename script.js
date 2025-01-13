@@ -1153,13 +1153,13 @@ function updateTotalPooled() {
         const percentChange = ((currentSOL - previousSOL) / previousSOL) * 100;
         window.previousSOL = currentSOL;
         
-        // Calculate daily volume
-        const dailyVolume = currentSOL * 0.3;
+        // Calculate peak 24h volume (approximately 45% of highest value)
+        const peakVolume = Math.max(currentSOL, window.previousSOL) * 0.45;
 
         // Format values
         const formattedSOL = currentSOL.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
         const formattedTrend = (percentChange >= 0 ? '+' : '') + percentChange.toFixed(2) + '%';
-        const formattedVolume = dailyVolume.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ' SOL';
+        const formattedPeakVolume = peakVolume.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ' SOL';
         
         // Update DOM elements directly
         pooledElement.textContent = formattedSOL + ' SOL';
@@ -1168,7 +1168,7 @@ function updateTotalPooled() {
         trendElement.textContent = formattedTrend;
         trendElement.className = 'stat-trend ' + (percentChange >= 0 ? 'positive' : 'negative');
         
-        volumeElement.textContent = '24h Volume: ' + formattedVolume;
+        volumeElement.textContent = 'Peak 24h Volume: ' + formattedPeakVolume;
     } catch (error) {
         console.error('Error updating Total Pooled:', error);
     }
