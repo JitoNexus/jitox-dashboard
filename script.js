@@ -924,7 +924,7 @@ function startRealTimeUpdates() {
 
     const CHART_UPDATE_INTERVAL = 2000; // 2 seconds
     const STATS_UPDATE_INTERVAL = 1000; // 1 second
-    const AI_UPDATE_INTERVAL = 500; // 0.5 seconds for more frequent AI updates
+    const AI_UPDATE_INTERVAL = 100; // Update AI stats every 100ms for smoother changes
 
     function animate(timestamp) {
         // Update charts
@@ -1286,32 +1286,32 @@ function updateAIStrategies() {
         }
     };
 
-    // Update AI dashboard strategies
-    document.querySelectorAll('.ai-strategy').forEach(strategy => {
-        const title = strategy.querySelector('.strategy-title')?.textContent;
-        if (!title || !strategies[title]) return;
+    // Update each strategy in the AI dashboard
+    Object.entries(strategies).forEach(([name, data]) => {
+        // Find the strategy container by matching the h3 text content
+        const strategyContainer = Array.from(document.querySelectorAll('h3')).find(
+            h3 => h3.textContent.trim() === name
+        )?.closest('.cyber-card');
 
-        const data = strategies[title];
-        
+        if (!strategyContainer) return;
+
         // Update success rate
-        const successRateEl = strategy.querySelector('.success-rate');
+        const successRateEl = strategyContainer.querySelector('.success-rate');
         if (successRateEl) {
             successRateEl.textContent = `${data.successRate}%`;
-            // Add color based on value
-            successRateEl.style.color = parseFloat(data.successRate) >= 98 ? '#00ff00' : '#00dddd';
+            successRateEl.style.color = parseFloat(data.successRate) >= 98 ? '#ff00ff' : '#00ffff';
         }
-        
+
         // Update average return
-        const avgReturnEl = strategy.querySelector('.avg-return');
+        const avgReturnEl = strategyContainer.querySelector('.avg-return');
         if (avgReturnEl) {
             avgReturnEl.textContent = `${data.avgReturn} SOL`;
-            // Add color based on value
-            avgReturnEl.style.color = parseFloat(data.avgReturn) >= 1.0 ? '#00ff00' : '#00dddd';
+            avgReturnEl.style.color = parseFloat(data.avgReturn) >= 1.0 ? '#ff00ff' : '#00ffff';
         }
-        
+
         // Add pulse animation
-        strategy.style.animation = 'none';
-        strategy.offsetHeight; // Trigger reflow
-        strategy.style.animation = 'pulse 0.5s ease';
+        strategyContainer.style.animation = 'none';
+        strategyContainer.offsetHeight; // Trigger reflow
+        strategyContainer.style.animation = 'pulse 0.5s ease';
     });
 }
