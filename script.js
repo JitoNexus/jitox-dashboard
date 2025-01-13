@@ -1133,44 +1133,42 @@ function updateTotalPooled() {
     try {
         // Base value and trend calculation
         const baseValue = 3760.5;
-        const time = Date.now() / 1000; // Use seconds for smoother animation
+        const time = Date.now() / 1000;
         
         // Create a smooth upward trend with small variations
-        const trendFactor = Math.sin(time * 0.1) * 50; // Smaller, smoother variations
-        const microVariation = Math.sin(time * 0.5) * 2; // Micro variations for natural movement
+        const trendFactor = Math.sin(time * 0.1) * 50;
+        const microVariation = Math.sin(time * 0.5) * 2;
         
-        // Calculate current SOL value with 2 decimal precision
+        // Calculate current SOL value
         const currentSOL = baseValue + trendFactor + microVariation;
         
-        // Store previous value for trend calculation
+        // Calculate percentage change
         const previousSOL = window.previousSOL || currentSOL;
         const percentChange = ((currentSOL - previousSOL) / previousSOL) * 100;
         window.previousSOL = currentSOL;
         
-        // Calculate daily volume (approximately 30% of total pooled)
+        // Calculate daily volume
         const dailyVolume = currentSOL * 0.3;
 
-        // Format values with 2 decimal places
+        // Format values
         const formattedSOL = currentSOL.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
         const formattedTrend = (percentChange >= 0 ? '+' : '') + percentChange.toFixed(2) + '%';
         const formattedVolume = dailyVolume.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ' SOL';
         
-        // Update DOM elements directly
+        // Update DOM elements
         const pooledElement = document.querySelector('.total-pooled .stat-value');
-        const trendElement = document.querySelector('.total-pooled .stat-trend');
-        const volumeElement = document.querySelector('.total-pooled .stat-details');
-        
         if (pooledElement) {
             pooledElement.textContent = formattedSOL + ' SOL';
             pooledElement.style.color = percentChange >= 0 ? '#00ff00' : '#ff4444';
-            pooledElement.style.transition = 'color 0.3s ease';
         }
         
+        const trendElement = document.querySelector('.total-pooled .stat-trend');
         if (trendElement) {
             trendElement.textContent = formattedTrend;
             trendElement.className = 'stat-trend ' + (percentChange >= 0 ? 'positive' : 'negative');
         }
         
+        const volumeElement = document.querySelector('.total-pooled .stat-details');
         if (volumeElement) {
             volumeElement.textContent = '24h Volume: ' + formattedVolume;
         }
@@ -1179,23 +1177,8 @@ function updateTotalPooled() {
     }
 }
 
-// Update Total Pooled value frequently
-function startPooledUpdates() {
-    let lastUpdate = 0;
-    const UPDATE_INTERVAL = 50; // Update every 50ms for smooth animation
-
-    function updateLoop(timestamp) {
-        if (timestamp - lastUpdate >= UPDATE_INTERVAL) {
-            if (document.visibilityState === 'visible') {
-                updateTotalPooled();
-                lastUpdate = timestamp;
-            }
-        }
-        requestAnimationFrame(updateLoop);
-    }
-
-    requestAnimationFrame(updateLoop);
-}
+// Start updating Total Pooled value
+setInterval(updateTotalPooled, 50);
 
 // Initialize everything when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
