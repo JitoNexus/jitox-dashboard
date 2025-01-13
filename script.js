@@ -935,12 +935,11 @@ function startRealTimeUpdates() {
             }
         }
 
-        // Update stats
+        // Update stats and AI strategies
         if (timestamp - lastStatsUpdate >= STATS_UPDATE_INTERVAL) {
             if (document.visibilityState === 'visible') {
                 updateStats();
-                
-                // Update additional real-time elements
+                updateAIStrategies();
                 updateNetworkStatus();
                 updateLastUpdateTime();
                 lastStatsUpdate = timestamp;
@@ -1276,4 +1275,47 @@ function createAlertCard(priority) {
     }
     
     return card;
+}
+
+// Add this function after the updateStats function
+function updateAIStrategies() {
+    const strategies = {
+        'Arbitrage Bot': {
+            status: Math.random() > 0.1 ? 'Active' : 'Scanning',
+            profit: (Math.random() * 5 + 0.2).toFixed(2),
+            success: Math.floor(Math.random() * 10 + 90)
+        },
+        'Sandwich Bot': {
+            status: Math.random() > 0.1 ? 'Active' : 'Scanning',
+            profit: (Math.random() * 4 + 0.1).toFixed(2),
+            success: Math.floor(Math.random() * 8 + 88)
+        },
+        'MEV Searcher': {
+            status: Math.random() > 0.1 ? 'Active' : 'Scanning',
+            profit: (Math.random() * 6 + 0.3).toFixed(2),
+            success: Math.floor(Math.random() * 12 + 85)
+        }
+    };
+
+    document.querySelectorAll('.ai-strategy-card').forEach(card => {
+        const title = card.querySelector('h3')?.textContent;
+        if (!title || !strategies[title]) return;
+
+        const strategy = strategies[title];
+        const statusEl = card.querySelector('.strategy-status');
+        const profitEl = card.querySelector('.strategy-profit');
+        const successEl = card.querySelector('.strategy-success');
+
+        if (statusEl) {
+            statusEl.textContent = strategy.status;
+            statusEl.className = 'strategy-status ' + 
+                (strategy.status === 'Active' ? 'active' : 'scanning');
+        }
+        if (profitEl) {
+            profitEl.textContent = `${strategy.profit} SOL/trade`;
+        }
+        if (successEl) {
+            successEl.textContent = `${strategy.success}% Success Rate`;
+        }
+    });
 }
