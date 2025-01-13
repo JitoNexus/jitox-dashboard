@@ -1271,38 +1271,39 @@ function createAlertCard(priority) {
 
 // Add this function after the updateStats function
 function updateAIStrategies() {
-    // Get all strategy cards
-    const strategyCards = document.querySelectorAll('.cyber-card');
-    
-    strategyCards.forEach(card => {
-        const title = card.querySelector('h3')?.textContent;
-        const successRate = card.querySelector('.success-rate');
-        const avgReturn = card.querySelector('.avg-return');
+    // Get all elements with class success-rate and avg-return
+    const successRates = document.querySelectorAll('.success-rate');
+    const avgReturns = document.querySelectorAll('.avg-return');
+
+    // Update each success rate and return value
+    successRates.forEach((element, index) => {
+        let success, returns;
         
-        if (!title || !successRate || !avgReturn) return;
-        
-        // Update based on strategy type
-        if (title.includes('Cross-DEX Arbitrage')) {
-            const success = (99 + Math.random() * 0.4).toFixed(1);
-            const returns = (0.7 + Math.random() * 0.2).toFixed(1);
-            successRate.textContent = success + '%';
-            avgReturn.textContent = returns + ' SOL';
+        switch(index) {
+            case 0: // Cross-DEX Arbitrage
+                success = (99 + Math.random() * 0.4).toFixed(1);
+                returns = (0.7 + Math.random() * 0.2).toFixed(1);
+                break;
+            case 1: // Sandwich Trading
+                success = (97.5 + Math.random() * 0.6).toFixed(1);
+                returns = (0.4 + Math.random() * 0.2).toFixed(1);
+                break;
+            case 2: // Flash Loan Arbitrage
+                success = (98.2 + Math.random() * 0.6).toFixed(1);
+                returns = (1.1 + Math.random() * 0.2).toFixed(1);
+                break;
+            default:
+                return;
         }
-        else if (title.includes('Sandwich Trading')) {
-            const success = (97.5 + Math.random() * 0.6).toFixed(1);
-            const returns = (0.4 + Math.random() * 0.2).toFixed(1);
-            successRate.textContent = success + '%';
-            avgReturn.textContent = returns + ' SOL';
-        }
-        else if (title.includes('Flash Loan Arbitrage')) {
-            const success = (98.2 + Math.random() * 0.6).toFixed(1);
-            const returns = (1.1 + Math.random() * 0.2).toFixed(1);
-            successRate.textContent = success + '%';
-            avgReturn.textContent = returns + ' SOL';
+
+        // Update the values
+        element.textContent = success + '%';
+        if (avgReturns[index]) {
+            avgReturns[index].textContent = returns + ' SOL';
         }
     });
 }
 
-// Start updating immediately and continue every 100ms
+// Start updating immediately and continue every 50ms for smoother updates
 updateAIStrategies();
-const aiUpdateInterval = setInterval(updateAIStrategies, 100);
+const aiUpdateInterval = setInterval(updateAIStrategies, 50);
