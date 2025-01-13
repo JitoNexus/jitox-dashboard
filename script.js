@@ -1130,6 +1130,12 @@ function updateStats() {
 
 // Function to update Total Pooled SOL with smooth transitions
 function updateTotalPooled() {
+    const pooledElement = document.querySelector('.total-pooled .stat-value');
+    const trendElement = document.querySelector('.total-pooled .stat-trend');
+    const volumeElement = document.querySelector('.total-pooled .stat-details');
+    
+    if (!pooledElement || !trendElement || !volumeElement) return;
+    
     try {
         // Base value and trend calculation
         const baseValue = 3760.5;
@@ -1155,23 +1161,14 @@ function updateTotalPooled() {
         const formattedTrend = (percentChange >= 0 ? '+' : '') + percentChange.toFixed(2) + '%';
         const formattedVolume = dailyVolume.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ' SOL';
         
-        // Update DOM elements
-        const pooledElement = document.querySelector('.total-pooled .stat-value');
-        if (pooledElement) {
-            pooledElement.textContent = formattedSOL + ' SOL';
-            pooledElement.style.color = percentChange >= 0 ? '#00ff00' : '#ff4444';
-        }
+        // Update DOM elements directly
+        pooledElement.textContent = formattedSOL + ' SOL';
+        pooledElement.style.color = percentChange >= 0 ? '#00ff00' : '#ff4444';
         
-        const trendElement = document.querySelector('.total-pooled .stat-trend');
-        if (trendElement) {
-            trendElement.textContent = formattedTrend;
-            trendElement.className = 'stat-trend ' + (percentChange >= 0 ? 'positive' : 'negative');
-        }
+        trendElement.textContent = formattedTrend;
+        trendElement.className = 'stat-trend ' + (percentChange >= 0 ? 'positive' : 'negative');
         
-        const volumeElement = document.querySelector('.total-pooled .stat-details');
-        if (volumeElement) {
-            volumeElement.textContent = '24h Volume: ' + formattedVolume;
-        }
+        volumeElement.textContent = '24h Volume: ' + formattedVolume;
     } catch (error) {
         console.error('Error updating Total Pooled:', error);
     }
