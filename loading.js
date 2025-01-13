@@ -1,4 +1,10 @@
-// Initialize animations when DOM is ready
+// Wait for window load to ensure all resources are available
+window.addEventListener('load', () => {
+    console.log('Window loaded, initializing animations...');
+    initializeAnimations();
+});
+
+// Initialize animations
 function initializeAnimations() {
     try {
         // Check if GSAP is available
@@ -7,21 +13,33 @@ function initializeAnimations() {
             return;
         }
 
-        console.log('Initializing animations...');
+        // Debug logging
+        console.log('GSAP version:', gsap.version);
+        
+        // Get all required elements first
+        const elements = {
+            walletBody: document.querySelector('.wallet-body'),
+            solCoin: document.querySelector('.coin.sol'),
+            ethCoin: document.querySelector('.coin.eth'),
+            wallet: document.querySelector('.wallet'),
+            textGradient: document.querySelector('.text-gradient')
+        };
+
+        // Debug log elements
+        console.log('Animation elements:', elements);
 
         // Initialize GSAP timeline for wallet animation
-        const tl = gsap.timeline({ repeat: -1 });
+        if (elements.walletBody) {
+            console.log('Initializing wallet animation');
+            const tl = gsap.timeline({ repeat: -1 });
 
-        // Wallet animation
-        const walletBody = document.querySelector('.wallet-body');
-        if (walletBody) {
-            tl.to(walletBody, {
+            tl.to(elements.walletBody, {
                 rotateY: 15,
                 rotateX: -10,
                 duration: 2,
                 ease: 'power1.inOut'
             })
-            .to(walletBody, {
+            .to(elements.walletBody, {
                 rotateY: -15,
                 rotateX: 10,
                 duration: 2,
@@ -30,9 +48,9 @@ function initializeAnimations() {
         }
 
         // Coin animations
-        const solCoin = document.querySelector('.coin.sol');
-        if (solCoin) {
-            gsap.to(solCoin, {
+        if (elements.solCoin) {
+            console.log('Initializing SOL coin animation');
+            gsap.to(elements.solCoin, {
                 y: -30,
                 rotation: 10,
                 duration: 2,
@@ -42,9 +60,9 @@ function initializeAnimations() {
             });
         }
 
-        const ethCoin = document.querySelector('.coin.eth');
-        if (ethCoin) {
-            gsap.to(ethCoin, {
+        if (elements.ethCoin) {
+            console.log('Initializing ETH coin animation');
+            gsap.to(elements.ethCoin, {
                 y: -20,
                 rotation: -10,
                 duration: 2,
@@ -56,9 +74,9 @@ function initializeAnimations() {
         }
 
         // Scale animation for the wallet
-        const wallet = document.querySelector('.wallet');
-        if (wallet) {
-            gsap.to(wallet, {
+        if (elements.wallet) {
+            console.log('Initializing wallet scale animation');
+            gsap.to(elements.wallet, {
                 scale: 1.05,
                 duration: 2,
                 ease: 'power1.inOut',
@@ -68,9 +86,9 @@ function initializeAnimations() {
         }
 
         // Text animation
-        const textGradient = document.querySelector('.text-gradient');
-        if (textGradient) {
-            gsap.to(textGradient, {
+        if (elements.textGradient) {
+            console.log('Initializing text animation');
+            gsap.to(elements.textGradient, {
                 opacity: 0.7,
                 duration: 1.5,
                 ease: 'power1.inOut',
@@ -79,17 +97,10 @@ function initializeAnimations() {
             });
         }
 
-        console.log('Animations initialized successfully');
+        console.log('All animations initialized successfully');
     } catch (error) {
         console.error('Error initializing animations:', error);
     }
-}
-
-// Initialize when DOM is ready
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initializeAnimations);
-} else {
-    initializeAnimations();
 }
 
 // Export function for use in other files

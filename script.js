@@ -1,3 +1,9 @@
+// Wait for all resources to load
+window.addEventListener('load', () => {
+    console.log('Window loaded, starting initialization...');
+    initializeLoadingSequence();
+});
+
 // Global variables
 let isInitialized = false;
 
@@ -11,25 +17,36 @@ function initializeLoadingSequence() {
         const loadingProgress = document.getElementById('loadingProgress');
         const statusItems = document.querySelectorAll('.status-item');
 
+        // Debug logging
+        console.log('Loading container:', loadingContainer);
+        console.log('Main content:', mainContent);
+        console.log('Cyber particles:', cyberParticles);
+        console.log('Loading progress:', loadingProgress);
+        console.log('Status items:', statusItems);
+
         // Verify essential elements exist
         if (!loadingContainer || !mainContent || !loadingProgress) {
             console.error('Essential elements not found');
+            // Show error message to user
+            document.body.innerHTML = `
+                <div style="color: white; padding: 20px; text-align: center;">
+                    <h1>Loading Error</h1>
+                    <p>Unable to initialize application. Please refresh the page.</p>
+                </div>
+            `;
             return;
         }
 
         console.log('Starting loading sequence...');
 
+        // Ensure main content is hidden initially
+        mainContent.style.display = 'none';
+        mainContent.style.opacity = '0';
+        loadingContainer.style.display = 'flex';
+
         // Create particles if container exists
         if (cyberParticles) {
-            cyberParticles.innerHTML = '';
-            for (let i = 0; i < 20; i++) {
-                const particle = document.createElement('div');
-                particle.className = 'cyber-particle';
-                particle.style.left = `${Math.random() * 100}%`;
-                particle.style.top = `${Math.random() * 100}%`;
-                particle.style.animationDelay = `${Math.random() * 10}s`;
-                cyberParticles.appendChild(particle);
-            }
+            createParticles(cyberParticles);
         }
 
         // Initialize progress
@@ -57,43 +74,59 @@ function initializeLoadingSequence() {
 
     } catch (error) {
         console.error('Error in loading sequence:', error);
-        // Attempt to show main content even if loading fails
-        const mainContent = document.getElementById('mainContent');
-        if (mainContent) {
-            mainContent.style.display = 'block';
-            mainContent.style.opacity = '1';
+        // Show error message to user
+        document.body.innerHTML = `
+            <div style="color: white; padding: 20px; text-align: center;">
+                <h1>Error</h1>
+                <p>An error occurred while loading. Please refresh the page.</p>
+                <p>Error details: ${error.message}</p>
+            </div>
+        `;
+    }
+}
+
+// Create particles for the loading screen
+function createParticles(container) {
+    try {
+        if (!container) return;
+        
+        container.innerHTML = '';
+        for (let i = 0; i < 20; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'cyber-particle';
+            particle.style.left = `${Math.random() * 100}%`;
+            particle.style.top = `${Math.random() * 100}%`;
+            particle.style.animationDelay = `${Math.random() * 10}s`;
+            container.appendChild(particle);
         }
+    } catch (error) {
+        console.error('Error creating particles:', error);
     }
 }
 
 // Complete loading and show main content
 function completeLoading(loadingContainer, mainContent) {
     try {
+        if (!loadingContainer || !mainContent) {
+            console.error('Missing elements for complete loading');
+            return;
+        }
+
         setTimeout(() => {
-            if (loadingContainer) loadingContainer.style.display = 'none';
-            if (mainContent) {
+            loadingContainer.style.opacity = '0';
+            setTimeout(() => {
+                loadingContainer.style.display = 'none';
                 mainContent.style.display = 'block';
-                mainContent.style.opacity = '1';
-            }
-            isInitialized = true;
-            console.log('Loading sequence completed');
+                setTimeout(() => {
+                    mainContent.style.opacity = '1';
+                    isInitialized = true;
+                    console.log('Loading sequence completed');
+                }, 50);
+            }, 500);
         }, 500);
     } catch (error) {
         console.error('Error completing loading:', error);
     }
-}
-
-// Initialize when DOM is ready
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initializeLoadingSequence);
-} else {
-    initializeLoadingSequence();
-}
-
-// Remove problematic function calls
-function updateConnectionStatus() {
-    // Function removed to prevent errors
-    console.log('Connection status update skipped');
 }
 
 // Export functions for use in other files
