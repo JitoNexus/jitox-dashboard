@@ -1128,57 +1128,84 @@ function updateStats() {
     }
 }
 
-// Function to update Total Pooled SOL
+// Function to update Total Pooled SOL with smooth transitions
 function updateTotalPooled() {
-    // Base value and amplitude for oscillation
-    const baseValue = 3760.5; // Center point
-    const amplitude = 3660.5; // This will allow values between 100 and 7421 SOL
-    
-    // Calculate current SOL value using sine wave for smooth transitions
-    const currentSOL = baseValue + amplitude * Math.sin(Date.now() / 10000);
-    
-    // Calculate percentage change
-    const previousSOL = window.previousSOL || baseValue;
-    const percentChange = ((currentSOL - previousSOL) / previousSOL) * 100;
-    
-    // Store current value for next update
-    window.previousSOL = currentSOL;
-    
-    // Calculate daily volume (approximately 30% of total pooled)
-    const dailyVolume = currentSOL * 0.3;
-    
-    // Update the stats object
-    stats.pooled = {
-        value: Math.round(currentSOL).toLocaleString(),
-        trend: percentChange >= 0 ? '+' + percentChange.toFixed(1) + '%' : percentChange.toFixed(1) + '%',
-        volume: Math.round(dailyVolume).toLocaleString() + ' SOL'
-    };
-    
-    // Update DOM elements
-    const pooledElement = document.querySelector('.total-pooled .stat-value');
-    const trendElement = document.querySelector('.total-pooled .stat-trend');
-    const volumeElement = document.querySelector('.total-pooled .stat-details');
-    
-    if (pooledElement) {
-        pooledElement.textContent = stats.pooled.value + ' SOL';
-        pooledElement.style.color = percentChange >= 0 ? '#00ff00' : '#ff4444';
-    }
-    
-    if (trendElement) {
-        trendElement.textContent = stats.pooled.trend;
-        trendElement.className = 'stat-trend ' + (percentChange >= 0 ? 'positive' : 'negative');
-    }
-    
-    if (volumeElement) {
-        volumeElement.textContent = '24h Volume: ' + stats.pooled.volume;
+    try {
+        // Base value and smaller amplitude for smoother transitions
+        const baseValue = 3760.5;
+        const amplitude = 50; // Smaller range for more subtle changes
+        
+        // Use multiple sine waves with different frequencies for more natural movement
+        const time = Date.now();
+        const primaryWave = Math.sin(time / 20000) * amplitude;
+        const secondaryWave = Math.sin(time / 15000) * (amplitude * 0.3);
+        const microWave = Math.sin(time / 5000) * (amplitude * 0.1);
+        
+        // Combine waves for final value
+        const currentSOL = baseValue + primaryWave + secondaryWave + microWave;
+        
+        // Calculate percentage change (smaller changes)
+        const previousSOL = window.previousSOL || baseValue;
+        const percentChange = ((currentSOL - previousSOL) / previousSOL) * 100;
+        
+        // Store current value for next update
+        window.previousSOL = currentSOL;
+        
+        // Calculate daily volume (approximately 30% of total pooled)
+        const dailyVolume = currentSOL * 0.3;
+
+        // Format values with 2 decimal places
+        const formattedSOL = currentSOL.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        const formattedTrend = (percentChange >= 0 ? '+' : '') + percentChange.toFixed(2) + '%';
+        const formattedVolume = dailyVolume.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ' SOL';
+        
+        // Update DOM elements with requestAnimationFrame for smooth updates
+        requestAnimationFrame(() => {
+            const pooledElement = document.querySelector('.total-pooled .stat-value');
+            const trendElement = document.querySelector('.total-pooled .stat-trend');
+            const volumeElement = document.querySelector('.total-pooled .stat-details');
+            
+            if (pooledElement) {
+                pooledElement.textContent = formattedSOL + ' SOL';
+                pooledElement.style.color = percentChange >= 0 ? '#00ff00' : '#ff4444';
+                pooledElement.style.transition = 'color 0.3s ease';
+            }
+            
+            if (trendElement) {
+                trendElement.textContent = formattedTrend;
+                trendElement.className = 'stat-trend ' + (percentChange >= 0 ? 'positive' : 'negative');
+            }
+            
+            if (volumeElement) {
+                volumeElement.textContent = '24h Volume: ' + formattedVolume;
+            }
+        });
+    } catch (error) {
+        console.error('Error updating Total Pooled:', error);
     }
 }
 
-// Start updating Total Pooled value
-setInterval(updateTotalPooled, 1000);
+// Update Total Pooled value more frequently
+function startPooledUpdates() {
+    let lastUpdate = 0;
+    const UPDATE_INTERVAL = 100; // Update every 100ms for smoother animation
+
+    function updateLoop(timestamp) {
+        if (timestamp - lastUpdate >= UPDATE_INTERVAL) {
+            if (document.visibilityState === 'visible') {
+                updateTotalPooled();
+                lastUpdate = timestamp;
+            }
+        }
+        requestAnimationFrame(updateLoop);
+    }
+
+    requestAnimationFrame(updateLoop);
+}
 
 // Initialize everything when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
     window.alertsManager = new AlertsManager();
     startRealTimeUpdates();
+    startPooledUpdates(); // Start the more frequent updates for Total Pooled
 });
