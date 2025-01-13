@@ -1,3 +1,164 @@
+// Utility functions
+function getRandomData(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+// Initialize Time Selector
+function initializeTimeSelector() {
+    const timeButtons = document.querySelectorAll('.time-selector button');
+    timeButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            timeButtons.forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+            // Update chart data based on selected time range
+            updateChartData(button.textContent);
+        });
+    });
+}
+
+// Initialize Chart Controls
+function initializeChartControls() {
+    const expandButtons = document.querySelectorAll('.chart-control-btn');
+    expandButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const chartContainer = this.closest('.chart-card');
+            if (chartContainer) {
+                chartContainer.classList.toggle('expanded');
+                // Update chart size when expanded
+                Chart.instances.forEach(chart => chart.resize());
+            }
+        });
+    });
+}
+
+// Update chart data based on time range
+function updateChartData(timeRange) {
+    try {
+        switch(timeRange) {
+            case '24H':
+                if (solChart) {
+                    solChart.data.labels = Array(24).fill('').map((_, i) => `${23-i}h`);
+                    solChart.data.datasets[0].data = Array(24).fill(0).map(() => getRandomData(100, 1000));
+                    solChart.update();
+                }
+                break;
+            case '7D':
+                if (solChart) {
+                    solChart.data.labels = Array(7).fill('').map((_, i) => `Day ${7-i}`);
+                    solChart.data.datasets[0].data = Array(7).fill(0).map(() => getRandomData(500, 2000));
+                    solChart.update();
+                }
+                break;
+            case '30D':
+                if (solChart) {
+                    solChart.data.labels = Array(30).fill('').map((_, i) => `Day ${30-i}`);
+                    solChart.data.datasets[0].data = Array(30).fill(0).map(() => getRandomData(800, 3000));
+                    solChart.update();
+                }
+                break;
+        }
+    } catch (error) {
+        console.error('Error updating chart data:', error);
+    }
+}
+
+// Start continuous updates
+function startUpdates() {
+    // Update stats and charts every 2 seconds
+    setInterval(() => {
+        updateAllStats();
+        updateAllCharts();
+    }, 2000);
+}
+
+// Update all stats with animation
+function updateAllStats() {
+    // Statistics tab ranges
+    const ranges = {
+        'Active Searchers': { min: 2500, max: 10000 },
+        'Active MEV Operations': { min: 100, max: 1232 },
+        'Ongoing Arbitrage': { min: 10, max: 523 },
+        'Ongoing Sandwich': { min: 24, max: 721 }
+    };
+
+    // Update each statistic with animation
+    document.querySelectorAll('.cyber-card .card-content').forEach(card => {
+        const title = card.querySelector('h2')?.textContent;
+        const valueElement = card.querySelector('.stat-value');
+        
+        if (title && valueElement && ranges[title]) {
+            const range = ranges[title];
+            const currentValue = parseInt(valueElement.textContent.replace(/,/g, '')) || 0;
+            
+            // Calculate new value with smaller change
+            const maxChange = Math.floor((range.max - range.min) * 0.1); // Only allow 10% range change
+            const minNewValue = Math.max(currentValue - maxChange, range.min);
+            const maxNewValue = Math.min(currentValue + maxChange, range.max);
+            const newValue = Math.floor(Math.random() * (maxNewValue - minNewValue + 1)) + minNewValue;
+            
+            // Animate the number change
+            animateValue(valueElement, currentValue, newValue, 2000);
+        }
+    });
+}
+
+// Animate value changes
+function animateValue(element, start, end, duration) {
+    const range = end - start;
+    const startTime = performance.now();
+    
+    function easeOutExpo(x) {
+        return x === 1 ? 1 : 1 - Math.pow(2, -10 * x);
+    }
+    
+    function updateNumber(currentTime) {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        
+        const easedProgress = easeOutExpo(progress);
+        const current = Math.floor(start + (range * easedProgress));
+        
+        element.textContent = current.toLocaleString();
+        element.style.textShadow = `0 0 ${10 * (1 - progress)}px rgba(0, 255, 255, ${0.5 * (1 - progress)})`;
+        
+        if (progress < 1) {
+            requestAnimationFrame(updateNumber);
+        }
+    }
+    
+    requestAnimationFrame(updateNumber);
+}
+
+// Update all charts
+function updateAllCharts() {
+    if (document.hidden) return; // Skip updates when page is not visible
+    
+    try {
+        if (networkChart) {
+            const newData = networkChart.data.datasets[0].data.slice(1);
+            newData.push(getRandomData(500, 2000));
+            networkChart.data.datasets[0].data = newData;
+            networkChart.update('none');
+        }
+        
+        if (volumeChart) {
+            volumeChart.data.datasets[0].data = volumeChart.data.datasets[0].data.map(() => 
+                getRandomData(5, 50)
+            );
+            volumeChart.update('none');
+        }
+        
+        if (solChart) {
+            const newData = solChart.data.datasets[0].data.slice(1);
+            newData.push(getRandomData(100, 1000));
+            solChart.data.datasets[0].data = newData;
+            solChart.update('none');
+        }
+    } catch (error) {
+        console.error('Error updating charts:', error);
+    }
+}
+
 // Global variables for charts and previous values
 let solChart = null, mevChart = null, sandwichChart = null, networkChart = null, volumeChart = null;
 let isInitialized = false;
@@ -410,166 +571,5 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize loading screen
     initializeLoadingScreen();
 });
-
-// Utility functions
-function getRandomData(min, max) {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-
-// Initialize Time Selector
-function initializeTimeSelector() {
-    const timeButtons = document.querySelectorAll('.time-selector button');
-    timeButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            timeButtons.forEach(btn => btn.classList.remove('active'));
-            button.classList.add('active');
-            // Update chart data based on selected time range
-            updateChartData(button.textContent);
-        });
-    });
-}
-
-// Initialize Chart Controls
-function initializeChartControls() {
-    const expandButtons = document.querySelectorAll('.chart-control-btn');
-    expandButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            const chartContainer = this.closest('.chart-card');
-            if (chartContainer) {
-                chartContainer.classList.toggle('expanded');
-                // Update chart size when expanded
-                Chart.instances.forEach(chart => chart.resize());
-            }
-        });
-    });
-}
-
-// Update chart data based on time range
-function updateChartData(timeRange) {
-    try {
-        switch(timeRange) {
-            case '24H':
-                if (solChart) {
-                    solChart.data.labels = Array(24).fill('').map((_, i) => `${23-i}h`);
-                    solChart.data.datasets[0].data = Array(24).fill(0).map(() => getRandomData(100, 1000));
-                    solChart.update();
-                }
-                break;
-            case '7D':
-                if (solChart) {
-                    solChart.data.labels = Array(7).fill('').map((_, i) => `Day ${7-i}`);
-                    solChart.data.datasets[0].data = Array(7).fill(0).map(() => getRandomData(500, 2000));
-                    solChart.update();
-                }
-                break;
-            case '30D':
-                if (solChart) {
-                    solChart.data.labels = Array(30).fill('').map((_, i) => `Day ${30-i}`);
-                    solChart.data.datasets[0].data = Array(30).fill(0).map(() => getRandomData(800, 3000));
-                    solChart.update();
-                }
-                break;
-        }
-    } catch (error) {
-        console.error('Error updating chart data:', error);
-    }
-}
-
-// Start continuous updates
-function startUpdates() {
-    // Update stats and charts every 2 seconds
-    setInterval(() => {
-        updateAllStats();
-        updateAllCharts();
-    }, 2000);
-}
-
-// Update all stats with animation
-function updateAllStats() {
-    // Statistics tab ranges
-    const ranges = {
-        'Active Searchers': { min: 2500, max: 10000 },
-        'Active MEV Operations': { min: 100, max: 1232 },
-        'Ongoing Arbitrage': { min: 10, max: 523 },
-        'Ongoing Sandwich': { min: 24, max: 721 }
-    };
-
-    // Update each statistic with animation
-    document.querySelectorAll('.cyber-card .card-content').forEach(card => {
-        const title = card.querySelector('h2')?.textContent;
-        const valueElement = card.querySelector('.stat-value');
-        
-        if (title && valueElement && ranges[title]) {
-            const range = ranges[title];
-            const currentValue = parseInt(valueElement.textContent.replace(/,/g, '')) || 0;
-            
-            // Calculate new value with smaller change
-            const maxChange = Math.floor((range.max - range.min) * 0.1); // Only allow 10% range change
-            const minNewValue = Math.max(currentValue - maxChange, range.min);
-            const maxNewValue = Math.min(currentValue + maxChange, range.max);
-            const newValue = Math.floor(Math.random() * (maxNewValue - minNewValue + 1)) + minNewValue;
-            
-            // Animate the number change
-            animateValue(valueElement, currentValue, newValue, 2000);
-        }
-    });
-}
-
-// Animate value changes
-function animateValue(element, start, end, duration) {
-    const range = end - start;
-    const startTime = performance.now();
-    
-    function easeOutExpo(x) {
-        return x === 1 ? 1 : 1 - Math.pow(2, -10 * x);
-    }
-    
-    function updateNumber(currentTime) {
-        const elapsed = currentTime - startTime;
-        const progress = Math.min(elapsed / duration, 1);
-        
-        const easedProgress = easeOutExpo(progress);
-        const current = Math.floor(start + (range * easedProgress));
-        
-        element.textContent = current.toLocaleString();
-        element.style.textShadow = `0 0 ${10 * (1 - progress)}px rgba(0, 255, 255, ${0.5 * (1 - progress)})`;
-        
-        if (progress < 1) {
-            requestAnimationFrame(updateNumber);
-        }
-    }
-    
-    requestAnimationFrame(updateNumber);
-}
-
-// Update all charts
-function updateAllCharts() {
-    if (document.hidden) return; // Skip updates when page is not visible
-    
-    try {
-        if (networkChart) {
-            const newData = networkChart.data.datasets[0].data.slice(1);
-            newData.push(getRandomData(500, 2000));
-            networkChart.data.datasets[0].data = newData;
-            networkChart.update('none');
-        }
-        
-        if (volumeChart) {
-            volumeChart.data.datasets[0].data = volumeChart.data.datasets[0].data.map(() => 
-                getRandomData(5, 50)
-            );
-            volumeChart.update('none');
-        }
-        
-        if (solChart) {
-            const newData = solChart.data.datasets[0].data.slice(1);
-            newData.push(getRandomData(100, 1000));
-            solChart.data.datasets[0].data = newData;
-            solChart.update('none');
-        }
-    } catch (error) {
-        console.error('Error updating charts:', error);
-    }
-}
 
 // ... rest of the existing code ...
