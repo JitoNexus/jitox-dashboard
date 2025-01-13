@@ -1018,11 +1018,25 @@ function startRealTimeUpdates() {
 // Enhanced updateStats function with smoother transitions
 function updateStats() {
     try {
-        // Update overview stats with random fluctuations
+        // Calculate Total Pooled SOL with smooth oscillation
+        const baseSOL = 3760.5; // Midpoint between 100 and 7421
+        const amplitude = 3660.5; // Half the range (7421 - 100) / 2
+        const frequency = 10000; // Slower oscillation
+        const currentSOL = baseSOL + amplitude * Math.sin(Date.now() / frequency);
+        
+        // Calculate percentage change based on previous value
+        const previousSOL = baseSOL + amplitude * Math.sin((Date.now() - 1000) / frequency);
+        const percentageChange = ((currentSOL - previousSOL) / previousSOL) * 100;
+        
+        // Calculate 24h volume based on Total Pooled SOL (approximately 30% daily volume)
+        const dailyVolume = currentSOL * 0.3 * 100; // Multiply by current SOL price (assumed $100)
+
+        // Update overview stats with smooth transitions
         const stats = {
-            tvl: {
-                value: `$${(1.2 + Math.sin(Date.now() / 10000) * 0.1).toFixed(1)}B`,
-                trend: `+${(10 + Math.sin(Date.now() / 5000) * 5).toFixed(1)}%`
+            pooled: {
+                value: `${Math.floor(currentSOL)} SOL`,
+                trend: `${percentageChange >= 0 ? '+' : ''}${percentageChange.toFixed(1)}%`,
+                volume: `$${(dailyVolume / 1000000).toFixed(1)}M`
             },
             searchers: {
                 value: (5000 + Math.floor(Math.sin(Date.now() / 8000) * 200)).toString(),
@@ -1044,7 +1058,7 @@ function updateStats() {
             if (!title) return;
 
             let stat;
-            if (title.includes('value')) stat = stats.tvl;
+            if (title.includes('total pooled')) stat = stats.pooled;
             else if (title.includes('searchers')) stat = stats.searchers;
             else if (title.includes('mev')) stat = stats.mev;
             else if (title.includes('health')) stat = stats.health;
@@ -1052,6 +1066,8 @@ function updateStats() {
             if (stat) {
                 const valueEl = card.querySelector('.stat-value');
                 const trendEl = card.querySelector('.stat-trend span');
+                const volumeEl = card.querySelector('.stat-details span');
+                
                 if (valueEl) {
                     valueEl.style.transition = 'color 0.3s ease';
                     valueEl.textContent = stat.value;
@@ -1060,6 +1076,9 @@ function updateStats() {
                     const trendValue = parseFloat(stat.trend);
                     trendEl.textContent = stat.trend;
                     trendEl.parentElement.className = `stat-trend ${trendValue >= 0 ? 'positive' : 'negative'}`;
+                }
+                if (volumeEl && stat.volume) {
+                    volumeEl.textContent = `24h Volume: ${stat.volume}`;
                 }
             }
         });
