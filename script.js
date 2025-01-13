@@ -756,37 +756,51 @@ function updateFooterTimestamp() {
     }
 }
 
-// Loading Screen Handler
+// Loading Screen Initialization
 document.addEventListener('DOMContentLoaded', () => {
-    const loadingOverlay = document.querySelector('.loading-overlay');
+    console.log('Initializing loading screen');
+    
+    const loadingContainer = document.getElementById('loadingContainer');
+    const progress = document.getElementById('loadingProgress');
     const mainContent = document.querySelector('.main-content');
-    const spinnerCube = document.createElement('div');
-    spinnerCube.className = 'spinner-cube';
-    document.querySelector('.cyber-spinner').appendChild(spinnerCube);
-
-    // Add cyber grid
-    const cyberGrid = document.createElement('div');
-    cyberGrid.className = 'cyber-grid';
-    loadingOverlay.appendChild(cyberGrid);
-
-    // Initialize loading screen
-    document.body.classList.add('loading');
-
-    // Simulate loading progress
-    setTimeout(() => {
-        loadingOverlay.classList.add('fade-out');
-        document.body.classList.remove('loading');
-        mainContent.classList.add('visible');
+    const statusItems = document.querySelectorAll('.status-item');
+    
+    // Ensure loading container is visible
+    loadingContainer.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    
+    // Create particles
+    const particlesContainer = document.getElementById('cyberParticles');
+    for (let i = 0; i < 20; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'cyber-particle';
+        particle.style.left = `${Math.random() * 100}%`;
+        particle.style.top = `${Math.random() * 100}%`;
+        particle.style.animationDelay = `${Math.random() * 10}s`;
+        particlesContainer.appendChild(particle);
+    }
+    
+    // Initialize progress
+    let currentProgress = 0;
+    const interval = setInterval(() => {
+        currentProgress += 1;
+        progress.style.width = `${currentProgress}%`;
         
-        // Remove loading overlay after animation
-        setTimeout(() => {
-            loadingOverlay.style.display = 'none';
-        }, 500);
-
-        // Initialize charts and start updates
-        initializeCharts();
-        startUpdates();
-    }, 2000);
+        // Update status items
+        if (currentProgress >= 30) statusItems[0].classList.add('completed');
+        if (currentProgress >= 60) statusItems[1].classList.add('completed');
+        if (currentProgress >= 90) statusItems[2].classList.add('completed');
+        
+        if (currentProgress >= 100) {
+            clearInterval(interval);
+            setTimeout(() => {
+                loadingContainer.classList.add('hidden');
+                document.body.style.overflow = 'auto';
+                mainContent.classList.add('visible');
+                initializeMainContent(); // Initialize main dashboard
+            }, 500);
+        }
+    }, 30);
 });
 
 function startUpdates() {
