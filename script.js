@@ -186,6 +186,15 @@ function initializeMainContent() {
     }
 }
 
+// Initialize everything
+function initialize() {
+    if (isInitialized) return;
+    console.log('Initializing application...');
+    
+    // Initialize loading screen
+    initializeLoadingScreen();
+}
+
 // Loading Screen Initialization
 function initializeLoadingScreen() {
     console.log('Initializing loading screen');
@@ -209,7 +218,9 @@ function initializeLoadingScreen() {
 
     // Ensure loading container is visible and main content is hidden
     elements.loadingContainer.style.display = 'flex';
-    elements.mainContent.style.display = 'none';
+    elements.mainContent.style.display = 'block';
+    elements.mainContent.style.opacity = '0';
+    elements.mainContent.style.visibility = 'hidden';
     document.body.style.overflow = 'hidden';
     
     // Create particles
@@ -246,56 +257,23 @@ function initializeLoadingScreen() {
         if (currentProgress >= 100) {
             clearInterval(interval);
             setTimeout(() => {
-                elements.loadingContainer.style.display = 'none';
-                elements.mainContent.style.display = 'block';
-                document.body.style.overflow = 'auto';
+                elements.loadingContainer.classList.add('hidden');
                 elements.mainContent.classList.add('visible');
+                document.body.style.overflow = 'auto';
                 
-                // Initialize main content only if not already initialized
-                if (!isInitialized) {
-                    initializeMainContent();
-                    isInitialized = true;
-                }
+                // Initialize main content
+                initializeCharts();
+                initializeTimeSelector();
+                initializeChartControls();
+                startUpdates();
+                
+                isInitialized = true;
             }, 500);
         }
     }, 30);
 }
 
-// Initialize everything
-function initialize() {
-    if (isInitialized) return;
-    console.log('Initializing application...');
-    
-    // Initialize disclaimer
-    const closeDisclaimerBtn = document.querySelector('.close-disclaimer');
-    if (closeDisclaimerBtn) {
-        closeDisclaimerBtn.addEventListener('click', () => {
-            const disclaimer = document.querySelector('.disclaimer-banner');
-            if (disclaimer) {
-                disclaimer.style.opacity = '0';
-                setTimeout(() => disclaimer.style.display = 'none', 500);
-            }
-        });
-    }
-
-    // Show main content immediately
-    const mainContent = document.querySelector('.main-content');
-    if (mainContent) {
-        mainContent.style.display = 'block';
-        mainContent.style.opacity = '1';
-    }
-
-    // Initialize all components
-    initializeCharts();
-    initializeTimeSelector();
-    initializeChartControls();
-    startUpdates();
-    
-    isInitialized = true;
-    console.log('Initialization complete');
-}
-
-// Single event listener for DOMContentLoaded
+// Start the app when DOM is loaded
 document.addEventListener('DOMContentLoaded', initialize, { once: true });
 
 // Initialize Time Selector

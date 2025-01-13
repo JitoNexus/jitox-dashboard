@@ -334,14 +334,36 @@ body {
 
 /* Main Content Visibility */
 .main-content {
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.5s ease-out, visibility 0.5s ease-out;
+    display: block !important;
+    opacity: 1 !important;
+    min-height: 100vh;
+    background: var(--deep-blue);
+    padding: 1rem;
+    box-sizing: border-box;
+    visibility: visible !important;
 }
 
-.main-content.visible {
-    opacity: 1;
-    visibility: visible;
+.main-content .cyber-frame {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(0, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 1rem;
+}
+
+/* Content Section Fix */
+.content-section {
+    display: block !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+.statistics-section {
+    display: block !important;
+}
+
+/* Loading Screen Hide */
+.loading-container {
+    display: none !important;
 }
 
 /* Loading Animations */
@@ -2147,12 +2169,13 @@ body {
 
 /* Main Content Visibility Fix */
 .main-content {
-    opacity: 1;
     display: block !important;
+    opacity: 1 !important;
     min-height: 100vh;
     background: var(--deep-blue);
     padding: 1rem;
     box-sizing: border-box;
+    visibility: visible !important;
 }
 
 .main-content .cyber-frame {
@@ -2165,10 +2188,53 @@ body {
 /* Content Section Fix */
 .content-section {
     display: block !important;
-    opacity: 1;
-    visibility: visible;
+    opacity: 1 !important;
+    visibility: visible !important;
 }
 
 .statistics-section {
     display: block !important;
+}
+
+/* Loading Screen Hide */
+.loading-container {
+    display: none !important;
+}
+
+/* Loading Screen */
+.loading-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background: var(--deep-blue);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+/* Main Content Visibility */
+.main-content {
+    opacity: 0;
+    visibility: hidden;
+    min-height: 100vh;
+    background: var(--deep-blue);
+    padding: 1rem;
+    box-sizing: border-box;
+    transition: opacity 0.5s ease-out, visibility 0.5s ease-out;
+}
+
+.main-content.visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Remove the loading screen hide */
+.loading-container.hidden {
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.5s ease-out, visibility 0.5s ease-out;
 }
