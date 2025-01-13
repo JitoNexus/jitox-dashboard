@@ -221,6 +221,19 @@ function initializeLoadingScreen() {
         return;
     }
 
+    // Reset any existing charts
+    if (solChart) solChart.destroy();
+    if (networkChart) networkChart.destroy();
+    if (volumeChart) volumeChart.destroy();
+    if (mevChart) mevChart.destroy();
+    if (sandwichChart) sandwichChart.destroy();
+
+    solChart = null;
+    networkChart = null;
+    volumeChart = null;
+    mevChart = null;
+    sandwichChart = null;
+
     // Ensure loading container is visible and main content is hidden
     loadingContainer.style.display = 'flex';
     mainContent.style.display = 'none';
@@ -267,16 +280,19 @@ function initializeLoadingScreen() {
             if (currentProgress >= 100) {
                 clearInterval(interval);
                 setTimeout(() => {
-                    loadingContainer.style.display = 'none';
-                    mainContent.style.display = 'block';
-                    document.body.style.overflow = 'auto';
-                    mainContent.classList.add('visible');
-                    
-                    // Initialize main content only if not already initialized
-                    if (!isInitialized) {
-                        initializeMainContent();
-                        isInitialized = true;
-                    }
+                    // Show disclaimer before showing main content
+                    showDisclaimer(() => {
+                        loadingContainer.style.display = 'none';
+                        mainContent.style.display = 'block';
+                        document.body.style.overflow = 'auto';
+                        mainContent.classList.add('visible');
+                        
+                        // Initialize main content only if not already initialized
+                        if (!isInitialized) {
+                            initializeMainContent();
+                            isInitialized = true;
+                        }
+                    });
                 }, 500);
             }
         }, 30);
@@ -285,14 +301,112 @@ function initializeLoadingScreen() {
     }
 }
 
+// Show disclaimer modal
+function showDisclaimer(callback) {
+    const disclaimerModal = document.createElement('div');
+    disclaimerModal.className = 'disclaimer-modal';
+    disclaimerModal.innerHTML = `
+        <div class="disclaimer-content">
+            <h3>Beta Version Notice</h3>
+            <div class="disclaimer-text">
+                <p>Welcome to JitoX Dashboard Beta!</p>
+                <p>Please note:</p>
+                <ul>
+                    <li>Users who haven't initialized with /get_wallet command and made a deposit may see demo statistics.</li>
+                    <li>Verified users with deposits will see their actual performance metrics.</li>
+                    <li>We're continuously improving the platform with daily updates.</li>
+                </ul>
+                <p>Found a bug? Report it to <span class="highlight">@jitoxai</span> and receive compensation for your contribution.</p>
+                <div class="disclaimer-footer">
+                    <button class="cyber-button" id="disclaimerAccept">I Understand</button>
+                </div>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(disclaimerModal);
+
+    // Add styles dynamically
+    const style = document.createElement('style');
+    style.textContent = `
+        .disclaimer-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 10, 10, 0.95);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            backdrop-filter: blur(5px);
+        }
+        .disclaimer-content {
+            background: #13111C;
+            border: 1px solid rgba(0, 255, 255, 0.2);
+            border-radius: 15px;
+            padding: 2rem;
+            max-width: 600px;
+            width: 90%;
+            color: #fff;
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.1);
+        }
+        .disclaimer-content h3 {
+            color: #00ffff;
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+        .disclaimer-text {
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+        .disclaimer-text p {
+            margin-bottom: 1rem;
+        }
+        .disclaimer-text ul {
+            margin: 1rem 0;
+            padding-left: 1.5rem;
+        }
+        .disclaimer-text li {
+            margin-bottom: 0.5rem;
+            color: rgba(255, 255, 255, 0.8);
+        }
+        .highlight {
+            color: #00ffff;
+            font-weight: bold;
+        }
+        .disclaimer-footer {
+            margin-top: 2rem;
+            text-align: center;
+        }
+        #disclaimerAccept {
+            background: linear-gradient(45deg, #00ffff, #00ff88);
+            border: none;
+            padding: 0.8rem 2rem;
+            border-radius: 25px;
+            color: #0a0a0a;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        #disclaimerAccept:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 255, 255, 0.3);
+        }
+    `;
+    document.head.appendChild(style);
+
+    // Handle accept button click
+    document.getElementById('disclaimerAccept').addEventListener('click', () => {
+        disclaimerModal.remove();
+        style.remove();
+        if (callback) callback();
+    });
+}
+
 // Single event listener for DOMContentLoaded
 document.addEventListener('DOMContentLoaded', () => {
-    // Remove any existing event listeners
-    const oldListeners = document.querySelectorAll('*');
-    oldListeners.forEach(element => {
-        element.replaceWith(element.cloneNode(true));
-    });
-    
     // Initialize loading screen
     initializeLoadingScreen();
 });
