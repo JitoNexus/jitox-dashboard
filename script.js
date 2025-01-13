@@ -191,6 +191,13 @@ function initialize() {
     if (isInitialized) return;
     console.log('Initializing application...');
     
+    initializeLoadingScreen();
+}
+
+// Loading Screen Initialization
+function initializeLoadingScreen() {
+    console.log('Initializing loading screen');
+    
     // Get required elements
     const elements = {
         loadingContainer: document.getElementById('loadingContainer'),
@@ -208,11 +215,6 @@ function initialize() {
         }
     }
 
-    // Show loading screen, hide main content
-    elements.loadingContainer.style.display = 'flex';
-    elements.loadingContainer.style.opacity = '1';
-    elements.mainContent.style.display = 'none';
-    
     // Create particles
     elements.particles.innerHTML = '';
     for (let i = 0; i < 20; i++) {
@@ -252,17 +254,11 @@ function initialize() {
                 initializeTimeSelector();
                 initializeChartControls();
                 startUpdates();
-                initializeTabs();
                 
-                // Hide loading screen
-                elements.loadingContainer.style.opacity = '0';
-                setTimeout(() => {
-                    elements.loadingContainer.style.display = 'none';
-                    // Show main content
-                    elements.mainContent.style.display = 'block';
-                    elements.mainContent.style.opacity = '1';
-                    document.querySelector('.statistics-section').classList.add('active');
-                }, 500);
+                // Hide loading screen and show main content
+                elements.loadingContainer.style.display = 'none';
+                elements.mainContent.classList.add('visible');
+                document.querySelector('.statistics-section').classList.add('active');
                 
                 isInitialized = true;
                 console.log('Application initialized');
