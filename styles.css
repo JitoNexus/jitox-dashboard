@@ -2214,9 +2214,15 @@ body {
     align-items: center;
     justify-content: center;
     z-index: 1000;
+    transition: opacity 0.5s ease-out, visibility 0.5s ease-out;
 }
 
-/* Main Content Visibility */
+.loading-container.hidden {
+    opacity: 0;
+    visibility: hidden;
+}
+
+/* Main Content */
 .main-content {
     opacity: 0;
     visibility: hidden;
@@ -2230,11 +2236,4 @@ body {
 .main-content.visible {
     opacity: 1;
     visibility: visible;
-}
-
-/* Remove the loading screen hide */
-.loading-container.hidden {
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.5s ease-out, visibility 0.5s ease-out;
 }

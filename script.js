@@ -257,17 +257,19 @@ function initializeLoadingScreen() {
         if (currentProgress >= 100) {
             clearInterval(interval);
             setTimeout(() => {
-                elements.loadingContainer.classList.add('hidden');
-                elements.mainContent.classList.add('visible');
-                document.body.style.overflow = 'auto';
-                
-                // Initialize main content
+                // Initialize main content first
                 initializeCharts();
                 initializeTimeSelector();
                 initializeChartControls();
                 startUpdates();
                 
+                // Then transition the UI
+                elements.loadingContainer.classList.add('hidden');
+                elements.mainContent.classList.add('visible');
+                document.body.style.overflow = 'auto';
+                
                 isInitialized = true;
+                console.log('Application initialized');
             }, 500);
         }
     }, 30);
