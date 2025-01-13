@@ -70,21 +70,32 @@ function initializeLoadingSequence() {
 
         console.log('Starting loading sequence...');
 
-        // Ensure main content is hidden initially
+        // Reset initial states
+        document.body.style.overflow = 'hidden';
         mainContent.style.display = 'none';
         mainContent.style.opacity = '0';
+        mainContent.classList.remove('visible');
+        
         loadingContainer.style.display = 'flex';
+        loadingContainer.style.opacity = '1';
+        loadingContainer.style.transition = 'opacity 0.5s ease';
+
+        // Reset loading progress
+        loadingProgress.style.width = '0%';
+        loadingProgress.style.transition = 'width 0.3s ease';
+
+        // Reset status items
+        statusItems.forEach(item => {
+            item.classList.remove('completed');
+        });
 
         // Create particles if container exists
         if (cyberParticles) {
             createParticles(cyberParticles);
         }
 
-        // Initialize progress
+        // Simulate loading progress
         let currentProgress = 0;
-        loadingProgress.style.width = '0%';
-
-        // Progress interval
         const interval = setInterval(() => {
             if (currentProgress >= 100) {
                 clearInterval(interval);
@@ -95,11 +106,20 @@ function initializeLoadingSequence() {
             currentProgress += 1;
             loadingProgress.style.width = `${currentProgress}%`;
 
-            // Update status items if they exist
+            // Update status items
             if (statusItems.length > 0) {
-                if (currentProgress >= 30) statusItems[0]?.classList.add('completed');
-                if (currentProgress >= 60) statusItems[1]?.classList.add('completed');
-                if (currentProgress >= 90) statusItems[2]?.classList.add('completed');
+                if (currentProgress >= 30) {
+                    statusItems[0]?.classList.add('completed');
+                    console.log('Network connection established');
+                }
+                if (currentProgress >= 60) {
+                    statusItems[1]?.classList.add('completed');
+                    console.log('Data synchronization complete');
+                }
+                if (currentProgress >= 90) {
+                    statusItems[2]?.classList.add('completed');
+                    console.log('Interface loaded');
+                }
             }
         }, 30);
 
@@ -202,18 +222,56 @@ function initializeTabs() {
         const tabs = document.querySelectorAll('.cyber-button');
         const sections = document.querySelectorAll('.content-section');
 
+        // Hide all sections initially
+        sections.forEach(section => {
+            section.style.display = 'none';
+            section.classList.remove('active');
+        });
+
+        // Show statistics section by default
+        const statisticsSection = document.querySelector('.statistics-section');
+        if (statisticsSection) {
+            statisticsSection.style.display = 'block';
+            statisticsSection.classList.add('active');
+            
+            // Set the corresponding tab as active
+            const statisticsTab = document.querySelector('[data-tab="statistics"]');
+            if (statisticsTab) {
+                statisticsTab.classList.add('active');
+            }
+        }
+
+        // Add click handlers to tabs
         tabs.forEach(tab => {
             tab.addEventListener('click', () => {
                 const targetSection = tab.getAttribute('data-tab');
                 
                 // Update active states
                 tabs.forEach(t => t.classList.remove('active'));
-                sections.forEach(s => s.style.display = 'none');
-                
                 tab.classList.add('active');
-                document.querySelector(`.${targetSection}-section`).style.display = 'block';
+
+                // Hide all sections with transition
+                sections.forEach(section => {
+                    section.classList.remove('active');
+                    setTimeout(() => {
+                        section.style.display = 'none';
+                    }, 300); // Match this with CSS transition duration
+                });
+                
+                // Show target section with transition
+                const targetElement = document.querySelector(`.${targetSection}-section`);
+                if (targetElement) {
+                    setTimeout(() => {
+                        targetElement.style.display = 'block';
+                        // Force a reflow
+                        targetElement.offsetHeight;
+                        targetElement.classList.add('active');
+                    }, 300);
+                }
             });
         });
+
+        console.log('Tab initialization completed');
     } catch (error) {
         console.error('Error initializing tabs:', error);
     }
@@ -227,20 +285,45 @@ function completeLoading(loadingContainer, mainContent) {
             return;
         }
 
+        console.log('Completing loading sequence...');
+
+        // First, initialize the main content components while loading screen is still visible
+        initializeCharts();
+        initializeTabs();
+
+        // Add visible class to main content (this will be used for the transition)
+        mainContent.classList.add('visible');
+
+        // Start the transition sequence
         setTimeout(() => {
+            // Fade out loading container
             loadingContainer.style.opacity = '0';
+            loadingContainer.style.transition = 'opacity 0.5s ease';
+
             setTimeout(() => {
+                // Hide loading container
                 loadingContainer.style.display = 'none';
+
+                // Show main content
                 mainContent.style.display = 'block';
-                setTimeout(() => {
-                    mainContent.style.opacity = '1';
-                    isInitialized = true;
-                    console.log('Loading sequence completed');
-                    
-                    // Initialize main content components
-                    initializeCharts();
-                    initializeTabs();
-                }, 50);
+                
+                // Force a reflow before setting opacity
+                mainContent.offsetHeight;
+                
+                // Fade in main content
+                mainContent.style.opacity = '1';
+                mainContent.style.transition = 'opacity 0.5s ease';
+
+                // Set initial active section
+                const initialSection = document.querySelector('.statistics-section');
+                if (initialSection) {
+                    initialSection.style.display = 'block';
+                    initialSection.classList.add('active');
+                }
+
+                // Mark initialization as complete
+                isInitialized = true;
+                console.log('Loading sequence completed successfully');
             }, 500);
         }, 500);
     } catch (error) {
