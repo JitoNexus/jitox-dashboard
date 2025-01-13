@@ -760,15 +760,23 @@ document.addEventListener('DOMContentLoaded', () => {
     const progress = document.getElementById('loadingProgress');
     const statusItems = document.querySelectorAll('.status-item');
     
+    console.log('Progress element:', progress); // Debug log
+    
     if (progress) {
         const interval = setInterval(() => {
             currentProgress += 1;
             progress.style.width = `${currentProgress}%`;
             
             // Update status items
-            if (currentProgress >= 30 && statusItems[0]) statusItems[0].classList.add('completed');
-            if (currentProgress >= 60 && statusItems[1]) statusItems[1].classList.add('completed');
-            if (currentProgress >= 90 && statusItems[2]) statusItems[2].classList.add('completed');
+            if (currentProgress >= 30 && statusItems[0]) {
+                statusItems[0].classList.add('completed');
+            }
+            if (currentProgress >= 60 && statusItems[1]) {
+                statusItems[1].classList.add('completed');
+            }
+            if (currentProgress >= 90 && statusItems[2]) {
+                statusItems[2].classList.add('completed');
+            }
             
             if (currentProgress >= 100) {
                 clearInterval(interval);
@@ -786,6 +794,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 }, 500);
             }
         }, 30);
+    } else {
+        console.error('Progress bar element not found');
     }
 });
 
