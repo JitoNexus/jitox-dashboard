@@ -1183,3 +1183,61 @@ document.addEventListener('DOMContentLoaded', () => {
     startRealTimeUpdates();
     startPooledUpdates(); // Start the more frequent updates for Total Pooled
 });
+
+function generateRandomProfit() {
+    // Use exponential distribution to favor lower values
+    const rand = Math.random();
+    // Base range from 0.2 to 14 SOL
+    const minProfit = 0.2;
+    const maxProfit = 14;
+    
+    // Exponential distribution calculation
+    // This will make lower values more common
+    const lambda = 0.5;
+    const profit = minProfit + (-Math.log(1 - rand * 0.95) / lambda);
+    
+    // Cap at maxProfit
+    return Math.min(profit, maxProfit).toFixed(2);
+}
+
+function createAlertCard(priority) {
+    const card = document.createElement('div');
+    card.className = `alert-card ${priority}-priority new`;
+    
+    const profit = generateRandomProfit();
+    const alertTypes = {
+        'high-priority': 'Large Opportunity',
+        'medium-priority': 'Standard Trade',
+        'low-priority': 'Small Opportunity'
+    };
+    
+    card.innerHTML = `
+        <div class="alert-header">
+            <div class="alert-type">
+                <i class="fas fa-exclamation-circle"></i>
+                <span>${alertTypes[priority]}</span>
+            </div>
+            <div class="alert-time">Just now</div>
+        </div>
+        <div class="alert-content">
+            <h3>MEV Opportunity Detected</h3>
+            <p>Potential profit opportunity identified on Solana network.</p>
+            <div class="alert-details">
+                <div class="detail-item">
+                    <i class="fas fa-coins"></i>
+                    <span>Profit: ${profit} SOL</span>
+                </div>
+                <div class="detail-item">
+                    <i class="fas fa-clock"></i>
+                    <span>Execution Time: ${Math.floor(Math.random() * 200 + 100)}ms</span>
+                </div>
+            </div>
+        </div>
+        <div class="alert-actions">
+            <button class="cyber-button">View Details</button>
+            <button class="cyber-button">Execute</button>
+        </div>
+    `;
+    
+    return card;
+}
