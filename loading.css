@@ -37,57 +37,115 @@ body {
     align-items: center;
     justify-content: center;
     z-index: 9999;
+    overflow: hidden;
 }
 
 .wallet {
     position: relative;
-    z-index: 1;
+    width: 200px;
+    height: 150px;
+    perspective: 1000px;
     margin-bottom: 40px;
+}
+
+.wallet-body {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+    animation: walletHover 3s ease-in-out infinite;
+}
+
+.wallet-front,
+.wallet-middle,
+.wallet-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: #2B2640;
+    border-radius: 15px;
+    box-shadow: 0 0 30px rgba(110, 86, 207, 0.15);
+}
+
+.wallet-front {
+    transform: translateZ(10px);
+    background: linear-gradient(45deg, #2B2640, #3D355A);
+}
+
+.wallet-middle {
+    transform: translateZ(0);
+}
+
+.wallet-back {
+    transform: translateZ(-10px);
 }
 
 .loading-text {
     position: relative;
     z-index: 1;
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 30px;
 }
 
 .loading-text h2 {
-    color: #fff;
-    font-size: 24px;
-    margin-bottom: 16px;
+    background: linear-gradient(45deg, #00ffff, #00ff88);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    text-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
 }
 
 .progress-bar {
     width: 300px;
     height: 4px;
     background: rgba(0, 255, 255, 0.1);
-    border-radius: 2px;
+    border-radius: 4px;
     overflow: hidden;
+    position: relative;
 }
 
 #loadingProgress {
     width: 0%;
     height: 100%;
-    background: #00ffff;
+    background: linear-gradient(90deg, #00ffff, #00ff88);
+    border-radius: 4px;
     transition: width 0.3s ease;
+    position: relative;
+}
+
+#loadingProgress::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    animation: progressGlow 1.5s linear infinite;
 }
 
 .loading-status {
     position: relative;
     z-index: 1;
-    margin-top: 20px;
+    margin-top: 30px;
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 15px;
 }
 
 .status-item {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 12px;
     color: rgba(255, 255, 255, 0.6);
     font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
 }
 
 .status-dot {
@@ -95,6 +153,7 @@ body {
     height: 8px;
     background: rgba(0, 255, 255, 0.3);
     border-radius: 50%;
+    transition: all 0.3s ease;
 }
 
 .status-item.completed {
@@ -106,15 +165,40 @@ body {
     box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
 }
 
-.main-content {
-    display: none;
-    opacity: 0;
-    transition: opacity 0.5s ease;
+@keyframes walletHover {
+    0%, 100% {
+        transform: translateY(0) rotateX(0);
+    }
+    50% {
+        transform: translateY(-10px) rotateX(5deg);
+    }
 }
 
-.main-content.visible {
-    display: block;
-    opacity: 1;
+@keyframes progressGlow {
+    0% {
+        transform: translateX(-100%);
+    }
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+.cyber-particles {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: 0;
+    opacity: 0.5;
+}
+
+.cyber-particle {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background: #00ffff;
+    border-radius: 50%;
+    animation: float 10s linear infinite;
 }
 
 @keyframes float {
@@ -148,6 +232,7 @@ body {
     display: flex;
     align-items: center;
     gap: 8px;
+    backdrop-filter: blur(5px);
 }
 
 .cyber-particles {
