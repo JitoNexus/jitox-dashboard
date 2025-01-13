@@ -264,6 +264,7 @@ function initializeLoadingScreen() {
 // Initialize everything
 function initialize() {
     if (isInitialized) return;
+    console.log('Initializing application...');
     
     // Initialize disclaimer
     const closeDisclaimerBtn = document.querySelector('.close-disclaimer');
@@ -276,11 +277,22 @@ function initialize() {
             }
         });
     }
+
+    // Show main content immediately
+    const mainContent = document.querySelector('.main-content');
+    if (mainContent) {
+        mainContent.style.display = 'block';
+        mainContent.style.opacity = '1';
+    }
+
+    // Initialize all components
+    initializeCharts();
+    initializeTimeSelector();
+    initializeChartControls();
+    startUpdates();
     
-    // Wait for a short moment to ensure DOM is fully loaded
-    setTimeout(() => {
-        initializeLoadingScreen();
-    }, 100);
+    isInitialized = true;
+    console.log('Initialization complete');
 }
 
 // Single event listener for DOMContentLoaded

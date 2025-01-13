@@ -2111,16 +2111,23 @@ body {
     border-radius: 8px;
     color: #ffa500;
     position: relative;
+    z-index: 100;
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
 }
 
 .disclaimer-banner i {
     font-size: 1.5rem;
+    color: #ffa500;
+    flex-shrink: 0;
 }
 
 .disclaimer-banner p {
     margin: 0;
     flex: 1;
     font-size: 0.9rem;
+    line-height: 1.4;
+    color: #ffa500;
 }
 
 .close-disclaimer {
@@ -2131,6 +2138,7 @@ body {
     padding: 0.5rem;
     opacity: 0.8;
     transition: opacity 0.3s;
+    flex-shrink: 0;
 }
 
 .close-disclaimer:hover {
@@ -2139,11 +2147,28 @@ body {
 
 /* Main Content Visibility Fix */
 .main-content {
-    opacity: 0;
-    transition: opacity 0.5s ease-in-out;
+    opacity: 1;
+    display: block !important;
+    min-height: 100vh;
+    background: var(--deep-blue);
+    padding: 1rem;
+    box-sizing: border-box;
 }
 
-.main-content.visible {
+.main-content .cyber-frame {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(0, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 1rem;
+}
+
+/* Content Section Fix */
+.content-section {
+    display: block !important;
     opacity: 1;
+    visibility: visible;
+}
+
+.statistics-section {
     display: block !important;
 }
