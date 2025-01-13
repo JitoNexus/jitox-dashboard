@@ -191,8 +191,31 @@ function initialize() {
     if (isInitialized) return;
     console.log('Initializing application...');
     
-    // Initialize loading screen
-    initializeLoadingScreen();
+    // Handle disclaimer first
+    const closeDisclaimerBtn = document.querySelector('.close-disclaimer');
+    const disclaimer = document.querySelector('.disclaimer-banner');
+    const loadingContainer = document.getElementById('loadingContainer');
+    
+    if (closeDisclaimerBtn && disclaimer) {
+        closeDisclaimerBtn.addEventListener('click', () => {
+            disclaimer.style.opacity = '0';
+            setTimeout(() => {
+                disclaimer.style.display = 'none';
+                // Start loading sequence after disclaimer is closed
+                if (loadingContainer) {
+                    loadingContainer.classList.add('visible');
+                    initializeLoadingScreen();
+                }
+            }, 500);
+        });
+    } else {
+        console.error('Disclaimer elements not found');
+        // If no disclaimer, start loading directly
+        if (loadingContainer) {
+            loadingContainer.classList.add('visible');
+            initializeLoadingScreen();
+        }
+    }
 }
 
 // Loading Screen Initialization
@@ -216,13 +239,6 @@ function initializeLoadingScreen() {
         }
     }
 
-    // Ensure loading container is visible and main content is hidden
-    elements.loadingContainer.style.display = 'flex';
-    elements.mainContent.style.display = 'block';
-    elements.mainContent.style.opacity = '0';
-    elements.mainContent.style.visibility = 'hidden';
-    document.body.style.overflow = 'hidden';
-    
     // Create particles
     elements.particles.innerHTML = ''; // Clear existing particles
     for (let i = 0; i < 20; i++) {
@@ -264,7 +280,7 @@ function initializeLoadingScreen() {
                 startUpdates();
                 
                 // Then transition the UI
-                elements.loadingContainer.classList.add('hidden');
+                elements.loadingContainer.classList.remove('visible');
                 elements.mainContent.classList.add('visible');
                 document.body.style.overflow = 'auto';
                 
