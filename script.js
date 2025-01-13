@@ -191,31 +191,35 @@ function initialize() {
     if (isInitialized) return;
     console.log('Initializing application...');
     
-    // Handle disclaimer first
-    const closeDisclaimerBtn = document.querySelector('.close-disclaimer');
-    const disclaimer = document.querySelector('.disclaimer-banner');
-    const loadingContainer = document.getElementById('loadingContainer');
+    // Start with loading screen
+    initializeLoadingScreen();
     
-    if (closeDisclaimerBtn && disclaimer) {
-        closeDisclaimerBtn.addEventListener('click', () => {
-            disclaimer.style.opacity = '0';
-            setTimeout(() => {
-                disclaimer.style.display = 'none';
-                // Start loading sequence after disclaimer is closed
-                if (loadingContainer) {
-                    loadingContainer.classList.add('visible');
-                    initializeLoadingScreen();
-                }
-            }, 500);
+    // Initialize tab switching
+    initializeTabs();
+}
+
+// Initialize tab switching
+function initializeTabs() {
+    const tabs = document.querySelectorAll('.cyber-nav .cyber-button');
+    const sections = document.querySelectorAll('.content-section');
+    
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            const targetSection = tab.getAttribute('data-tab');
+            
+            // Update active states
+            tabs.forEach(t => t.classList.remove('active'));
+            sections.forEach(s => s.classList.remove('active'));
+            
+            tab.classList.add('active');
+            document.querySelector(`.${targetSection}-section`)?.classList.add('active');
+            
+            // Update charts if needed
+            if (targetSection === 'statistics') {
+                updateChartData();
+            }
         });
-    } else {
-        console.error('Disclaimer elements not found');
-        // If no disclaimer, start loading directly
-        if (loadingContainer) {
-            loadingContainer.classList.add('visible');
-            initializeLoadingScreen();
-        }
-    }
+    });
 }
 
 // Loading Screen Initialization
@@ -240,7 +244,7 @@ function initializeLoadingScreen() {
     }
 
     // Create particles
-    elements.particles.innerHTML = ''; // Clear existing particles
+    elements.particles.innerHTML = '';
     for (let i = 0; i < 20; i++) {
         const particle = document.createElement('div');
         particle.className = 'cyber-particle';
@@ -280,8 +284,9 @@ function initializeLoadingScreen() {
                 startUpdates();
                 
                 // Then transition the UI
-                elements.loadingContainer.classList.remove('visible');
+                elements.loadingContainer.style.display = 'none';
                 elements.mainContent.classList.add('visible');
+                document.querySelector('.statistics-section').classList.add('active');
                 document.body.style.overflow = 'auto';
                 
                 isInitialized = true;

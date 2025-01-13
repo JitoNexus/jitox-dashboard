@@ -2124,51 +2124,42 @@ body {
 /* Disclaimer Banner */
 .disclaimer-banner {
     position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    top: 0;
+    left: 0;
+    right: 0;
+    background: rgba(255, 0, 0, 0.1);
+    border-bottom: 1px solid rgba(255, 0, 0, 0.3);
+    padding: 0.75rem;
+    color: #ff3333;
+    z-index: 2000;
     display: flex;
     align-items: center;
     gap: 1rem;
-    background: rgba(0, 0, 0, 0.95);
-    border: 1px solid rgba(255, 165, 0, 0.3);
-    padding: 1.5rem;
-    border-radius: 8px;
-    color: #ffa500;
-    z-index: 2000;
     backdrop-filter: blur(5px);
     -webkit-backdrop-filter: blur(5px);
-    max-width: 600px;
-    width: 90%;
 }
 
 .disclaimer-banner i {
-    font-size: 1.5rem;
-    color: #ffa500;
-    flex-shrink: 0;
+    font-size: 1.2rem;
+    color: #ff3333;
 }
 
 .disclaimer-banner p {
     margin: 0;
-    flex: 1;
     font-size: 0.9rem;
     line-height: 1.4;
-    color: #ffa500;
+    color: #ff3333;
+    flex: 1;
 }
 
 .close-disclaimer {
     background: none;
     border: none;
-    color: #ffa500;
+    color: #ff3333;
     cursor: pointer;
     padding: 0.5rem;
     opacity: 0.8;
     transition: opacity 0.3s;
-    flex-shrink: 0;
-}
-
-.close-disclaimer:hover {
-    opacity: 1;
 }
 
 /* Loading Screen */
@@ -2179,18 +2170,11 @@ body {
     width: 100%;
     height: 100vh;
     background: var(--deep-blue);
-    display: none;
+    display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     z-index: 1000;
-    opacity: 0;
-    transition: opacity 0.5s ease-out;
-}
-
-.loading-container.visible {
-    display: flex;
-    opacity: 1;
 }
 
 /* Main Content */
@@ -2207,4 +2191,25 @@ body {
 .main-content.visible {
     opacity: 1;
     visibility: visible;
+}
+
+/* Content Sections */
+.content-section {
+    display: none;
+}
+
+.content-section.active {
+    display: block;
+}
+
+/* Navigation */
+.cyber-nav .cyber-button {
+    opacity: 0.7;
+    transition: opacity 0.3s ease;
+}
+
+.cyber-nav .cyber-button.active {
+    opacity: 1;
+    border-color: var(--neon-cyan);
+    box-shadow: 0 0 10px var(--neon-cyan);
 }
