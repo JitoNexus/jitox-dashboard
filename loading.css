@@ -30,33 +30,141 @@ body {
     top: 0;
     left: 0;
     width: 100%;
-    height: 100vh;
+    height: 100%;
+    background: #0a0a0a;
     display: flex;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
-    gap: 2rem;
-    background-color: var(--background);
+    justify-content: center;
     z-index: 9999;
-    opacity: 1;
-    visibility: visible;
-    transition: opacity 0.5s ease, visibility 0.5s ease;
-    overflow: hidden;
-    border: 2px solid red;
-}
-
-.loading-container.hidden {
-    opacity: 0;
-    visibility: hidden;
 }
 
 .wallet {
     position: relative;
-    width: 200px;
-    height: 150px;
-    perspective: 1000px;
-    transform-style: preserve-3d;
-    border: 2px solid blue;
+    z-index: 1;
+    margin-bottom: 40px;
+}
+
+.loading-text {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.loading-text h2 {
+    color: #fff;
+    font-size: 24px;
+    margin-bottom: 16px;
+}
+
+.progress-bar {
+    width: 300px;
+    height: 4px;
+    background: rgba(0, 255, 255, 0.1);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+#loadingProgress {
+    width: 0%;
+    height: 100%;
+    background: #00ffff;
+    transition: width 0.3s ease;
+}
+
+.loading-status {
+    position: relative;
+    z-index: 1;
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.status-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 14px;
+}
+
+.status-dot {
+    width: 8px;
+    height: 8px;
+    background: rgba(0, 255, 255, 0.3);
+    border-radius: 50%;
+}
+
+.status-item.completed {
+    color: #00ffff;
+}
+
+.status-item.completed .status-dot {
+    background: #00ffff;
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+}
+
+.main-content {
+    display: none;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+.main-content.visible {
+    display: block;
+    opacity: 1;
+}
+
+@keyframes float {
+    0% {
+        transform: translateY(100vh) scale(0);
+        opacity: 0;
+    }
+    50% {
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(-100vh) scale(1);
+        opacity: 0;
+    }
+}
+
+.security-status {
+    position: absolute;
+    top: 20px;
+    display: flex;
+    gap: 20px;
+}
+
+.security-badge {
+    background: rgba(0, 255, 255, 0.1);
+    border: 1px solid rgba(0, 255, 255, 0.3);
+    padding: 8px 16px;
+    border-radius: 20px;
+    color: #00ffff;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.cyber-particles {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: 0;
+}
+
+.cyber-particle {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background: #00ffff;
+    border-radius: 50%;
+    animation: float 10s linear infinite;
 }
 
 .wallet-body {
@@ -141,11 +249,6 @@ body {
     pointer-events: none;
 }
 
-.loading-text {
-    text-align: center;
-    margin-top: 2rem;
-}
-
 .text-gradient {
     background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
     -webkit-background-clip: text;
@@ -156,52 +259,6 @@ body {
     letter-spacing: 1px;
     opacity: 1;
     text-shadow: 0 0 10px rgba(110, 86, 207, 0.5);
-}
-
-.progress-bar {
-    width: 300px;
-    height: 6px;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 3px;
-    margin-top: 1rem;
-    overflow: hidden;
-    position: relative;
-    border: 1px solid var(--primary-color);
-}
-
-.progress {
-    width: 0%;
-    height: 100%;
-    background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
-    border-radius: 3px;
-    transition: width 0.3s ease;
-    position: relative;
-    box-shadow: 0 0 10px var(--primary-color);
-}
-
-.progress::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(
-        90deg,
-        transparent,
-        rgba(255, 255, 255, 0.2),
-        transparent
-    );
-    animation: progressGlow 2s linear infinite;
-}
-
-@keyframes float {
-    0%, 100% {
-        transform: translateY(0) rotate(0deg);
-    }
-    50% {
-        transform: translateY(-20px) rotate(10deg);
-    }
 }
 
 /* Glowing effect */
@@ -225,17 +282,6 @@ body {
         opacity: 1;
         transform: scale(1.1);
     }
-}
-
-.main-content {
-    display: none;
-    opacity: 0;
-    transition: opacity 0.5s ease;
-}
-
-.main-content.visible {
-    display: block;
-    opacity: 1;
 }
 
 /* Add Cyber Grid Background */

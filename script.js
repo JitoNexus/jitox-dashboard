@@ -391,75 +391,44 @@ function updateAllCharts() {
 // Optimize chart initialization
 function initializeCharts() {
     try {
-        // SOL Gained Chart
-        const solCtx = document.getElementById('solGainedChart');
+        // SOL Gained Chart with enhanced visuals
+        const solCtx = document.getElementById('solGainedChart')?.getContext('2d');
         if (solCtx) {
+            const solGradient = createGradient(solCtx, 'rgba(255, 0, 255, 0.5)', 'rgba(255, 0, 255, 0)');
+
             solChart = new Chart(solCtx, {
                 type: 'line',
                 data: {
-                    labels: Array(12).fill('').map((_, i) => `${11-i}h`),
+                    labels: Array(24).fill('').map((_, i) => `${23-i}h`),
                     datasets: [{
-                        data: Array(12).fill(0).map(() => getRandomData(100, 1000)),
+                        data: Array(24).fill(0).map(() => getRandomData(100, 1000)),
                         borderColor: '#ff00ff',
-                        backgroundColor: 'rgba(255, 0, 255, 0.1)',
-                        fill: true
-                    }]
-                },
-                options: chartOptions
-            });
-        }
-
-        // MEV Operations Chart
-        const mevCtx = document.getElementById('mevOpsChart');
-        if (mevCtx) {
-            mevChart = new Chart(mevCtx, {
-                type: 'bar',
-                data: {
-                    labels: ['Arb', 'Sand', 'Liq', 'Other'],
-                    datasets: [{
-                        data: [
-                            getRandomData(10, 500),
-                            getRandomData(24, 700),
-                            getRandomData(10, 300),
-                            getRandomData(5, 200)
-                        ],
-                        backgroundColor: [
-                            'rgba(0, 255, 255, 0.7)',
-                            'rgba(255, 0, 255, 0.7)',
-                            'rgba(255, 255, 0, 0.7)',
-                            'rgba(0, 255, 0, 0.7)'
-                        ]
-                    }]
-                },
-                options: chartOptions
-            });
-        }
-
-        // Sandwich Opportunities Chart
-        const sandwichCtx = document.getElementById('sandwichChart');
-        if (sandwichCtx) {
-            sandwichChart = new Chart(sandwichCtx, {
-                type: 'doughnut',
-                data: {
-                    labels: ['High', 'Med', 'Low'],
-                    datasets: [{
-                        data: [35, 45, 20],
-                        backgroundColor: [
-                            'rgba(255, 0, 255, 0.8)',
-                            'rgba(0, 255, 255, 0.8)',
-                            'rgba(255, 255, 0, 0.8)'
-                        ]
+                        backgroundColor: solGradient,
+                        fill: true,
+                        pointBackgroundColor: '#ff00ff',
+                        pointBorderColor: '#ffffff'
                     }]
                 },
                 options: {
-                    ...chartOptions,
-                    cutout: '60%',
-                    radius: '90%'
+                    ...chartDefaults,
+                    plugins: {
+                        ...chartDefaults.plugins,
+                        tooltip: {
+                            ...chartDefaults.plugins.tooltip,
+                            callbacks: {
+                                label: function(context) {
+                                    return `SOL Gained: ${context.parsed.y.toFixed(2)}`;
+                                }
+                            }
+                        }
+                    }
                 }
             });
         }
 
-        console.log('Charts initialized with optimized settings');
+        // Initialize other charts
+        initializeNetworkChart();
+        initializeVolumeChart();
     } catch (error) {
         console.error('Error initializing charts:', error);
     }
@@ -761,46 +730,63 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log('Initializing loading screen');
     
     const loadingContainer = document.getElementById('loadingContainer');
-    const progress = document.getElementById('loadingProgress');
     const mainContent = document.querySelector('.main-content');
-    const statusItems = document.querySelectorAll('.status-item');
     
-    // Ensure loading container is visible
+    if (!loadingContainer || !mainContent) {
+        console.error('Loading screen elements not found');
+        return;
+    }
+
+    // Ensure loading container is visible and main content is hidden
     loadingContainer.style.display = 'flex';
+    mainContent.style.display = 'none';
     document.body.style.overflow = 'hidden';
     
     // Create particles
     const particlesContainer = document.getElementById('cyberParticles');
-    for (let i = 0; i < 20; i++) {
-        const particle = document.createElement('div');
-        particle.className = 'cyber-particle';
-        particle.style.left = `${Math.random() * 100}%`;
-        particle.style.top = `${Math.random() * 100}%`;
-        particle.style.animationDelay = `${Math.random() * 10}s`;
-        particlesContainer.appendChild(particle);
+    if (particlesContainer) {
+        for (let i = 0; i < 20; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'cyber-particle';
+            particle.style.left = `${Math.random() * 100}%`;
+            particle.style.top = `${Math.random() * 100}%`;
+            particle.style.animationDelay = `${Math.random() * 10}s`;
+            particlesContainer.appendChild(particle);
+        }
     }
     
     // Initialize progress
     let currentProgress = 0;
-    const interval = setInterval(() => {
-        currentProgress += 1;
-        progress.style.width = `${currentProgress}%`;
-        
-        // Update status items
-        if (currentProgress >= 30) statusItems[0].classList.add('completed');
-        if (currentProgress >= 60) statusItems[1].classList.add('completed');
-        if (currentProgress >= 90) statusItems[2].classList.add('completed');
-        
-        if (currentProgress >= 100) {
-            clearInterval(interval);
-            setTimeout(() => {
-                loadingContainer.classList.add('hidden');
-                document.body.style.overflow = 'auto';
-                mainContent.classList.add('visible');
-                initializeMainContent(); // Initialize main dashboard
-            }, 500);
-        }
-    }, 30);
+    const progress = document.getElementById('loadingProgress');
+    const statusItems = document.querySelectorAll('.status-item');
+    
+    if (progress) {
+        const interval = setInterval(() => {
+            currentProgress += 1;
+            progress.style.width = `${currentProgress}%`;
+            
+            // Update status items
+            if (currentProgress >= 30 && statusItems[0]) statusItems[0].classList.add('completed');
+            if (currentProgress >= 60 && statusItems[1]) statusItems[1].classList.add('completed');
+            if (currentProgress >= 90 && statusItems[2]) statusItems[2].classList.add('completed');
+            
+            if (currentProgress >= 100) {
+                clearInterval(interval);
+                setTimeout(() => {
+                    loadingContainer.style.display = 'none';
+                    mainContent.style.display = 'block';
+                    document.body.style.overflow = 'auto';
+                    mainContent.classList.add('visible');
+                    
+                    // Initialize main content
+                    initializeCharts();
+                    initializeTimeSelector();
+                    initializeChartControls();
+                    startUpdates();
+                }, 500);
+            }
+        }, 30);
+    }
 });
 
 function startUpdates() {
