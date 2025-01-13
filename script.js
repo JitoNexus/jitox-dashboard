@@ -84,6 +84,131 @@ function createGradient(ctx, colorStart, colorEnd) {
     return gradient;
 }
 
+// Initialize Network Activity Chart
+function initializeNetworkChart() {
+    try {
+        const ctx = document.getElementById('networkActivityChart')?.getContext('2d');
+        if (!ctx) return;
+
+        if (networkChart) {
+            networkChart.destroy();
+            networkChart = null;
+        }
+        
+        const gradient = createGradient(ctx, 'rgba(0, 240, 255, 0.5)', 'rgba(0, 240, 255, 0)');
+        
+        networkChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: Array(24).fill('').map((_, i) => `${i}:00`),
+                datasets: [{
+                    label: 'Network Activity',
+                    data: Array(24).fill(0).map(() => Math.random() * 1000 + 500),
+                    borderColor: '#00f0ff',
+                    backgroundColor: gradient,
+                    borderWidth: 2,
+                    pointRadius: 0,
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                ...chartDefaults,
+                interaction: {
+                    intersect: false,
+                    mode: 'index'
+                }
+            }
+        });
+    } catch (error) {
+        console.error('Error initializing network chart:', error);
+    }
+}
+
+// Initialize Volume Distribution Chart
+function initializeVolumeChart() {
+    try {
+        const ctx = document.getElementById('volumeDistributionChart')?.getContext('2d');
+        if (!ctx) return;
+
+        if (volumeChart) {
+            volumeChart.destroy();
+            volumeChart = null;
+        }
+        
+        const gradient = createGradient(ctx, 'rgba(0, 255, 136, 0.5)', 'rgba(0, 255, 136, 0)');
+        
+        volumeChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['DEX', 'Lending', 'NFT', 'Options', 'Other'],
+                datasets: [{
+                    label: 'Volume Distribution',
+                    data: [45, 25, 15, 10, 5],
+                    backgroundColor: gradient,
+                    borderColor: '#00ff88',
+                    borderWidth: 2,
+                    borderRadius: 8
+                }]
+            },
+            options: chartDefaults
+        });
+    } catch (error) {
+        console.error('Error initializing volume chart:', error);
+    }
+}
+
+// Initialize all charts
+function initializeCharts() {
+    try {
+        // SOL Gained Chart
+        const solCtx = document.getElementById('solGainedChart')?.getContext('2d');
+        if (solCtx) {
+            if (solChart) {
+                solChart.destroy();
+                solChart = null;
+            }
+            
+            const solGradient = createGradient(solCtx, 'rgba(255, 0, 255, 0.5)', 'rgba(255, 0, 255, 0)');
+            solChart = new Chart(solCtx, {
+                type: 'line',
+                data: {
+                    labels: Array(24).fill('').map((_, i) => `${23-i}h`),
+                    datasets: [{
+                        data: Array(24).fill(0).map(() => getRandomData(100, 1000)),
+                        borderColor: '#ff00ff',
+                        backgroundColor: solGradient,
+                        fill: true,
+                        pointBackgroundColor: '#ff00ff',
+                        pointBorderColor: '#ffffff'
+                    }]
+                },
+                options: chartDefaults
+            });
+        }
+
+        // Initialize other charts
+        initializeNetworkChart();
+        initializeVolumeChart();
+    } catch (error) {
+        console.error('Error initializing charts:', error);
+    }
+}
+
+// Initialize main content
+function initializeMainContent() {
+    try {
+        // Initialize charts
+        initializeCharts();
+        // Initialize other components
+        initializeTimeSelector();
+        initializeChartControls();
+        startUpdates();
+    } catch (error) {
+        console.error('Error initializing main content:', error);
+    }
+}
+
 // Loading Screen Initialization
 function initializeLoadingScreen() {
     console.log('Initializing loading screen');
@@ -160,122 +285,15 @@ function initializeLoadingScreen() {
     }
 }
 
-// Initialize main content
-function initializeMainContent() {
-    try {
-        // Destroy existing charts if they exist
-        if (solChart) solChart.destroy();
-        if (networkChart) networkChart.destroy();
-        if (volumeChart) volumeChart.destroy();
-        if (mevChart) mevChart.destroy();
-        if (sandwichChart) sandwichChart.destroy();
-
-        // Initialize new charts
-        initializeCharts();
-        initializeTimeSelector();
-        initializeChartControls();
-        startUpdates();
-    } catch (error) {
-        console.error('Error initializing main content:', error);
-    }
-}
-
-// Initialize Network Activity Chart
-function initializeNetworkChart() {
-    const ctx = document.getElementById('networkActivityChart')?.getContext('2d');
-    if (!ctx) return;
-
-    if (networkChart) networkChart.destroy();
-    
-    const gradient = createGradient(ctx, 'rgba(0, 240, 255, 0.5)', 'rgba(0, 240, 255, 0)');
-    
-    networkChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: Array(24).fill('').map((_, i) => `${i}:00`),
-            datasets: [{
-                label: 'Network Activity',
-                data: Array(24).fill(0).map(() => Math.random() * 1000 + 500),
-                borderColor: '#00f0ff',
-                backgroundColor: gradient,
-                borderWidth: 2,
-                pointRadius: 0,
-                fill: true,
-                tension: 0.4
-            }]
-        },
-        options: {
-            ...chartDefaults,
-            interaction: {
-                intersect: false,
-                mode: 'index'
-            }
-        }
-    });
-}
-
-// Initialize Volume Distribution Chart
-function initializeVolumeChart() {
-    const ctx = document.getElementById('volumeDistributionChart')?.getContext('2d');
-    if (!ctx) return;
-
-    if (volumeChart) volumeChart.destroy();
-    
-    const gradient = createGradient(ctx, 'rgba(0, 255, 136, 0.5)', 'rgba(0, 255, 136, 0)');
-    
-    volumeChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: ['DEX', 'Lending', 'NFT', 'Options', 'Other'],
-            datasets: [{
-                label: 'Volume Distribution',
-                data: [45, 25, 15, 10, 5],
-                backgroundColor: gradient,
-                borderColor: '#00ff88',
-                borderWidth: 2,
-                borderRadius: 8
-            }]
-        },
-        options: chartDefaults
-    });
-}
-
-// Initialize all charts
-function initializeCharts() {
-    try {
-        // SOL Gained Chart
-        const solCtx = document.getElementById('solGainedChart')?.getContext('2d');
-        if (solCtx) {
-            if (solChart) solChart.destroy();
-            
-            const solGradient = createGradient(solCtx, 'rgba(255, 0, 255, 0.5)', 'rgba(255, 0, 255, 0)');
-            solChart = new Chart(solCtx, {
-                type: 'line',
-                data: {
-                    labels: Array(24).fill('').map((_, i) => `${23-i}h`),
-                    datasets: [{
-                        data: Array(24).fill(0).map(() => getRandomData(100, 1000)),
-                        borderColor: '#ff00ff',
-                        backgroundColor: solGradient,
-                        fill: true,
-                        pointBackgroundColor: '#ff00ff',
-                        pointBorderColor: '#ffffff'
-                    }]
-                },
-                options: chartDefaults
-            });
-        }
-
-        // Initialize other charts
-        initializeNetworkChart();
-        initializeVolumeChart();
-    } catch (error) {
-        console.error('Error initializing charts:', error);
-    }
-}
-
 // Single event listener for DOMContentLoaded
 document.addEventListener('DOMContentLoaded', () => {
+    // Remove any existing event listeners
+    const oldListeners = document.querySelectorAll('*');
+    oldListeners.forEach(element => {
+        element.replaceWith(element.cloneNode(true));
+    });
+    
+    // Initialize loading screen
     initializeLoadingScreen();
 });
 
