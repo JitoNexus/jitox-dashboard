@@ -914,30 +914,131 @@ function updateCharts() {
     }
 }
 
-// Update statistics
+// Start real-time updates with improved frequencies
+function startRealTimeUpdates() {
+    // Performance optimization: Use RequestAnimationFrame for smooth animations
+    let lastChartUpdate = 0;
+    let lastStatsUpdate = 0;
+    let lastAlertUpdate = 0;
+
+    const CHART_UPDATE_INTERVAL = 2000; // 2 seconds
+    const STATS_UPDATE_INTERVAL = 1000; // 1 second
+    const ALERT_UPDATE_INTERVAL = 3000; // 3 seconds
+
+    function animate(timestamp) {
+        // Update charts
+        if (timestamp - lastChartUpdate >= CHART_UPDATE_INTERVAL) {
+            if (document.visibilityState === 'visible') {
+                updateCharts();
+                lastChartUpdate = timestamp;
+            }
+        }
+
+        // Update stats
+        if (timestamp - lastStatsUpdate >= STATS_UPDATE_INTERVAL) {
+            if (document.visibilityState === 'visible') {
+                updateStats();
+                
+                // Update additional real-time elements
+                updateNetworkStatus();
+                updateLastUpdateTime();
+                lastStatsUpdate = timestamp;
+            }
+        }
+
+        // Update alerts and feed
+        if (timestamp - lastAlertUpdate >= ALERT_UPDATE_INTERVAL) {
+            if (document.visibilityState === 'visible' && window.alertsManager) {
+                if (Math.random() < 0.4) { // 40% chance to add new alert
+                    window.alertsManager.addNewAlert(window.alertsManager.generateRandomAlert());
+                }
+                if (Math.random() < 0.3) { // 30% chance to add feed item
+                    window.alertsManager.addFeedItem(window.alertsManager.generateRandomFeedItem());
+                }
+                lastAlertUpdate = timestamp;
+            }
+        }
+
+        // Continue animation loop
+        requestAnimationFrame(animate);
+    }
+
+    // Start animation loop
+    requestAnimationFrame(animate);
+
+    // Update network status randomly
+    function updateNetworkStatus() {
+        const statusIndicator = document.querySelector('.status-indicator');
+        const statusText = document.querySelector('.status-text');
+        if (statusIndicator && statusText) {
+            const isHealthy = Math.random() > 0.1; // 90% chance of healthy status
+            statusIndicator.style.background = isHealthy ? '#00ff00' : '#ff0000';
+            statusIndicator.style.boxShadow = `0 0 10px ${isHealthy ? '#00ff00' : '#ff0000'}`;
+            statusText.textContent = isHealthy ? 'Connected to Solana' : 'Reconnecting...';
+        }
+    }
+
+    // Update last update time
+    function updateLastUpdateTime() {
+        const updateTime = document.querySelector('.update-time');
+        if (updateTime) {
+            updateTime.textContent = 'Just now';
+        }
+    }
+
+    // Add dynamic hover effects for cyber-cards
+    document.querySelectorAll('.cyber-card').forEach(card => {
+        card.addEventListener('mouseover', () => {
+            card.style.transform = 'translateY(-5px) scale(1.02)';
+            card.style.boxShadow = '0 8px 20px rgba(0, 255, 255, 0.2)';
+        });
+
+        card.addEventListener('mouseout', () => {
+            card.style.transform = 'translateY(0) scale(1)';
+            card.style.boxShadow = '0 0 15px rgba(0, 255, 255, 0.1)';
+        });
+    });
+
+    // Add pulse animation to important stats
+    setInterval(() => {
+        document.querySelectorAll('.stat-value').forEach(stat => {
+            stat.style.animation = 'pulse 0.5s ease';
+            setTimeout(() => {
+                stat.style.animation = '';
+            }, 500);
+        });
+    }, 5000);
+
+    // Cleanup function
+    return () => {
+        document.removeEventListener('visibilitychange', updateNetworkStatus);
+    };
+}
+
+// Enhanced updateStats function with smoother transitions
 function updateStats() {
     try {
-        // Update overview stats
+        // Update overview stats with random fluctuations
         const stats = {
             tvl: {
-                value: `$${(1.2 + Math.random() * 0.1).toFixed(1)}B`,
-                trend: `+${(Math.random() * 20).toFixed(1)}%`
+                value: `$${(1.2 + Math.sin(Date.now() / 10000) * 0.1).toFixed(1)}B`,
+                trend: `+${(10 + Math.sin(Date.now() / 5000) * 5).toFixed(1)}%`
             },
             searchers: {
-                value: (5000 + Math.floor(Math.random() * 500)).toString(),
-                trend: `+${(Math.random() * 15).toFixed(1)}%`
+                value: (5000 + Math.floor(Math.sin(Date.now() / 8000) * 200)).toString(),
+                trend: `+${(8 + Math.sin(Date.now() / 6000) * 4).toFixed(1)}%`
             },
             mev: {
-                value: `${(850 + Math.random() * 100).toFixed(1)} SOL`,
-                trend: `+${(Math.random() * 10).toFixed(1)}%`
+                value: `${(850 + Math.sin(Date.now() / 7000) * 50).toFixed(1)} SOL`,
+                trend: `+${(5 + Math.sin(Date.now() / 4000) * 3).toFixed(1)}%`
             },
             health: {
-                value: `${(98 + Math.random()).toFixed(1)}%`,
-                trend: `+${(Math.random()).toFixed(1)}%`
+                value: `${(98 + Math.sin(Date.now() / 9000)).toFixed(1)}%`,
+                trend: `+${(0.5 + Math.sin(Date.now() / 3000) * 0.3).toFixed(2)}%`
             }
         };
 
-        // Update DOM elements
+        // Update DOM elements with smooth transitions
         document.querySelectorAll('.cyber-card').forEach(card => {
             const title = card.querySelector('h2')?.textContent.toLowerCase();
             if (!title) return;
@@ -951,28 +1052,35 @@ function updateStats() {
             if (stat) {
                 const valueEl = card.querySelector('.stat-value');
                 const trendEl = card.querySelector('.stat-trend span');
-                if (valueEl) valueEl.textContent = stat.value;
-                if (trendEl) trendEl.textContent = stat.trend;
+                if (valueEl) {
+                    valueEl.style.transition = 'color 0.3s ease';
+                    valueEl.textContent = stat.value;
+                }
+                if (trendEl) {
+                    const trendValue = parseFloat(stat.trend);
+                    trendEl.textContent = stat.trend;
+                    trendEl.parentElement.className = `stat-trend ${trendValue >= 0 ? 'positive' : 'negative'}`;
+                }
             }
         });
 
-        // Update MEV Activity stats
+        // Update MEV Activity with smooth animations
         const activities = {
             arbitrage: {
-                value: Math.floor(300 + Math.random() * 50),
-                progress: Math.floor(70 + Math.random() * 10)
+                value: Math.floor(300 + Math.sin(Date.now() / 6000) * 30),
+                progress: Math.floor(70 + Math.sin(Date.now() / 5000) * 5)
             },
             sandwich: {
-                value: Math.floor(140 + Math.random() * 30),
-                progress: Math.floor(40 + Math.random() * 10)
+                value: Math.floor(140 + Math.sin(Date.now() / 7000) * 20),
+                progress: Math.floor(40 + Math.sin(Date.now() / 4000) * 5)
             },
             liquidations: {
-                value: Math.floor(80 + Math.random() * 20),
-                progress: Math.floor(30 + Math.random() * 10)
+                value: Math.floor(80 + Math.sin(Date.now() / 8000) * 15),
+                progress: Math.floor(30 + Math.sin(Date.now() / 3000) * 5)
             }
         };
 
-        // Update activity breakdown
+        // Update activity breakdown with animations
         document.querySelectorAll('.breakdown-grid .cyber-card').forEach(card => {
             const title = card.querySelector('h2')?.textContent.toLowerCase();
             if (!title) return;
@@ -985,43 +1093,20 @@ function updateStats() {
             if (activity) {
                 const valueEl = card.querySelector('.stat-value');
                 const progressEl = card.querySelector('.progress');
-                if (valueEl) valueEl.textContent = activity.value;
-                if (progressEl) progressEl.style.width = `${activity.progress}%`;
+                if (valueEl) {
+                    valueEl.style.transition = 'color 0.3s ease';
+                    valueEl.textContent = activity.value;
+                }
+                if (progressEl) {
+                    progressEl.style.transition = 'width 0.5s ease';
+                    progressEl.style.width = `${activity.progress}%`;
+                }
             }
         });
 
     } catch (error) {
         console.error('Error updating stats:', error);
     }
-}
-
-// Start real-time updates
-function startRealTimeUpdates() {
-    // Update charts every 5 seconds
-    const chartInterval = setInterval(() => {
-        if (document.visibilityState === 'visible') {
-            updateCharts();
-        }
-    }, 5000);
-
-    // Update stats every 3 seconds
-    const statsInterval = setInterval(() => {
-        if (document.visibilityState === 'visible') {
-            updateStats();
-        }
-    }, 3000);
-
-    // Cleanup on page hide/unload
-    document.addEventListener('visibilitychange', () => {
-        if (document.visibilityState === 'hidden') {
-            clearInterval(chartInterval);
-            clearInterval(statsInterval);
-        }
-    });
-
-    // Initial updates
-    updateCharts();
-    updateStats();
 }
 
 // Initialize everything when DOM is loaded
