@@ -1271,47 +1271,38 @@ function createAlertCard(priority) {
 
 // Add this function after the updateStats function
 function updateAIStrategies() {
-    const strategies = {
-        'Cross-DEX Arbitrage': {
-            successRate: (98.5 + Math.random() * 1.2).toFixed(1),
-            avgReturn: (0.6 + Math.random() * 0.4).toFixed(1)
-        },
-        'Sandwich Trading': {
-            successRate: (97 + Math.random() * 1.5).toFixed(1),
-            avgReturn: (0.3 + Math.random() * 0.4).toFixed(1)
-        },
-        'Flash Loan Arbitrage': {
-            successRate: (97.8 + Math.random() * 1.4).toFixed(1),
-            avgReturn: (1.0 + Math.random() * 0.4).toFixed(1)
+    // Get all strategy cards
+    const strategyCards = document.querySelectorAll('.cyber-card');
+    
+    strategyCards.forEach(card => {
+        const title = card.querySelector('h3')?.textContent;
+        const successRate = card.querySelector('.success-rate');
+        const avgReturn = card.querySelector('.avg-return');
+        
+        if (!title || !successRate || !avgReturn) return;
+        
+        // Update based on strategy type
+        if (title.includes('Cross-DEX Arbitrage')) {
+            const success = (99 + Math.random() * 0.4).toFixed(1);
+            const returns = (0.7 + Math.random() * 0.2).toFixed(1);
+            successRate.textContent = success + '%';
+            avgReturn.textContent = returns + ' SOL';
         }
-    };
-
-    // Update each strategy in the AI dashboard
-    Object.entries(strategies).forEach(([name, data]) => {
-        // Find the strategy container by matching the h3 text content
-        const strategyContainer = Array.from(document.querySelectorAll('h3')).find(
-            h3 => h3.textContent.trim() === name
-        )?.closest('.cyber-card');
-
-        if (!strategyContainer) return;
-
-        // Update success rate
-        const successRateEl = strategyContainer.querySelector('.success-rate');
-        if (successRateEl) {
-            successRateEl.textContent = `${data.successRate}%`;
-            successRateEl.style.color = parseFloat(data.successRate) >= 98 ? '#ff00ff' : '#00ffff';
+        else if (title.includes('Sandwich Trading')) {
+            const success = (97.5 + Math.random() * 0.6).toFixed(1);
+            const returns = (0.4 + Math.random() * 0.2).toFixed(1);
+            successRate.textContent = success + '%';
+            avgReturn.textContent = returns + ' SOL';
         }
-
-        // Update average return
-        const avgReturnEl = strategyContainer.querySelector('.avg-return');
-        if (avgReturnEl) {
-            avgReturnEl.textContent = `${data.avgReturn} SOL`;
-            avgReturnEl.style.color = parseFloat(data.avgReturn) >= 1.0 ? '#ff00ff' : '#00ffff';
+        else if (title.includes('Flash Loan Arbitrage')) {
+            const success = (98.2 + Math.random() * 0.6).toFixed(1);
+            const returns = (1.1 + Math.random() * 0.2).toFixed(1);
+            successRate.textContent = success + '%';
+            avgReturn.textContent = returns + ' SOL';
         }
-
-        // Add pulse animation
-        strategyContainer.style.animation = 'none';
-        strategyContainer.offsetHeight; // Trigger reflow
-        strategyContainer.style.animation = 'pulse 0.5s ease';
     });
 }
+
+// Start updating immediately and continue every 100ms
+updateAIStrategies();
+const aiUpdateInterval = setInterval(updateAIStrategies, 100);
