@@ -191,33 +191,7 @@ function initialize() {
     if (isInitialized) return;
     console.log('Initializing application...');
     
-    initializeLoadingScreen();
-}
-
-// Initialize tab switching
-function initializeTabs() {
-    const tabs = document.querySelectorAll('.cyber-nav .cyber-button');
-    const sections = document.querySelectorAll('.content-section');
-    
-    tabs.forEach(tab => {
-        tab.addEventListener('click', () => {
-            const targetSection = tab.getAttribute('data-tab');
-            
-            // Update active states
-            tabs.forEach(t => t.classList.remove('active'));
-            sections.forEach(s => s.classList.remove('active'));
-            
-            tab.classList.add('active');
-            document.querySelector(`.${targetSection}-section`)?.classList.add('active');
-        });
-    });
-}
-
-// Loading Screen Initialization
-function initializeLoadingScreen() {
-    console.log('Initializing loading screen');
-    
-    // Get required elements
+    // Start with loading screen
     const elements = {
         loadingContainer: document.getElementById('loadingContainer'),
         mainContent: document.querySelector('.main-content'),
@@ -277,8 +251,13 @@ function initializeLoadingScreen() {
                 
                 // Hide loading screen and show main content
                 elements.loadingContainer.style.display = 'none';
-                elements.mainContent.classList.add('visible');
-                document.querySelector('.statistics-section').classList.add('active');
+                elements.mainContent.style.display = 'block';
+                requestAnimationFrame(() => {
+                    elements.mainContent.style.opacity = '1';
+                });
+                
+                // Show statistics section by default
+                document.querySelector('.statistics-section').style.display = 'block';
                 
                 isInitialized = true;
                 console.log('Application initialized');
@@ -371,4 +350,37 @@ function updateNetworkStats() {
             tpsElement.style.transform = 'scale(1)';
         }, 200);
     }
+}
+
+// Initialize tab switching
+function initializeTabs() {
+    const tabs = document.querySelectorAll('.cyber-nav .cyber-button');
+    const sections = document.querySelectorAll('.content-section');
+    
+    // Hide all sections except statistics
+    sections.forEach(section => {
+        if (!section.classList.contains('statistics-section')) {
+            section.style.display = 'none';
+        }
+    });
+    
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            const targetSection = tab.getAttribute('data-tab');
+            
+            // Update active states
+            tabs.forEach(t => t.classList.remove('active'));
+            sections.forEach(s => s.style.display = 'none');
+            
+            tab.classList.add('active');
+            const targetElement = document.querySelector(`.${targetSection}-section`);
+            if (targetElement) {
+                targetElement.style.display = 'block';
+                // Update charts if showing statistics
+                if (targetSection === 'statistics') {
+                    updateChartData();
+                }
+            }
+        });
+    });
 }
