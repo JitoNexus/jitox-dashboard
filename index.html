@@ -103,62 +103,183 @@
 
             <!-- Statistics Section -->
             <section class="content-section statistics-section">
+                <!-- Overview Stats -->
                 <div class="stats-grid">
                     <div class="cyber-card">
                         <div class="card-content">
+                            <h2>Total Value Locked</h2>
+                            <div class="stat-value">$1.2B</div>
+                            <div class="stat-trend positive">
+                                <i class="fas fa-arrow-up"></i>
+                                <span>+15.3%</span>
+                            </div>
+                            <div class="stat-details">
+                                <span>24h Volume: $245M</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="cyber-card">
+                        <div class="card-content">
                             <h2>Active Searchers</h2>
-                            <div class="stat-value">5,000</div>
+                            <div class="stat-value">5,234</div>
                             <div class="stat-trend positive">
                                 <i class="fas fa-arrow-up"></i>
                                 <span>+12.5%</span>
                             </div>
+                            <div class="stat-details">
+                                <span>Peak Today: 6,102</span>
+                            </div>
                         </div>
                     </div>
                     <div class="cyber-card">
                         <div class="card-content">
-                            <h2>Active MEV Operations</h2>
-                            <div class="stat-value">500</div>
+                            <h2>MEV Extracted</h2>
+                            <div class="stat-value">892.5 SOL</div>
                             <div class="stat-trend positive">
                                 <i class="fas fa-arrow-up"></i>
                                 <span>+8.3%</span>
                             </div>
-                        </div>
-                    </div>
-                    <div class="cyber-card">
-                        <div class="card-content">
-                            <h2>Ongoing Arbitrage</h2>
-                            <div class="stat-value">100</div>
-                            <div class="stat-trend positive">
-                                <i class="fas fa-arrow-up"></i>
-                                <span>+15.2%</span>
+                            <div class="stat-details">
+                                <span>≈ $89,250 USD</span>
                             </div>
                         </div>
                     </div>
                     <div class="cyber-card">
                         <div class="card-content">
-                            <h2>Ongoing Sandwich</h2>
-                            <div class="stat-value">200</div>
+                            <h2>Network Health</h2>
+                            <div class="stat-value">98.9%</div>
                             <div class="stat-trend positive">
                                 <i class="fas fa-arrow-up"></i>
-                                <span>+10.1%</span>
+                                <span>+0.5%</span>
+                            </div>
+                            <div class="stat-details">
+                                <span>Latency: 0.15s</span>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Charts Grid -->
-                <div class="charts-grid">
-                    <div class="chart-card">
-                        <h3 class="chart-title">Network Activity</h3>
-                        <canvas id="networkActivityChart"></canvas>
+                <!-- MEV Activity Breakdown -->
+                <div class="activity-breakdown">
+                    <h3 class="section-title">MEV Activity Breakdown</h3>
+                    <div class="breakdown-grid">
+                        <div class="cyber-card">
+                            <div class="card-content">
+                                <h2>Arbitrage</h2>
+                                <div class="stat-value">324</div>
+                                <div class="progress-bar">
+                                    <div class="progress" style="width: 75%; background: #00ffff;"></div>
+                                </div>
+                                <div class="stat-details">
+                                    <span>Success Rate: 92%</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="cyber-card">
+                            <div class="card-content">
+                                <h2>Sandwich</h2>
+                                <div class="stat-value">156</div>
+                                <div class="progress-bar">
+                                    <div class="progress" style="width: 45%; background: #ff00ff;"></div>
+                                </div>
+                                <div class="stat-details">
+                                    <span>Success Rate: 88%</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="cyber-card">
+                            <div class="card-content">
+                                <h2>Liquidations</h2>
+                                <div class="stat-value">89</div>
+                                <div class="progress-bar">
+                                    <div class="progress" style="width: 35%; background: #00ff88;"></div>
+                                </div>
+                                <div class="stat-details">
+                                    <span>Success Rate: 95%</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="chart-card">
-                        <h3 class="chart-title">Volume Distribution</h3>
-                        <canvas id="volumeDistributionChart"></canvas>
+                </div>
+
+                <!-- Performance Metrics -->
+                <div class="performance-metrics">
+                    <h3 class="section-title">Performance Metrics</h3>
+                    <div class="metrics-grid">
+                        <div class="chart-card">
+                            <h3 class="chart-title">Network Activity</h3>
+                            <canvas id="networkActivityChart"></canvas>
+                            <div class="chart-legend">
+                                <div class="legend-item">
+                                    <span class="legend-color" style="background: #00ffff;"></span>
+                                    <span>Transactions</span>
+                                </div>
+                                <div class="legend-item">
+                                    <span class="legend-color" style="background: #ff00ff;"></span>
+                                    <span>Success Rate</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="chart-card">
+                            <h3 class="chart-title">Volume Distribution</h3>
+                            <canvas id="volumeDistributionChart"></canvas>
+                            <div class="chart-legend">
+                                <div class="legend-item">
+                                    <span class="legend-color" style="background: #00ffff;"></span>
+                                    <span>DEX Volume</span>
+                                </div>
+                                <div class="legend-item">
+                                    <span class="legend-color" style="background: #ff00ff;"></span>
+                                    <span>MEV Volume</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="chart-card">
-                        <h3 class="chart-title">SOL Gained (24h)</h3>
-                        <canvas id="solGainedChart"></canvas>
+                </div>
+
+                <!-- Real-time Transactions -->
+                <div class="realtime-transactions">
+                    <h3 class="section-title">Latest Transactions</h3>
+                    <div class="transactions-list">
+                        <div class="transaction-item">
+                            <div class="transaction-icon">
+                                <i class="fas fa-exchange-alt"></i>
+                            </div>
+                            <div class="transaction-details">
+                                <div class="transaction-title">Arbitrage Opportunity</div>
+                                <div class="transaction-info">
+                                    <span>Profit: 2.5 SOL</span>
+                                    <span>Route: Jupiter → Orca</span>
+                                </div>
+                            </div>
+                            <div class="transaction-time">Just now</div>
+                        </div>
+                        <div class="transaction-item">
+                            <div class="transaction-icon">
+                                <i class="fas fa-layer-group"></i>
+                            </div>
+                            <div class="transaction-details">
+                                <div class="transaction-title">Sandwich Executed</div>
+                                <div class="transaction-info">
+                                    <span>Profit: 1.8 SOL</span>
+                                    <span>DEX: Raydium</span>
+                                </div>
+                            </div>
+                            <div class="transaction-time">2m ago</div>
+                        </div>
+                        <div class="transaction-item">
+                            <div class="transaction-icon">
+                                <i class="fas fa-bolt"></i>
+                            </div>
+                            <div class="transaction-details">
+                                <div class="transaction-title">Liquidation</div>
+                                <div class="transaction-info">
+                                    <span>Value: 15.2 SOL</span>
+                                    <span>Protocol: Solend</span>
+                                </div>
+                            </div>
+                            <div class="transaction-time">5m ago</div>
+                        </div>
                     </div>
                 </div>
             </section>

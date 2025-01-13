@@ -318,33 +318,88 @@ function initializeCharts() {
                 data: {
                     labels: ['Market Making', 'Arbitrage', 'Liquidations', 'Flash Loans', 'Sandwich', 'Other'],
                     datasets: [{
+                        label: 'Success Rate',
                         data: [85, 95, 75, 80, 90, 70],
-                        borderColor: '#00ff88',
-                        backgroundColor: 'rgba(0, 255, 136, 0.2)',
-                        pointBackgroundColor: '#00ff88',
-                        pointBorderColor: '#fff'
+                        borderColor: '#00ffff',
+                        backgroundColor: 'rgba(0, 255, 255, 0.2)',
+                        pointBackgroundColor: '#00ffff',
+                        pointBorderColor: '#fff',
+                        borderWidth: 2,
+                        pointRadius: 4,
+                        pointHoverRadius: 6
+                    },
+                    {
+                        label: 'Profit Potential',
+                        data: [75, 90, 85, 70, 85, 65],
+                        borderColor: '#ff00ff',
+                        backgroundColor: 'rgba(255, 0, 255, 0.2)',
+                        pointBackgroundColor: '#ff00ff',
+                        pointBorderColor: '#fff',
+                        borderWidth: 2,
+                        pointRadius: 4,
+                        pointHoverRadius: 6
                     }]
                 },
                 options: {
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top',
+                            labels: {
+                                color: '#ffffff',
+                                font: {
+                                    size: 12
+                                },
+                                padding: 20
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            titleColor: '#00ffff',
+                            bodyColor: '#ffffff',
+                            borderColor: '#00ffff',
+                            borderWidth: 1,
+                            padding: 10
+                        }
+                    },
                     scales: {
                         r: {
+                            min: 0,
+                            max: 100,
+                            beginAtZero: true,
                             angleLines: {
-                                color: 'rgba(255, 255, 255, 0.1)'
+                                color: 'rgba(255, 255, 255, 0.1)',
+                                lineWidth: 1
                             },
                             grid: {
-                                color: 'rgba(255, 255, 255, 0.1)'
+                                color: 'rgba(255, 255, 255, 0.1)',
+                                circular: true
                             },
                             pointLabels: {
-                                color: '#ffffff'
+                                color: '#ffffff',
+                                font: {
+                                    size: 12,
+                                    weight: 'bold'
+                                }
                             },
                             ticks: {
                                 color: '#ffffff',
-                                backdropColor: 'transparent'
+                                backdropColor: 'transparent',
+                                stepSize: 20,
+                                font: {
+                                    size: 10
+                                }
                             }
                         }
                     },
                     animation: {
-                        duration: 1000
+                        duration: 2000,
+                        easing: 'easeInOutQuart'
+                    },
+                    elements: {
+                        line: {
+                            tension: 0.4
+                        }
                     }
                 }
             });
