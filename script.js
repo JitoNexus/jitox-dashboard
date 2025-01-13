@@ -31,6 +31,9 @@ let isInitialized = false;
 let networkChart = null;
 let volumeChart = null;
 let solGainedChart = null;
+let strategyPerformanceChart = null;
+let patternRecognitionChart = null;
+let aiAccuracyChart = null;
 
 // Chart configuration
 const chartConfig = {
@@ -254,6 +257,129 @@ function initializeCharts() {
                 },
                 options: {
                     ...chartConfig,
+                    animation: {
+                        duration: 1000
+                    }
+                }
+            });
+        }
+
+        // Strategy Performance Chart
+        const strategyCtx = document.getElementById('strategyPerformanceChart')?.getContext('2d');
+        if (strategyCtx) {
+            if (strategyPerformanceChart) strategyPerformanceChart.destroy();
+            strategyPerformanceChart = new Chart(strategyCtx, {
+                type: 'line',
+                data: {
+                    labels: Array.from({length: 7}, (_, i) => `Day ${i + 1}`),
+                    datasets: [
+                        {
+                            label: 'Arbitrage',
+                            data: Array.from({length: 7}, () => 95 + Math.random() * 5),
+                            borderColor: '#00ffff',
+                            backgroundColor: 'rgba(0, 255, 255, 0.1)',
+                            fill: true,
+                            tension: 0.4
+                        },
+                        {
+                            label: 'Sandwich',
+                            data: Array.from({length: 7}, () => 90 + Math.random() * 8),
+                            borderColor: '#ff00ff',
+                            backgroundColor: 'rgba(255, 0, 255, 0.1)',
+                            fill: true,
+                            tension: 0.4
+                        }
+                    ]
+                },
+                options: {
+                    ...chartConfig,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top',
+                            labels: {
+                                color: '#ffffff'
+                            }
+                        }
+                    },
+                    animation: {
+                        duration: 1000
+                    }
+                }
+            });
+        }
+
+        // Pattern Recognition Chart
+        const patternCtx = document.getElementById('patternRecognitionChart')?.getContext('2d');
+        if (patternCtx) {
+            if (patternRecognitionChart) patternRecognitionChart.destroy();
+            patternRecognitionChart = new Chart(patternCtx, {
+                type: 'radar',
+                data: {
+                    labels: ['Market Making', 'Arbitrage', 'Liquidations', 'Flash Loans', 'Sandwich', 'Other'],
+                    datasets: [{
+                        data: [85, 95, 75, 80, 90, 70],
+                        borderColor: '#00ff88',
+                        backgroundColor: 'rgba(0, 255, 136, 0.2)',
+                        pointBackgroundColor: '#00ff88',
+                        pointBorderColor: '#fff'
+                    }]
+                },
+                options: {
+                    scales: {
+                        r: {
+                            angleLines: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            pointLabels: {
+                                color: '#ffffff'
+                            },
+                            ticks: {
+                                color: '#ffffff',
+                                backdropColor: 'transparent'
+                            }
+                        }
+                    },
+                    animation: {
+                        duration: 1000
+                    }
+                }
+            });
+        }
+
+        // AI Accuracy Trend Chart
+        const accuracyCtx = document.getElementById('aiAccuracyChart')?.getContext('2d');
+        if (accuracyCtx) {
+            if (aiAccuracyChart) aiAccuracyChart.destroy();
+            aiAccuracyChart = new Chart(accuracyCtx, {
+                type: 'line',
+                data: {
+                    labels: Array.from({length: 12}, (_, i) => `${i * 2}h`),
+                    datasets: [{
+                        data: Array.from({length: 12}, () => 95 + Math.random() * 5),
+                        borderColor: '#ff00ff',
+                        backgroundColor: 'rgba(255, 0, 255, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    ...chartConfig,
+                    scales: {
+                        y: {
+                            min: 90,
+                            max: 100,
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: '#ffffff'
+                            }
+                        }
+                    },
                     animation: {
                         duration: 1000
                     }

@@ -2098,3 +2098,196 @@ body {
         align-items: flex-start;
     }
 }
+
+/* AI Dashboard Specific Styles */
+.ai-analysis-feed {
+    margin-top: 30px;
+    background: var(--card-bg);
+    border: 1px solid var(--neon-cyan);
+    border-radius: 8px;
+    padding: 20px;
+}
+
+.feed-title {
+    color: var(--neon-cyan);
+    font-size: 20px;
+    margin-bottom: 20px;
+}
+
+.feed-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.feed-item {
+    background: rgba(0, 255, 255, 0.05);
+    border-left: 3px solid var(--neon-cyan);
+    padding: 15px;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+}
+
+.feed-item:hover {
+    background: rgba(0, 255, 255, 0.1);
+    transform: translateX(5px);
+}
+
+.feed-item.high-priority {
+    border-left-color: #ff00ff;
+    background: rgba(255, 0, 255, 0.05);
+}
+
+.feed-time {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.6);
+    margin-bottom: 5px;
+}
+
+.feed-content {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--neon-cyan);
+}
+
+.feed-content i {
+    color: var(--neon-pink);
+}
+
+/* Strategy Cards */
+.strategies-container {
+    margin-top: 30px;
+}
+
+.section-title {
+    color: var(--neon-cyan);
+    font-size: 20px;
+    margin-bottom: 20px;
+}
+
+.strategies-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.strategy-card {
+    background: var(--card-bg);
+    border: 1px solid var(--neon-cyan);
+    border-radius: 8px;
+    padding: 20px;
+    transition: all 0.3s ease;
+}
+
+.strategy-card:hover {
+    border-color: var(--neon-pink);
+    transform: translateY(-2px);
+}
+
+.strategy-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.strategy-header i {
+    color: var(--neon-pink);
+    font-size: 20px;
+}
+
+.strategy-header h4 {
+    color: var(--neon-cyan);
+    margin: 0;
+    font-size: 18px;
+}
+
+.strategy-stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+}
+
+.stat {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.stat .label {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 12px;
+}
+
+.stat .value {
+    color: var(--neon-pink);
+    font-size: 16px;
+    font-weight: bold;
+}
+
+/* Trend Indicators */
+.stat-trend {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 14px;
+    margin-top: 5px;
+}
+
+.stat-trend.positive {
+    color: var(--neon-green);
+}
+
+.stat-trend.negative {
+    color: #ff4444;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .strategies-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .strategy-card {
+        padding: 15px;
+    }
+
+    .strategy-header h4 {
+        font-size: 16px;
+    }
+
+    .stat .value {
+        font-size: 14px;
+    }
+
+    .feed-item {
+        padding: 12px;
+    }
+
+    .feed-content {
+        font-size: 14px;
+    }
+}
+
+/* Chart Adjustments */
+.chart-card {
+    position: relative;
+    overflow: hidden;
+}
+
+.chart-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, var(--neon-cyan), var(--neon-pink));
+    opacity: 0.5;
+}
+
+/* Ensure charts are visible in dark theme */
+canvas {
+    background: transparent !important;
+}
