@@ -110,11 +110,6 @@
         }, 30);
     }
 
-    // Initialize everything when DOM is ready
-    document.addEventListener('DOMContentLoaded', () => {
-        initializeLoadingScreen();
-    });
-
     // Chart initialization functions
     function initializeCharts() {
         try {
@@ -275,4 +270,9 @@
             }
         }, 2000);
     }
+
+    // Initialize everything when DOM is ready - MOVED TO BOTTOM
+    document.addEventListener('DOMContentLoaded', () => {
+        initializeLoadingScreen();
+    });
 })();
