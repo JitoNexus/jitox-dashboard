@@ -807,40 +807,41 @@ class AlertsManager {
     generateRandomAlert() {
         const priorities = ['high', 'medium', 'low'];
         const priority = priorities[Math.floor(Math.random() * priorities.length)];
+        const profit = generateRandomProfit(); // Get random profit between 0.2 and 14 SOL
         
         const alerts = [
             {
                 priority: 'high',
                 title: 'Large Transaction Detected',
-                description: 'Unusual transaction volume detected on Jupiter. 50,000 SOL movement in progress.',
+                description: 'Unusual transaction volume detected on Jupiter. Potential MEV opportunity identified.',
                 details: [
-                    { icon: 'fa-wallet', text: 'Wallet: 7xKX...9aB2' },
-                    { icon: 'fa-exchange-alt', text: 'DEX: Jupiter' }
+                    { icon: 'fa-coins', text: `Profit: ${profit} SOL` },
+                    { icon: 'fa-clock', text: `Execution Time: ${Math.floor(Math.random() * 200 + 100)}ms` }
                 ],
-                primaryAction: 'View Details',
-                secondaryAction: 'Track'
+                primaryAction: 'Track',
+                secondaryAction: 'Analyze'
             },
             {
                 priority: 'medium',
                 title: 'New Pattern Identified',
                 description: 'Recurring arbitrage pattern detected between Orca and Raydium.',
                 details: [
-                    { icon: 'fa-chart-line', text: 'Profit: 2.5 SOL' },
-                    { icon: 'fa-clock', text: 'Interval: 15min' }
+                    { icon: 'fa-coins', text: `Profit: ${profit} SOL` },
+                    { icon: 'fa-clock', text: `Execution Time: ${Math.floor(Math.random() * 200 + 100)}ms` }
                 ],
-                primaryAction: 'Analyze',
-                secondaryAction: 'Monitor'
+                primaryAction: 'Track',
+                secondaryAction: 'Analyze'
             },
             {
                 priority: 'low',
-                title: 'Network Activity Update',
-                description: 'Increased network activity detected. Transaction fees rising slightly.',
+                title: 'MEV Opportunity',
+                description: 'Potential arbitrage opportunity identified on Solana network.',
                 details: [
-                    { icon: 'fa-tachometer-alt', text: 'TPS: 2,500' },
-                    { icon: 'fa-coins', text: 'Avg Fee: 0.000005 SOL' }
+                    { icon: 'fa-coins', text: `Profit: ${profit} SOL` },
+                    { icon: 'fa-clock', text: `Execution Time: ${Math.floor(Math.random() * 200 + 100)}ms` }
                 ],
-                primaryAction: 'View Stats',
-                secondaryAction: 'Dismiss'
+                primaryAction: 'Track',
+                secondaryAction: 'Analyze'
             }
         ];
 
