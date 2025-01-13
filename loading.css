@@ -7,6 +7,9 @@
     --wallet-color: #2B2640;
     --sol-color: #00ff88;
     --eth-color: #6E56CF;
+    --glow-primary: rgba(110, 86, 207, 0.5);
+    --glow-secondary: rgba(0, 255, 136, 0.5);
+    --cyber-grid: rgba(110, 86, 207, 0.1);
 }
 
 * {
@@ -38,6 +41,7 @@ body {
     opacity: 1;
     visibility: visible;
     transition: opacity 0.5s ease, visibility 0.5s ease;
+    overflow: hidden;
 }
 
 .loading-container.hidden {
@@ -50,6 +54,7 @@ body {
     width: 200px;
     height: 150px;
     perspective: 1000px;
+    transform-style: preserve-3d;
 }
 
 .wallet-body {
@@ -58,6 +63,7 @@ body {
     height: 100%;
     transform-style: preserve-3d;
     transition: transform 0.5s ease;
+    animation: walletHover 3s ease-in-out infinite;
 }
 
 .wallet-front,
@@ -150,12 +156,13 @@ body {
 }
 
 .progress-bar {
-    width: 200px;
+    width: 300px;
     height: 4px;
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.05);
     border-radius: 2px;
     margin-top: 1rem;
     overflow: hidden;
+    position: relative;
 }
 
 .progress {
@@ -164,6 +171,23 @@ body {
     background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
     border-radius: 2px;
     transition: width 0.3s ease;
+    position: relative;
+}
+
+.progress::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.2),
+        transparent
+    );
+    animation: progressGlow 2s linear infinite;
 }
 
 @keyframes float {
@@ -205,4 +229,163 @@ body {
 
 .main-content.visible {
     opacity: 1;
+}
+
+/* Add Cyber Grid Background */
+.loading-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: 
+        linear-gradient(var(--cyber-grid) 1px, transparent 1px),
+        linear-gradient(90deg, var(--cyber-grid) 1px, transparent 1px);
+    background-size: 30px 30px;
+    animation: gridMove 20s linear infinite;
+    opacity: 0.3;
+}
+
+/* Add Floating Particles */
+.cyber-particles {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.cyber-particle {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background: var(--primary-color);
+    border-radius: 50%;
+    animation: particleFloat 10s infinite linear;
+}
+
+.cyber-particle:nth-child(2n) {
+    background: var(--secondary-color);
+    animation-duration: 15s;
+}
+
+/* Add Holographic Effect */
+.wallet-front::before,
+.wallet-middle::before,
+.wallet-back::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+        45deg,
+        transparent 0%,
+        rgba(110, 86, 207, 0.1) 45%,
+        rgba(0, 255, 136, 0.1) 55%,
+        transparent 100%
+    );
+    animation: holographic 3s linear infinite;
+}
+
+/* Add Loading Status */
+.loading-status {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.status-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--primary-color);
+    animation: statusPulse 1.5s infinite;
+}
+
+/* Add Security Indicators */
+.security-status {
+    position: absolute;
+    top: 2rem;
+    right: 2rem;
+    display: flex;
+    gap: 1rem;
+}
+
+.security-badge {
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    background: rgba(0, 255, 136, 0.1);
+    color: var(--secondary-color);
+    font-size: 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.security-badge i {
+    font-size: 1rem;
+}
+
+/* New Animations */
+@keyframes gridMove {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(30px); }
+}
+
+@keyframes particleFloat {
+    0% {
+        transform: translate(0, 0);
+        opacity: 0;
+    }
+    50% {
+        opacity: 1;
+    }
+    100% {
+        transform: translate(100px, -100px);
+        opacity: 0;
+    }
+}
+
+@keyframes holographic {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+@keyframes progressGlow {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+@keyframes statusPulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.5); opacity: 0.5; }
+}
+
+@keyframes walletHover {
+    0%, 100% { transform: translateY(0) rotateX(0); }
+    50% { transform: translateY(-10px) rotateX(5deg); }
+}
+
+/* Add Responsive Design */
+@media (max-width: 768px) {
+    .progress-bar {
+        width: 250px;
+    }
+    
+    .security-status {
+        position: relative;
+        top: auto;
+        right: auto;
+        margin-top: 1rem;
+    }
 } 

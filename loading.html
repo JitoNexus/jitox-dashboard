@@ -3,43 +3,118 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crypto Wallet Loading Animation</title>
+    <title>JitoX - Loading</title>
     <link rel="stylesheet" href="loading.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-    <!-- Loading Screen -->
     <div class="loading-container">
+        <!-- Security Status -->
+        <div class="security-status">
+            <div class="security-badge">
+                <i class="fas fa-shield-alt"></i>
+                Secure Connection
+            </div>
+            <div class="security-badge">
+                <i class="fas fa-lock"></i>
+                End-to-End Encrypted
+            </div>
+        </div>
+
+        <!-- Cyber Particles -->
+        <div class="cyber-particles">
+            <div class="cyber-particle"></div>
+            <div class="cyber-particle"></div>
+            <div class="cyber-particle"></div>
+            <div class="cyber-particle"></div>
+            <div class="cyber-particle"></div>
+            <div class="cyber-particle"></div>
+            <div class="cyber-particle"></div>
+            <div class="cyber-particle"></div>
+        </div>
+
+        <!-- Wallet Animation -->
         <div class="wallet">
             <div class="wallet-body">
                 <div class="wallet-front"></div>
                 <div class="wallet-middle"></div>
                 <div class="wallet-back"></div>
-            </div>
-            <div class="coins-container">
-                <div class="coin sol">
-                    <div class="coin-inner">SOL</div>
-                </div>
-                <div class="coin eth">
-                    <div class="coin-inner">ETH</div>
+                <div class="coins-container">
+                    <div class="coin sol">
+                        <div class="coin-inner">SOL</div>
+                    </div>
+                    <div class="coin eth">
+                        <div class="coin-inner">ETH</div>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="particles"></div>
+
+        <!-- Loading Text and Progress -->
         <div class="loading-text">
-            <span class="text-gradient">Loading Your Crypto Universe</span>
+            <h2 class="text-gradient">Initializing JitoX</h2>
             <div class="progress-bar">
-                <div class="progress"></div>
+                <div class="progress" id="loadingProgress"></div>
+            </div>
+        </div>
+
+        <!-- Loading Status -->
+        <div class="loading-status">
+            <div class="status-item">
+                <div class="status-dot"></div>
+                <span>Connecting to Network</span>
+            </div>
+            <div class="status-item">
+                <div class="status-dot"></div>
+                <span>Syncing Data</span>
+            </div>
+            <div class="status-item">
+                <div class="status-dot"></div>
+                <span>Loading Interface</span>
             </div>
         </div>
     </div>
 
-    <!-- Main Content -->
     <div class="main-content">
-        <!-- Your main content goes here -->
-        <h1>Welcome to Your Crypto Dashboard</h1>
+        <!-- Your main content here -->
     </div>
 
-    <script src="loading.js"></script>
+    <script>
+        // Simulate loading progress
+        const progress = document.getElementById('loadingProgress');
+        const loadingContainer = document.querySelector('.loading-container');
+        const mainContent = document.querySelector('.main-content');
+        const statusItems = document.querySelectorAll('.status-item');
+        
+        let currentProgress = 0;
+        const interval = setInterval(() => {
+            currentProgress += 1;
+            progress.style.width = `${currentProgress}%`;
+            
+            // Update status items
+            if (currentProgress >= 30) statusItems[0].classList.add('completed');
+            if (currentProgress >= 60) statusItems[1].classList.add('completed');
+            if (currentProgress >= 90) statusItems[2].classList.add('completed');
+            
+            if (currentProgress >= 100) {
+                clearInterval(interval);
+                setTimeout(() => {
+                    loadingContainer.classList.add('hidden');
+                    mainContent.classList.add('visible');
+                }, 500);
+            }
+        }, 30);
+
+        // Create floating particles
+        const particlesContainer = document.querySelector('.cyber-particles');
+        for (let i = 0; i < 20; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'cyber-particle';
+            particle.style.left = `${Math.random() * 100}%`;
+            particle.style.top = `${Math.random() * 100}%`;
+            particle.style.animationDelay = `${Math.random() * 10}s`;
+            particlesContainer.appendChild(particle);
+        }
+    </script>
 </body>
 </html> 
