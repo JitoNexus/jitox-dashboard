@@ -186,17 +186,13 @@ function initializeMainContent() {
     }
 }
 
-// Initialize everything
-function initialize() {
-    if (isInitialized) return;
-    console.log('Initializing application...');
-    
-    // Start with loading screen
+// Initialize loading sequence
+function initializeLoadingSequence() {
     const elements = {
         loadingContainer: document.getElementById('loadingContainer'),
-        mainContent: document.querySelector('.main-content'),
-        particles: document.getElementById('cyberParticles'),
-        progress: document.getElementById('loadingProgress'),
+        mainContent: document.getElementById('mainContent'),
+        cyberParticles: document.getElementById('cyberParticles'),
+        loadingProgress: document.getElementById('loadingProgress'),
         statusItems: document.querySelectorAll('.status-item')
     };
 
@@ -208,26 +204,20 @@ function initialize() {
         }
     }
 
+    console.log('Initializing loading sequence...');
+
     // Create particles
-    elements.particles.innerHTML = '';
-    for (let i = 0; i < 20; i++) {
-        const particle = document.createElement('div');
-        particle.className = 'cyber-particle';
-        particle.style.left = `${Math.random() * 100}%`;
-        particle.style.top = `${Math.random() * 100}%`;
-        particle.style.animationDelay = `${Math.random() * 10}s`;
-        elements.particles.appendChild(particle);
-    }
-    
+    createParticles(elements.cyberParticles);
+
     // Initialize progress
     let currentProgress = 0;
-    elements.progress.style.width = '0%';
+    elements.loadingProgress.style.width = '0%';
     elements.statusItems.forEach(item => item.classList.remove('completed'));
-    
+
     const interval = setInterval(() => {
         currentProgress += 1;
-        elements.progress.style.width = `${currentProgress}%`;
-        
+        elements.loadingProgress.style.width = `${currentProgress}%`;
+
         // Update status items
         if (currentProgress >= 30) {
             elements.statusItems[0]?.classList.add('completed');
@@ -238,36 +228,41 @@ function initialize() {
         if (currentProgress >= 90) {
             elements.statusItems[2]?.classList.add('completed');
         }
-        
+
         if (currentProgress >= 100) {
             clearInterval(interval);
             setTimeout(() => {
-                // Initialize main content
-                initializeCharts();
-                initializeTimeSelector();
-                initializeChartControls();
-                initializeTabs();
-                startUpdates();
-                
                 // Hide loading screen and show main content
                 elements.loadingContainer.style.display = 'none';
                 elements.mainContent.style.display = 'block';
-                requestAnimationFrame(() => {
-                    elements.mainContent.style.opacity = '1';
-                });
-                
-                // Show statistics section by default
-                document.querySelector('.statistics-section').style.display = 'block';
-                
+                elements.mainContent.style.opacity = '1';
                 isInitialized = true;
-                console.log('Application initialized');
+                console.log('Loading sequence completed');
             }, 500);
         }
     }, 30);
 }
 
-// Start the app when DOM is loaded
-document.addEventListener('DOMContentLoaded', initialize, { once: true });
+// Create particles for the loading screen
+function createParticles(container) {
+    if (!container) return;
+    
+    container.innerHTML = '';
+    for (let i = 0; i < 20; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'cyber-particle';
+        particle.style.left = `${Math.random() * 100}%`;
+        particle.style.top = `${Math.random() * 100}%`;
+        particle.style.animationDelay = `${Math.random() * 10}s`;
+        container.appendChild(particle);
+    }
+}
+
+// Initialize everything when the DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('DOM loaded, starting initialization...');
+    initializeLoadingSequence();
+});
 
 // Initialize Time Selector
 function initializeTimeSelector() {
