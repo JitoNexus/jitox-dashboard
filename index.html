@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="loading.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <!-- Loading Screen -->
@@ -72,8 +73,144 @@
     </div>
 
     <!-- Main Content -->
-    <div class="main-content" id="mainContent" style="display: none;">
-        <!-- Your main content here -->
+    <div class="main-content" id="mainContent">
+        <div class="cyber-frame">
+            <!-- Dashboard Header -->
+            <header class="dashboard-header">
+                <div class="header-left">
+                    <h1 class="cyber-title">JitoX</h1>
+                    <div class="security-status">
+                        <span class="secure-badge"><i class="fas fa-shield-alt"></i> Secure Connection</span>
+                        <span class="verified-badge"><i class="fas fa-check-circle"></i> Verified</span>
+                    </div>
+                </div>
+                <div class="header-right">
+                    <div class="connection-status">
+                        <span class="status-indicator"></span>
+                        <span class="status-text">Connected to Solana</span>
+                    </div>
+                    <div class="last-update">Last Update: <span class="update-time">Just now</span></div>
+                </div>
+            </header>
+
+            <!-- Navigation -->
+            <nav class="cyber-nav">
+                <button class="cyber-button active" data-tab="statistics">Statistics</button>
+                <button class="cyber-button" data-tab="ai">AI Dashboard</button>
+                <button class="cyber-button" data-tab="alerts">Live Alerts</button>
+                <button class="cyber-button" data-tab="user">Profile</button>
+            </nav>
+
+            <!-- Statistics Section -->
+            <section class="content-section statistics-section">
+                <div class="stats-grid">
+                    <div class="cyber-card">
+                        <div class="card-content">
+                            <h2>Active Searchers</h2>
+                            <div class="stat-value">5,000</div>
+                            <div class="stat-trend positive">
+                                <i class="fas fa-arrow-up"></i>
+                                <span>+12.5%</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="cyber-card">
+                        <div class="card-content">
+                            <h2>Active MEV Operations</h2>
+                            <div class="stat-value">500</div>
+                            <div class="stat-trend positive">
+                                <i class="fas fa-arrow-up"></i>
+                                <span>+8.3%</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="cyber-card">
+                        <div class="card-content">
+                            <h2>Ongoing Arbitrage</h2>
+                            <div class="stat-value">100</div>
+                            <div class="stat-trend positive">
+                                <i class="fas fa-arrow-up"></i>
+                                <span>+15.2%</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="cyber-card">
+                        <div class="card-content">
+                            <h2>Ongoing Sandwich</h2>
+                            <div class="stat-value">200</div>
+                            <div class="stat-trend positive">
+                                <i class="fas fa-arrow-up"></i>
+                                <span>+10.1%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Grid -->
+                <div class="charts-grid">
+                    <div class="chart-card">
+                        <h3 class="chart-title">Network Activity</h3>
+                        <canvas id="networkActivityChart"></canvas>
+                    </div>
+                    <div class="chart-card">
+                        <h3 class="chart-title">Volume Distribution</h3>
+                        <canvas id="volumeDistributionChart"></canvas>
+                    </div>
+                    <div class="chart-card">
+                        <h3 class="chart-title">SOL Gained (24h)</h3>
+                        <canvas id="solGainedChart"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <!-- AI Dashboard Section -->
+            <section class="content-section ai-section" style="display: none;">
+                <div class="ai-stats-grid">
+                    <div class="cyber-card">
+                        <div class="card-content">
+                            <h2>AI Success Rate</h2>
+                            <div class="stat-value">98.5%</div>
+                        </div>
+                    </div>
+                    <div class="cyber-card">
+                        <div class="card-content">
+                            <h2>Active Strategies</h2>
+                            <div class="stat-value">12</div>
+                        </div>
+                    </div>
+                    <div class="cyber-card">
+                        <div class="card-content">
+                            <h2>Patterns Identified</h2>
+                            <div class="stat-value">247</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- User Profile Section -->
+            <section class="content-section user-section" style="display: none;">
+                <div class="user-profile-container">
+                    <div class="user-info-card">
+                        <h3 class="profile-title">User Profile</h3>
+                        <div class="user-details">
+                            <div class="profile-avatar">
+                                <img src="https://via.placeholder.com/100" alt="Profile Photo" id="userPhoto">
+                            </div>
+                            <div class="profile-info">
+                                <div class="info-item">
+                                    <span class="label">Username</span>
+                                    <span class="value" id="userName">JitoX User</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="label">Wallet</span>
+                                    <span class="value" id="userWallet">Not connected</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
     </div>
 
     <!-- Scripts -->

@@ -6,6 +6,38 @@ window.addEventListener('load', () => {
 
 // Global variables
 let isInitialized = false;
+let networkChart = null;
+let volumeChart = null;
+let solGainedChart = null;
+
+// Chart configuration
+const chartConfig = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+        legend: {
+            display: false
+        }
+    },
+    scales: {
+        x: {
+            grid: {
+                color: 'rgba(255, 255, 255, 0.1)'
+            },
+            ticks: {
+                color: 'rgba(255, 255, 255, 0.7)'
+            }
+        },
+        y: {
+            grid: {
+                color: 'rgba(255, 255, 255, 0.1)'
+            },
+            ticks: {
+                color: 'rgba(255, 255, 255, 0.7)'
+            }
+        }
+    }
+};
 
 // Initialize loading sequence
 function initializeLoadingSequence() {
@@ -27,7 +59,6 @@ function initializeLoadingSequence() {
         // Verify essential elements exist
         if (!loadingContainer || !mainContent || !loadingProgress) {
             console.error('Essential elements not found');
-            // Show error message to user
             document.body.innerHTML = `
                 <div style="color: white; padding: 20px; text-align: center;">
                     <h1>Loading Error</h1>
@@ -74,7 +105,6 @@ function initializeLoadingSequence() {
 
     } catch (error) {
         console.error('Error in loading sequence:', error);
-        // Show error message to user
         document.body.innerHTML = `
             <div style="color: white; padding: 20px; text-align: center;">
                 <h1>Error</h1>
@@ -104,6 +134,91 @@ function createParticles(container) {
     }
 }
 
+// Initialize charts
+function initializeCharts() {
+    try {
+        // Network Activity Chart
+        const networkCtx = document.getElementById('networkActivityChart')?.getContext('2d');
+        if (networkCtx) {
+            networkChart = new Chart(networkCtx, {
+                type: 'line',
+                data: {
+                    labels: Array.from({length: 24}, (_, i) => `${i}:00`),
+                    datasets: [{
+                        data: Array.from({length: 24}, () => Math.random() * 1000),
+                        borderColor: '#00ffff',
+                        backgroundColor: 'rgba(0, 255, 255, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: chartConfig
+            });
+        }
+
+        // Volume Distribution Chart
+        const volumeCtx = document.getElementById('volumeDistributionChart')?.getContext('2d');
+        if (volumeCtx) {
+            volumeChart = new Chart(volumeCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['DEX', 'Lending', 'NFT', 'Options', 'Other'],
+                    datasets: [{
+                        data: [40, 20, 15, 15, 10],
+                        backgroundColor: '#ff00ff',
+                        borderRadius: 4
+                    }]
+                },
+                options: chartConfig
+            });
+        }
+
+        // SOL Gained Chart
+        const solCtx = document.getElementById('solGainedChart')?.getContext('2d');
+        if (solCtx) {
+            solGainedChart = new Chart(solCtx, {
+                type: 'line',
+                data: {
+                    labels: Array.from({length: 24}, (_, i) => `${23-i}h`),
+                    datasets: [{
+                        data: Array.from({length: 24}, () => Math.random() * 100),
+                        borderColor: '#00ff88',
+                        backgroundColor: 'rgba(0, 255, 136, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: chartConfig
+            });
+        }
+    } catch (error) {
+        console.error('Error initializing charts:', error);
+    }
+}
+
+// Initialize tab switching
+function initializeTabs() {
+    try {
+        const tabs = document.querySelectorAll('.cyber-button');
+        const sections = document.querySelectorAll('.content-section');
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const targetSection = tab.getAttribute('data-tab');
+                
+                // Update active states
+                tabs.forEach(t => t.classList.remove('active'));
+                sections.forEach(s => s.style.display = 'none');
+                
+                tab.classList.add('active');
+                document.querySelector(`.${targetSection}-section`).style.display = 'block';
+            });
+        });
+    } catch (error) {
+        console.error('Error initializing tabs:', error);
+    }
+}
+
 // Complete loading and show main content
 function completeLoading(loadingContainer, mainContent) {
     try {
@@ -121,6 +236,10 @@ function completeLoading(loadingContainer, mainContent) {
                     mainContent.style.opacity = '1';
                     isInitialized = true;
                     console.log('Loading sequence completed');
+                    
+                    // Initialize main content components
+                    initializeCharts();
+                    initializeTabs();
                 }, 50);
             }, 500);
         }, 500);
