@@ -191,41 +191,6 @@ function initialize() {
     if (isInitialized) return;
     console.log('Initializing application...');
     
-    // Start with loading screen
-    initializeLoadingScreen();
-    
-    // Initialize tab switching
-    initializeTabs();
-}
-
-// Initialize tab switching
-function initializeTabs() {
-    const tabs = document.querySelectorAll('.cyber-nav .cyber-button');
-    const sections = document.querySelectorAll('.content-section');
-    
-    tabs.forEach(tab => {
-        tab.addEventListener('click', () => {
-            const targetSection = tab.getAttribute('data-tab');
-            
-            // Update active states
-            tabs.forEach(t => t.classList.remove('active'));
-            sections.forEach(s => s.classList.remove('active'));
-            
-            tab.classList.add('active');
-            document.querySelector(`.${targetSection}-section`)?.classList.add('active');
-            
-            // Update charts if needed
-            if (targetSection === 'statistics') {
-                updateChartData();
-            }
-        });
-    });
-}
-
-// Loading Screen Initialization
-function initializeLoadingScreen() {
-    console.log('Initializing loading screen');
-    
     // Get required elements
     const elements = {
         loadingContainer: document.getElementById('loadingContainer'),
@@ -243,6 +208,11 @@ function initializeLoadingScreen() {
         }
     }
 
+    // Show loading screen, hide main content
+    elements.loadingContainer.style.display = 'flex';
+    elements.loadingContainer.style.opacity = '1';
+    elements.mainContent.style.display = 'none';
+    
     // Create particles
     elements.particles.innerHTML = '';
     for (let i = 0; i < 20; i++) {
@@ -277,17 +247,22 @@ function initializeLoadingScreen() {
         if (currentProgress >= 100) {
             clearInterval(interval);
             setTimeout(() => {
-                // Initialize main content first
+                // Initialize main content
                 initializeCharts();
                 initializeTimeSelector();
                 initializeChartControls();
                 startUpdates();
+                initializeTabs();
                 
-                // Then transition the UI
-                elements.loadingContainer.style.display = 'none';
-                elements.mainContent.classList.add('visible');
-                document.querySelector('.statistics-section').classList.add('active');
-                document.body.style.overflow = 'auto';
+                // Hide loading screen
+                elements.loadingContainer.style.opacity = '0';
+                setTimeout(() => {
+                    elements.loadingContainer.style.display = 'none';
+                    // Show main content
+                    elements.mainContent.style.display = 'block';
+                    elements.mainContent.style.opacity = '1';
+                    document.querySelector('.statistics-section').classList.add('active');
+                }, 500);
                 
                 isInitialized = true;
                 console.log('Application initialized');
