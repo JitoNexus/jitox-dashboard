@@ -1,6 +1,28 @@
 // Wait for all resources to load
 window.addEventListener('load', () => {
     console.log('Window loaded, starting initialization...');
+    
+    // Check if Chart.js is loaded
+    if (typeof Chart === 'undefined') {
+        console.error('Chart.js not loaded');
+        document.body.innerHTML = `
+            <div style="color: white; padding: 20px; text-align: center;">
+                <h1>Loading Error</h1>
+                <p>Required libraries not loaded. Please check your internet connection and refresh the page.</p>
+            </div>
+        `;
+        return;
+    }
+
+    // Replace placeholder image with a data URI
+    const userPhoto = document.getElementById('userPhoto');
+    if (userPhoto) {
+        userPhoto.src = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiB2aWV3Qm94PSIwIDAgMTAwIDEwMCI+PHJlY3Qgd2lkdGg9IjEwMCIgaGVpZ2h0PSIxMDAiIGZpbGw9IiMyQjI2NDAiLz48Y2lyY2xlIGN4PSI1MCIgY3k9IjM1IiByPSIyMCIgZmlsbD0iIzZFNTZDRiIvPjxwYXRoIGQ9Ik0xMCw5MCBDMTAsOTAgNDUsNzAgOTAsOTAgTDkwLDEwMCBMMTAsMTAwIFoiIGZpbGw9IiM2RTU2Q0YiLz48L3N2Zz4=';
+        userPhoto.onerror = function() {
+            this.src = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiB2aWV3Qm94PSIwIDAgMTAwIDEwMCI+PHJlY3Qgd2lkdGg9IjEwMCIgaGVpZ2h0PSIxMDAiIGZpbGw9IiMyQjI2NDAiLz48Y2lyY2xlIGN4PSI1MCIgY3k9IjM1IiByPSIyMCIgZmlsbD0iIzZFNTZDRiIvPjxwYXRoIGQ9Ik0xMCw5MCBDMTAsOTAgNDUsNzAgOTAsOTAgTDkwLDEwMCBMMTAsMTAwIFoiIGZpbGw9IiM2RTU2Q0YiLz48L3N2Zz4=';
+        };
+    }
+
     initializeLoadingSequence();
 });
 
@@ -157,9 +179,19 @@ function createParticles(container) {
 // Initialize charts
 function initializeCharts() {
     try {
+        if (typeof Chart === 'undefined') {
+            console.error('Chart.js not loaded');
+            return;
+        }
+
+        // Set default Chart.js options
+        Chart.defaults.color = '#ffffff';
+        Chart.defaults.borderColor = 'rgba(255, 255, 255, 0.1)';
+        
         // Network Activity Chart
         const networkCtx = document.getElementById('networkActivityChart')?.getContext('2d');
         if (networkCtx) {
+            if (networkChart) networkChart.destroy();
             networkChart = new Chart(networkCtx, {
                 type: 'line',
                 data: {
@@ -172,13 +204,19 @@ function initializeCharts() {
                         tension: 0.4
                     }]
                 },
-                options: chartConfig
+                options: {
+                    ...chartConfig,
+                    animation: {
+                        duration: 1000
+                    }
+                }
             });
         }
 
         // Volume Distribution Chart
         const volumeCtx = document.getElementById('volumeDistributionChart')?.getContext('2d');
         if (volumeCtx) {
+            if (volumeChart) volumeChart.destroy();
             volumeChart = new Chart(volumeCtx, {
                 type: 'bar',
                 data: {
@@ -189,13 +227,19 @@ function initializeCharts() {
                         borderRadius: 4
                     }]
                 },
-                options: chartConfig
+                options: {
+                    ...chartConfig,
+                    animation: {
+                        duration: 1000
+                    }
+                }
             });
         }
 
         // SOL Gained Chart
         const solCtx = document.getElementById('solGainedChart')?.getContext('2d');
         if (solCtx) {
+            if (solGainedChart) solGainedChart.destroy();
             solGainedChart = new Chart(solCtx, {
                 type: 'line',
                 data: {
@@ -208,9 +252,16 @@ function initializeCharts() {
                         tension: 0.4
                     }]
                 },
-                options: chartConfig
+                options: {
+                    ...chartConfig,
+                    animation: {
+                        duration: 1000
+                    }
+                }
             });
         }
+
+        console.log('Charts initialized successfully');
     } catch (error) {
         console.error('Error initializing charts:', error);
     }
