@@ -1128,6 +1128,55 @@ function updateStats() {
     }
 }
 
+// Function to update Total Pooled SOL
+function updateTotalPooled() {
+    // Base value and amplitude for oscillation
+    const baseValue = 3760.5; // Center point
+    const amplitude = 3660.5; // This will allow values between 100 and 7421 SOL
+    
+    // Calculate current SOL value using sine wave for smooth transitions
+    const currentSOL = baseValue + amplitude * Math.sin(Date.now() / 10000);
+    
+    // Calculate percentage change
+    const previousSOL = window.previousSOL || baseValue;
+    const percentChange = ((currentSOL - previousSOL) / previousSOL) * 100;
+    
+    // Store current value for next update
+    window.previousSOL = currentSOL;
+    
+    // Calculate daily volume (approximately 30% of total pooled)
+    const dailyVolume = currentSOL * 0.3;
+    
+    // Update the stats object
+    stats.pooled = {
+        value: Math.round(currentSOL).toLocaleString(),
+        trend: percentChange >= 0 ? '+' + percentChange.toFixed(1) + '%' : percentChange.toFixed(1) + '%',
+        volume: Math.round(dailyVolume).toLocaleString() + ' SOL'
+    };
+    
+    // Update DOM elements
+    const pooledElement = document.querySelector('.total-pooled .stat-value');
+    const trendElement = document.querySelector('.total-pooled .stat-trend');
+    const volumeElement = document.querySelector('.total-pooled .stat-details');
+    
+    if (pooledElement) {
+        pooledElement.textContent = stats.pooled.value + ' SOL';
+        pooledElement.style.color = percentChange >= 0 ? '#00ff00' : '#ff4444';
+    }
+    
+    if (trendElement) {
+        trendElement.textContent = stats.pooled.trend;
+        trendElement.className = 'stat-trend ' + (percentChange >= 0 ? 'positive' : 'negative');
+    }
+    
+    if (volumeElement) {
+        volumeElement.textContent = '24h Volume: ' + stats.pooled.volume;
+    }
+}
+
+// Start updating Total Pooled value
+setInterval(updateTotalPooled, 1000);
+
 // Initialize everything when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
     window.alertsManager = new AlertsManager();
