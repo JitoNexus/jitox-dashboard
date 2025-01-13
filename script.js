@@ -1131,24 +1131,20 @@ function updateStats() {
 // Function to update Total Pooled SOL with smooth transitions
 function updateTotalPooled() {
     try {
-        // Base value and smaller amplitude for smoother transitions
+        // Base value and trend calculation
         const baseValue = 3760.5;
-        const amplitude = 50; // Smaller range for more subtle changes
+        const time = Date.now() / 1000; // Use seconds for smoother animation
         
-        // Use multiple sine waves with different frequencies for more natural movement
-        const time = Date.now();
-        const primaryWave = Math.sin(time / 20000) * amplitude;
-        const secondaryWave = Math.sin(time / 15000) * (amplitude * 0.3);
-        const microWave = Math.sin(time / 5000) * (amplitude * 0.1);
+        // Create a smooth upward trend with small variations
+        const trendFactor = time * 0.1; // Gradual upward trend
+        const variation = Math.sin(time * 0.5) * 20 + Math.sin(time * 0.2) * 10; // Small variations
         
-        // Combine waves for final value
-        const currentSOL = baseValue + primaryWave + secondaryWave + microWave;
+        // Calculate current SOL value
+        const currentSOL = baseValue + trendFactor + variation;
         
-        // Calculate percentage change (smaller changes)
-        const previousSOL = window.previousSOL || baseValue;
+        // Store previous value for trend calculation
+        const previousSOL = window.previousSOL || currentSOL;
         const percentChange = ((currentSOL - previousSOL) / previousSOL) * 100;
-        
-        // Store current value for next update
         window.previousSOL = currentSOL;
         
         // Calculate daily volume (approximately 30% of total pooled)
@@ -1188,7 +1184,7 @@ function updateTotalPooled() {
 // Update Total Pooled value more frequently
 function startPooledUpdates() {
     let lastUpdate = 0;
-    const UPDATE_INTERVAL = 100; // Update every 100ms for smoother animation
+    const UPDATE_INTERVAL = 50; // Update every 50ms for even smoother animation
 
     function updateLoop(timestamp) {
         if (timestamp - lastUpdate >= UPDATE_INTERVAL) {
