@@ -72,36 +72,113 @@
             <!-- Statistics Section -->
             <section class="content-section statistics-section">
                 <div class="stats-grid">
-                    <div class="cyber-card">
+                    <div class="cyber-card pulse">
                         <div class="card-content">
                             <h2>Active Searchers</h2>
                             <div class="stat-value">5,000</div>
+                            <div class="stat-trend positive">
+                                <i class="fas fa-arrow-up"></i>
+                                <span>+12.5%</span>
+                            </div>
                         </div>
                     </div>
-                    <div class="cyber-card">
+                    <div class="cyber-card pulse">
                         <div class="card-content">
                             <h2>Active MEV Operations</h2>
                             <div class="stat-value">500</div>
+                            <div class="stat-trend positive">
+                                <i class="fas fa-arrow-up"></i>
+                                <span>+8.3%</span>
+                            </div>
                         </div>
                     </div>
-                    <div class="cyber-card">
+                    <div class="cyber-card pulse">
                         <div class="card-content">
                             <h2>Ongoing Arbitrage</h2>
                             <div class="stat-value">100</div>
+                            <div class="stat-trend positive">
+                                <i class="fas fa-arrow-up"></i>
+                                <span>+15.2%</span>
+                            </div>
                         </div>
                     </div>
-                    <div class="cyber-card">
+                    <div class="cyber-card pulse">
                         <div class="card-content">
                             <h2>Ongoing Sandwich</h2>
                             <div class="stat-value">200</div>
+                            <div class="stat-trend positive">
+                                <i class="fas fa-arrow-up"></i>
+                                <span>+10.1%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="advanced-metrics-grid">
+                    <div class="cyber-card network-activity">
+                        <div class="card-header">
+                            <h3 class="chart-title">Network Activity</h3>
+                            <div class="real-time-badge">
+                                <span class="pulse-dot"></span>
+                                LIVE
+                            </div>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="networkActivityChart"></canvas>
+                        </div>
+                        <div class="network-stats">
+                            <div class="stat-item">
+                                <span class="label">TPS</span>
+                                <span class="value" id="currentTPS">2,145</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="label">Block Time</span>
+                                <span class="value">400ms</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="cyber-card volume-distribution">
+                        <div class="card-header">
+                            <h3 class="chart-title">Volume Distribution</h3>
+                            <div class="time-selector">
+                                <button class="active">24H</button>
+                                <button>7D</button>
+                                <button>30D</button>
+                            </div>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="volumeDistributionChart"></canvas>
                         </div>
                     </div>
                 </div>
 
                 <div class="charts-grid">
                     <div class="chart-card">
-                        <h3 class="chart-title">SOL Gained (24h)</h3>
-                        <canvas id="solGainedChart"></canvas>
+                        <div class="card-header">
+                            <h3 class="chart-title">SOL Gained (24h)</h3>
+                            <div class="chart-controls">
+                                <button class="chart-control-btn">
+                                    <i class="fas fa-expand"></i>
+                                </button>
+                                <button class="chart-control-btn">
+                                    <i class="fas fa-download"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="solGainedChart"></canvas>
+                        </div>
+                        <div class="chart-footer">
+                            <div class="chart-stat">
+                                <span class="label">Total Gained</span>
+                                <span class="value">1,234.56 SOL</span>
+                            </div>
+                            <div class="chart-stat">
+                                <span class="label">Peak Hour</span>
+                                <span class="value">14:00 UTC</span>
+                            </div>
+                        </div>
                     </div>
                     <div class="chart-card">
                         <h3 class="chart-title">MEV Operations</h3>
@@ -110,6 +187,34 @@
                     <div class="chart-card">
                         <h3 class="chart-title">Sandwich Opportunities</h3>
                         <canvas id="sandwichChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="market-insights">
+                    <div class="cyber-card">
+                        <h3 class="section-title">Market Insights</h3>
+                        <div class="insights-grid">
+                            <div class="insight-item">
+                                <i class="fas fa-robot"></i>
+                                <div class="insight-content">
+                                    <h4>AI Prediction</h4>
+                                    <p>High MEV opportunity window expected in ~2.5 hours</p>
+                                </div>
+                                <div class="confidence-level" style="--confidence: 92%">
+                                    <span>92% confidence</span>
+                                </div>
+                            </div>
+                            <div class="insight-item">
+                                <i class="fas fa-chart-line"></i>
+                                <div class="insight-content">
+                                    <h4>Volume Analysis</h4>
+                                    <p>Unusual activity detected on Jupiter DEX</p>
+                                </div>
+                                <div class="alert-level high">
+                                    <span>High Priority</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </section>

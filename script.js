@@ -1,5 +1,5 @@
 // Global variables for charts and previous values
-let solChart, mevChart, sandwichChart, aiPerformanceChart;
+let solChart, mevChart, sandwichChart, aiPerformanceChart, volumeChart, networkChart;
 let previousStats = {
     'Active Searchers': 5000,
     'Active MEV Operations': 500,
@@ -13,6 +13,207 @@ const MAX_CHANGE_PERCENT = 0.05;
 // Performance optimizations
 let isUpdating = false;
 let scrollTimeout;
+
+// Chart Configurations
+const chartDefaults = {
+    responsive: true,
+    maintainAspectRatio: false,
+    animation: {
+        duration: 1000,
+        easing: 'easeInOutQuart'
+    },
+    plugins: {
+        legend: {
+            display: false
+        },
+        tooltip: {
+            enabled: true,
+            mode: 'index',
+            intersect: false,
+            backgroundColor: 'rgba(16, 20, 24, 0.95)',
+            titleColor: '#fff',
+            bodyColor: 'rgba(255, 255, 255, 0.8)',
+            borderColor: 'rgba(255, 255, 255, 0.1)',
+            borderWidth: 1,
+            padding: 12,
+            boxPadding: 6,
+            usePointStyle: true,
+            callbacks: {
+                label: function(context) {
+                    let label = context.dataset.label || '';
+                    if (label) {
+                        label += ': ';
+                    }
+                    label += context.parsed.y.toFixed(2);
+                    return label;
+                }
+            }
+        }
+    },
+    scales: {
+        x: {
+            grid: {
+                color: 'rgba(255, 255, 255, 0.05)',
+                drawBorder: false
+            },
+            ticks: {
+                color: 'rgba(255, 255, 255, 0.6)'
+            }
+        },
+        y: {
+            grid: {
+                color: 'rgba(255, 255, 255, 0.05)',
+                drawBorder: false
+            },
+            ticks: {
+                color: 'rgba(255, 255, 255, 0.6)',
+                callback: function(value) {
+                    return value.toLocaleString();
+                }
+            }
+        }
+    }
+};
+
+// Create gradient for charts
+function createGradient(ctx, colorStart, colorEnd) {
+    const gradient = ctx.createLinearGradient(0, 0, 0, 300);
+    gradient.addColorStop(0, colorStart);
+    gradient.addColorStop(1, colorEnd);
+    return gradient;
+}
+
+// Initialize Network Activity Chart
+function initializeNetworkChart() {
+    const ctx = document.getElementById('networkActivityChart').getContext('2d');
+    const gradient = createGradient(ctx, 'rgba(0, 240, 255, 0.5)', 'rgba(0, 240, 255, 0)');
+    
+    networkChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: Array(24).fill('').map((_, i) => `${i}:00`),
+            datasets: [{
+                label: 'Network Activity',
+                data: Array(24).fill(0).map(() => Math.random() * 1000 + 500),
+                borderColor: '#00f0ff',
+                backgroundColor: gradient,
+                borderWidth: 2,
+                pointRadius: 0,
+                fill: true,
+                tension: 0.4
+            }]
+        },
+        options: {
+            ...chartDefaults,
+            interaction: {
+                intersect: false,
+                mode: 'index'
+            }
+        }
+    });
+}
+
+// Initialize Volume Distribution Chart
+function initializeVolumeChart() {
+    const ctx = document.getElementById('volumeDistributionChart').getContext('2d');
+    const gradient = createGradient(ctx, 'rgba(0, 255, 136, 0.5)', 'rgba(0, 255, 136, 0)');
+    
+    volumeChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['DEX', 'Lending', 'NFT', 'Options', 'Other'],
+            datasets: [{
+                label: 'Volume Distribution',
+                data: [45, 25, 15, 10, 5],
+                backgroundColor: gradient,
+                borderColor: '#00ff88',
+                borderWidth: 2,
+                borderRadius: 8
+            }]
+        },
+        options: {
+            ...chartDefaults,
+            scales: {
+                x: {
+                    grid: {
+                        display: false
+                    }
+                },
+                y: {
+                    beginAtZero: true,
+                    max: 50,
+                    ticks: {
+                        callback: value => `${value}%`
+                    }
+                }
+            }
+        }
+    });
+}
+
+// Update Network Stats
+function updateNetworkStats() {
+    const tpsElement = document.getElementById('currentTPS');
+    if (tpsElement) {
+        setInterval(() => {
+            const newTPS = Math.floor(Math.random() * 500) + 2000;
+            tpsElement.textContent = newTPS.toLocaleString();
+            
+            // Animate the value change
+            tpsElement.style.transform = 'scale(1.1)';
+            setTimeout(() => {
+                tpsElement.style.transform = 'scale(1)';
+            }, 200);
+        }, 3000);
+    }
+}
+
+// Initialize Time Selector
+function initializeTimeSelector() {
+    const timeButtons = document.querySelectorAll('.time-selector button');
+    timeButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            timeButtons.forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+            // Update chart data based on selected time range
+            updateChartData(button.textContent);
+        });
+    });
+}
+
+// Initialize Chart Controls
+function initializeChartControls() {
+    const expandButtons = document.querySelectorAll('.chart-control-btn');
+    expandButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const chartContainer = this.closest('.chart-card');
+            if (chartContainer) {
+                chartContainer.classList.toggle('expanded');
+                // Update chart size when expanded
+                Chart.instances.forEach(chart => chart.resize());
+            }
+        });
+    });
+}
+
+// Initialize all components
+document.addEventListener('DOMContentLoaded', () => {
+    initializeNetworkChart();
+    initializeVolumeChart();
+    updateNetworkStats();
+    initializeTimeSelector();
+    initializeChartControls();
+    
+    // Add smooth scroll behavior
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            document.querySelector(this.getAttribute('href')).scrollIntoView({
+                behavior: 'smooth'
+            });
+        });
+    });
+});
 
 // Wait for document to be fully loaded
 document.addEventListener('DOMContentLoaded', function() {
@@ -150,17 +351,19 @@ function animateValue(element, start, end, duration) {
     const range = end - start;
     const startTime = performance.now();
     
-    function easeOutQuart(x) {
-        return 1 - Math.pow(1 - x, 4);
+    function easeOutExpo(x) {
+        return x === 1 ? 1 : 1 - Math.pow(2, -10 * x);
     }
     
     function updateNumber(currentTime) {
         const elapsed = currentTime - startTime;
         const progress = Math.min(elapsed / duration, 1);
         
-        const easedProgress = easeOutQuart(progress);
+        const easedProgress = easeOutExpo(progress);
         const current = Math.floor(start + (range * easedProgress));
+        
         element.textContent = current.toLocaleString();
+        element.style.textShadow = `0 0 ${10 * (1 - progress)}px rgba(0, 255, 255, ${0.5 * (1 - progress)})`;
         
         if (progress < 1) {
             requestAnimationFrame(updateNumber);
@@ -172,47 +375,6 @@ function animateValue(element, start, end, duration) {
 
 // Update stats every 10 seconds
 setInterval(updateAllStats, 10000);
-
-// Chart optimization
-const chartOptions = {
-    responsive: true,
-    maintainAspectRatio: false,
-    animation: {
-        duration: 0 // Disable animations for better performance
-    },
-    elements: {
-        line: {
-            tension: 0.1 // Reduce line tension for better performance
-        },
-        point: {
-            radius: 2 // Smaller points for better performance
-        }
-    },
-    plugins: {
-        legend: {
-            display: false // Hide legend for better performance
-        }
-    },
-    scales: {
-        y: {
-            beginAtZero: true,
-            grid: {
-                display: false // Hide grid for better performance
-            },
-            ticks: {
-                maxTicksLimit: 5 // Limit number of ticks for better performance
-            }
-        },
-        x: {
-            grid: {
-                display: false // Hide grid for better performance
-            },
-            ticks: {
-                maxTicksLimit: 6 // Limit number of ticks for better performance
-            }
-        }
-    }
-};
 
 // Optimize chart updates
 function updateAllCharts() {
@@ -797,3 +959,149 @@ document.addEventListener('DOMContentLoaded', () => {
     // Update connection status periodically
     setInterval(updateConnectionStatus, 5000);
 });
+
+// Initialize advanced charts
+function initializeAdvancedCharts() {
+    // SOL Gained Chart with enhanced visuals
+    const solCtx = document.getElementById('solGainedChart')?.getContext('2d');
+    if (solCtx) {
+        const solGradient = createGradient(solCtx, [
+            'rgba(255, 0, 255, 0.5)',
+            'rgba(255, 0, 255, 0.1)',
+            'rgba(255, 0, 255, 0)'
+        ]);
+
+        solChart = new Chart(solCtx, {
+            type: 'line',
+            data: {
+                labels: Array(24).fill('').map((_, i) => `${23-i}h`),
+                datasets: [{
+                    data: Array(24).fill(0).map(() => getRandomData(100, 1000)),
+                    borderColor: '#ff00ff',
+                    backgroundColor: solGradient,
+                    fill: true,
+                    pointBackgroundColor: '#ff00ff',
+                    pointBorderColor: '#ffffff'
+                }]
+            },
+            options: {
+                ...advancedChartOptions,
+                plugins: {
+                    ...advancedChartOptions.plugins,
+                    tooltip: {
+                        ...advancedChartOptions.plugins.tooltip,
+                        callbacks: {
+                            label: function(context) {
+                                return `SOL Gained: ${context.parsed.y.toFixed(2)}`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // Network Activity Chart (New)
+    const networkCtx = document.getElementById('networkActivityChart')?.getContext('2d');
+    if (networkCtx) {
+        const networkGradient = createGradient(networkCtx, [
+            'rgba(0, 255, 255, 0.5)',
+            'rgba(0, 255, 255, 0.1)',
+            'rgba(0, 255, 255, 0)'
+        ]);
+
+        networkChart = new Chart(networkCtx, {
+            type: 'line',
+            data: {
+                labels: Array(60).fill('').map((_, i) => `${i}s`),
+                datasets: [{
+                    data: Array(60).fill(0).map(() => getRandomData(50, 200)),
+                    borderColor: '#00ffff',
+                    backgroundColor: networkGradient,
+                    fill: true,
+                    pointBackgroundColor: '#00ffff',
+                    pointBorderColor: '#ffffff'
+                }]
+            },
+            options: {
+                ...advancedChartOptions,
+                animation: {
+                    duration: 0
+                },
+                plugins: {
+                    ...advancedChartOptions.plugins,
+                    tooltip: {
+                        ...advancedChartOptions.plugins.tooltip,
+                        callbacks: {
+                            label: function(context) {
+                                return `TPS: ${context.parsed.y.toFixed(0)}`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // Volume Distribution Chart (New)
+    const volumeCtx = document.getElementById('volumeDistributionChart')?.getContext('2d');
+    if (volumeCtx) {
+        volumeChart = new Chart(volumeCtx, {
+            type: 'polarArea',
+            data: {
+                labels: ['DEX-A', 'DEX-B', 'DEX-C', 'DEX-D', 'Others'],
+                datasets: [{
+                    data: [45, 25, 15, 10, 5],
+                    backgroundColor: [
+                        'rgba(255, 0, 255, 0.7)',
+                        'rgba(0, 255, 255, 0.7)',
+                        'rgba(255, 255, 0, 0.7)',
+                        'rgba(0, 255, 0, 0.7)',
+                        'rgba(255, 165, 0, 0.7)'
+                    ],
+                    borderWidth: 2,
+                    borderColor: '#ffffff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    r: {
+                        ticks: {
+                            display: false
+                        },
+                        grid: {
+                            color: 'rgba(0, 255, 255, 0.1)'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'right',
+                        labels: {
+                            color: '#00ffff',
+                            font: {
+                                family: 'Courier New',
+                                size: 11
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+}
+
+// Real-time network stats update
+function updateNetworkStats() {
+    if (networkChart && !document.hidden) {
+        const newData = getRandomData(50, 200);
+        networkChart.data.datasets[0].data.shift();
+        networkChart.data.datasets[0].data.push(newData);
+        networkChart.update('none');
+    }
+}
+
+// Start real-time updates
+setInterval(updateNetworkStats, 1000);
