@@ -15,18 +15,18 @@
 
 /* Main Content */
 .main-content {
+    display: none;
     opacity: 0;
-    visibility: hidden;
     min-height: 100vh;
     background: var(--deep-blue);
     padding: 1rem;
     box-sizing: border-box;
-    transition: opacity 0.5s ease-out, visibility 0.5s ease-out;
+    transition: opacity 0.5s ease-out;
 }
 
 .main-content.visible {
+    display: block;
     opacity: 1;
-    visibility: visible;
 }
 
 /* Content Sections */

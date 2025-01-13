@@ -194,6 +194,25 @@ function initialize() {
     initializeLoadingScreen();
 }
 
+// Initialize tab switching
+function initializeTabs() {
+    const tabs = document.querySelectorAll('.cyber-nav .cyber-button');
+    const sections = document.querySelectorAll('.content-section');
+    
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            const targetSection = tab.getAttribute('data-tab');
+            
+            // Update active states
+            tabs.forEach(t => t.classList.remove('active'));
+            sections.forEach(s => s.classList.remove('active'));
+            
+            tab.classList.add('active');
+            document.querySelector(`.${targetSection}-section`)?.classList.add('active');
+        });
+    });
+}
+
 // Loading Screen Initialization
 function initializeLoadingScreen() {
     console.log('Initializing loading screen');
@@ -253,6 +272,7 @@ function initializeLoadingScreen() {
                 initializeCharts();
                 initializeTimeSelector();
                 initializeChartControls();
+                initializeTabs();
                 startUpdates();
                 
                 // Hide loading screen and show main content
