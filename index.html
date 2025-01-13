@@ -335,6 +335,160 @@
                     </div>
                 </div>
             </section>
+
+            <!-- Alerts Section -->
+            <section class="content-section alerts-section" style="display: none;">
+                <div class="alerts-header">
+                    <div class="alerts-stats">
+                        <div class="cyber-card">
+                            <div class="card-content">
+                                <h2>Active Alerts</h2>
+                                <div class="stat-value">24</div>
+                                <div class="stat-trend positive">
+                                    <i class="fas fa-arrow-up"></i>
+                                    <span>+8</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="cyber-card">
+                            <div class="card-content">
+                                <h2>High Priority</h2>
+                                <div class="stat-value">5</div>
+                                <div class="stat-trend negative">
+                                    <i class="fas fa-arrow-up"></i>
+                                    <span>+2</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="cyber-card">
+                            <div class="card-content">
+                                <h2>Response Time</h2>
+                                <div class="stat-value">1.2s</div>
+                                <div class="stat-trend positive">
+                                    <i class="fas fa-arrow-down"></i>
+                                    <span>-0.3s</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="alerts-container">
+                    <div class="alerts-filters">
+                        <div class="filter-group">
+                            <button class="cyber-button active" data-filter="all">All</button>
+                            <button class="cyber-button" data-filter="high">High Priority</button>
+                            <button class="cyber-button" data-filter="medium">Medium</button>
+                            <button class="cyber-button" data-filter="low">Low</button>
+                        </div>
+                        <div class="search-group">
+                            <div class="cyber-search">
+                                <i class="fas fa-search"></i>
+                                <input type="text" placeholder="Search alerts...">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="alerts-grid">
+                        <!-- High Priority Alerts -->
+                        <div class="alert-card high-priority">
+                            <div class="alert-header">
+                                <div class="alert-type">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                    <span>High Priority</span>
+                                </div>
+                                <div class="alert-time">2 min ago</div>
+                            </div>
+                            <div class="alert-content">
+                                <h3>Large Transaction Detected</h3>
+                                <p>Unusual transaction volume detected on Jupiter. 50,000 SOL movement in progress.</p>
+                                <div class="alert-details">
+                                    <span class="detail-item"><i class="fas fa-wallet"></i> Wallet: 7xKX...9aB2</span>
+                                    <span class="detail-item"><i class="fas fa-exchange-alt"></i> DEX: Jupiter</span>
+                                </div>
+                            </div>
+                            <div class="alert-actions">
+                                <button class="cyber-button">View Details</button>
+                                <button class="cyber-button">Track</button>
+                            </div>
+                        </div>
+
+                        <!-- Medium Priority Alert -->
+                        <div class="alert-card medium-priority">
+                            <div class="alert-header">
+                                <div class="alert-type">
+                                    <i class="fas fa-bell"></i>
+                                    <span>Medium Priority</span>
+                                </div>
+                                <div class="alert-time">5 min ago</div>
+                            </div>
+                            <div class="alert-content">
+                                <h3>New Pattern Identified</h3>
+                                <p>Recurring arbitrage pattern detected between Orca and Raydium.</p>
+                                <div class="alert-details">
+                                    <span class="detail-item"><i class="fas fa-chart-line"></i> Profit: 2.5 SOL</span>
+                                    <span class="detail-item"><i class="fas fa-clock"></i> Interval: 15min</span>
+                                </div>
+                            </div>
+                            <div class="alert-actions">
+                                <button class="cyber-button">Analyze</button>
+                                <button class="cyber-button">Monitor</button>
+                            </div>
+                        </div>
+
+                        <!-- Low Priority Alert -->
+                        <div class="alert-card low-priority">
+                            <div class="alert-header">
+                                <div class="alert-type">
+                                    <i class="fas fa-info-circle"></i>
+                                    <span>Low Priority</span>
+                                </div>
+                                <div class="alert-time">10 min ago</div>
+                            </div>
+                            <div class="alert-content">
+                                <h3>Network Activity Update</h3>
+                                <p>Increased network activity detected. Transaction fees rising slightly.</p>
+                                <div class="alert-details">
+                                    <span class="detail-item"><i class="fas fa-tachometer-alt"></i> TPS: 2,500</span>
+                                    <span class="detail-item"><i class="fas fa-coins"></i> Avg Fee: 0.000005 SOL</span>
+                                </div>
+                            </div>
+                            <div class="alert-actions">
+                                <button class="cyber-button">View Stats</button>
+                                <button class="cyber-button">Dismiss</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Real-time Feed -->
+                    <div class="realtime-feed">
+                        <h3 class="feed-title">Real-time Activity</h3>
+                        <div class="feed-container">
+                            <div class="feed-item">
+                                <div class="feed-time">Just now</div>
+                                <div class="feed-content">
+                                    <i class="fas fa-sync"></i>
+                                    <span>Network synchronization complete</span>
+                                </div>
+                            </div>
+                            <div class="feed-item">
+                                <div class="feed-time">30s ago</div>
+                                <div class="feed-content">
+                                    <i class="fas fa-shield-alt"></i>
+                                    <span>Security check passed: All systems normal</span>
+                                </div>
+                            </div>
+                            <div class="feed-item">
+                                <div class="feed-time">1m ago</div>
+                                <div class="feed-content">
+                                    <i class="fas fa-chart-bar"></i>
+                                    <span>Performance metrics updated</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
         </div>
     </div>
 

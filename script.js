@@ -511,3 +511,247 @@ function completeLoading(loadingContainer, mainContent) {
 // Export functions for use in other files
 window.initializeLoadingSequence = initializeLoadingSequence;
 window.completeLoading = completeLoading;
+
+// Alerts Management
+class AlertsManager {
+    constructor() {
+        this.alerts = [];
+        this.stats = {
+            active: 24,
+            highPriority: 5,
+            responseTime: 1.2
+        };
+        this.initializeEventListeners();
+        this.startRealTimeUpdates();
+    }
+
+    initializeEventListeners() {
+        // Filter buttons
+        document.querySelectorAll('.filter-group .cyber-button').forEach(button => {
+            button.addEventListener('click', () => {
+                this.filterAlerts(button.dataset.filter);
+                // Update active state
+                document.querySelectorAll('.filter-group .cyber-button').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                button.classList.add('active');
+            });
+        });
+
+        // Search functionality
+        const searchInput = document.querySelector('.cyber-search input');
+        if (searchInput) {
+            searchInput.addEventListener('input', (e) => {
+                this.searchAlerts(e.target.value);
+            });
+        }
+    }
+
+    filterAlerts(type) {
+        const alertCards = document.querySelectorAll('.alert-card');
+        alertCards.forEach(card => {
+            if (type === 'all' || card.classList.contains(`${type}-priority`)) {
+                card.style.display = 'block';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    }
+
+    searchAlerts(query) {
+        const alertCards = document.querySelectorAll('.alert-card');
+        query = query.toLowerCase();
+        
+        alertCards.forEach(card => {
+            const content = card.textContent.toLowerCase();
+            if (content.includes(query)) {
+                card.style.display = 'block';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    }
+
+    updateStats() {
+        // Update active alerts
+        const activeAlertsEl = document.querySelector('.alerts-stats .cyber-card:nth-child(1) .stat-value');
+        if (activeAlertsEl) {
+            activeAlertsEl.textContent = this.stats.active;
+        }
+
+        // Update high priority alerts
+        const highPriorityEl = document.querySelector('.alerts-stats .cyber-card:nth-child(2) .stat-value');
+        if (highPriorityEl) {
+            highPriorityEl.textContent = this.stats.highPriority;
+        }
+
+        // Update response time
+        const responseTimeEl = document.querySelector('.alerts-stats .cyber-card:nth-child(3) .stat-value');
+        if (responseTimeEl) {
+            responseTimeEl.textContent = this.stats.responseTime + 's';
+        }
+    }
+
+    addNewAlert(alert) {
+        const alertsGrid = document.querySelector('.alerts-grid');
+        if (!alertsGrid) return;
+
+        const alertCard = document.createElement('div');
+        alertCard.className = `alert-card ${alert.priority}-priority new`;
+        
+        alertCard.innerHTML = `
+            <div class="alert-header">
+                <div class="alert-type">
+                    <i class="fas ${this.getPriorityIcon(alert.priority)}"></i>
+                    <span>${alert.priority.charAt(0).toUpperCase() + alert.priority.slice(1)} Priority</span>
+                </div>
+                <div class="alert-time">Just now</div>
+            </div>
+            <div class="alert-content">
+                <h3>${alert.title}</h3>
+                <p>${alert.description}</p>
+                <div class="alert-details">
+                    ${alert.details.map(detail => `
+                        <span class="detail-item">
+                            <i class="fas ${detail.icon}"></i> ${detail.text}
+                        </span>
+                    `).join('')}
+                </div>
+            </div>
+            <div class="alert-actions">
+                <button class="cyber-button">${alert.primaryAction}</button>
+                <button class="cyber-button">${alert.secondaryAction}</button>
+            </div>
+        `;
+
+        // Add to the beginning of the grid
+        alertsGrid.insertBefore(alertCard, alertsGrid.firstChild);
+
+        // Remove animation class after animation completes
+        setTimeout(() => {
+            alertCard.classList.remove('new');
+        }, 1000);
+
+        // Update stats
+        this.stats.active++;
+        if (alert.priority === 'high') {
+            this.stats.highPriority++;
+        }
+        this.updateStats();
+    }
+
+    getPriorityIcon(priority) {
+        switch (priority) {
+            case 'high':
+                return 'fa-exclamation-triangle';
+            case 'medium':
+                return 'fa-bell';
+            case 'low':
+                return 'fa-info-circle';
+            default:
+                return 'fa-bell';
+        }
+    }
+
+    addFeedItem(item) {
+        const feedContainer = document.querySelector('.feed-container');
+        if (!feedContainer) return;
+
+        const feedItem = document.createElement('div');
+        feedItem.className = 'feed-item';
+        feedItem.innerHTML = `
+            <div class="feed-time">Just now</div>
+            <div class="feed-content">
+                <i class="fas ${item.icon}"></i>
+                <span>${item.message}</span>
+            </div>
+        `;
+
+        // Add to the beginning of the feed
+        feedContainer.insertBefore(feedItem, feedContainer.firstChild);
+
+        // Remove oldest item if more than 5
+        if (feedContainer.children.length > 5) {
+            feedContainer.removeChild(feedContainer.lastChild);
+        }
+    }
+
+    startRealTimeUpdates() {
+        // Simulate real-time updates
+        setInterval(() => {
+            // Random chance to add new alert
+            if (Math.random() < 0.3) {
+                this.addNewAlert(this.generateRandomAlert());
+            }
+
+            // Random chance to add feed item
+            if (Math.random() < 0.4) {
+                this.addFeedItem(this.generateRandomFeedItem());
+            }
+
+            // Update response time randomly
+            this.stats.responseTime = (Math.random() * 0.4 + 1).toFixed(1);
+            this.updateStats();
+        }, 5000);
+    }
+
+    generateRandomAlert() {
+        const priorities = ['high', 'medium', 'low'];
+        const priority = priorities[Math.floor(Math.random() * priorities.length)];
+        
+        const alerts = [
+            {
+                priority: 'high',
+                title: 'Large Transaction Detected',
+                description: 'Unusual transaction volume detected on Jupiter. 50,000 SOL movement in progress.',
+                details: [
+                    { icon: 'fa-wallet', text: 'Wallet: 7xKX...9aB2' },
+                    { icon: 'fa-exchange-alt', text: 'DEX: Jupiter' }
+                ],
+                primaryAction: 'View Details',
+                secondaryAction: 'Track'
+            },
+            {
+                priority: 'medium',
+                title: 'New Pattern Identified',
+                description: 'Recurring arbitrage pattern detected between Orca and Raydium.',
+                details: [
+                    { icon: 'fa-chart-line', text: 'Profit: 2.5 SOL' },
+                    { icon: 'fa-clock', text: 'Interval: 15min' }
+                ],
+                primaryAction: 'Analyze',
+                secondaryAction: 'Monitor'
+            },
+            {
+                priority: 'low',
+                title: 'Network Activity Update',
+                description: 'Increased network activity detected. Transaction fees rising slightly.',
+                details: [
+                    { icon: 'fa-tachometer-alt', text: 'TPS: 2,500' },
+                    { icon: 'fa-coins', text: 'Avg Fee: 0.000005 SOL' }
+                ],
+                primaryAction: 'View Stats',
+                secondaryAction: 'Dismiss'
+            }
+        ];
+
+        return alerts.find(alert => alert.priority === priority);
+    }
+
+    generateRandomFeedItem() {
+        const feedItems = [
+            { icon: 'fa-sync', message: 'Network synchronization complete' },
+            { icon: 'fa-shield-alt', message: 'Security check passed: All systems normal' },
+            { icon: 'fa-chart-bar', message: 'Performance metrics updated' },
+            { icon: 'fa-database', message: 'Database optimization completed' },
+            { icon: 'fa-network-wired', message: 'New node connected to network' }
+        ];
+
+        return feedItems[Math.floor(Math.random() * feedItems.length)];
+    }
+}
+
+// Initialize Alerts Manager when DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+    window.alertsManager = new AlertsManager();
+});
