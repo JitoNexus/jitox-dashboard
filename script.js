@@ -3,6 +3,57 @@
     let solChart = null, networkChart = null, volumeChart = null;
     let isInitialized = false;
 
+    // Chart configuration defaults
+    const chartDefaults = {
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: {
+            duration: 1000,
+            easing: 'easeInOutQuart'
+        },
+        plugins: {
+            legend: {
+                display: false
+            },
+            tooltip: {
+                enabled: true,
+                mode: 'index',
+                intersect: false,
+                backgroundColor: 'rgba(16, 20, 24, 0.95)',
+                titleColor: '#fff',
+                bodyColor: 'rgba(255, 255, 255, 0.8)',
+                borderColor: 'rgba(255, 255, 255, 0.1)',
+                borderWidth: 1,
+                padding: 12,
+                boxPadding: 6,
+                usePointStyle: true
+            }
+        },
+        scales: {
+            x: {
+                grid: {
+                    color: 'rgba(255, 255, 255, 0.05)',
+                    drawBorder: false
+                },
+                ticks: {
+                    color: 'rgba(255, 255, 255, 0.6)'
+                }
+            },
+            y: {
+                grid: {
+                    color: 'rgba(255, 255, 255, 0.05)',
+                    drawBorder: false
+                },
+                ticks: {
+                    color: 'rgba(255, 255, 255, 0.6)',
+                    callback: function(value) {
+                        return value.toLocaleString();
+                    }
+                }
+            }
+        }
+    };
+
     // Utility functions
     function getRandomData(min, max) {
         return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -14,6 +65,55 @@
         gradient.addColorStop(1, colorEnd);
         return gradient;
     }
+
+    // Loading screen initialization
+    function initializeLoadingScreen() {
+        console.log('Initializing loading screen');
+        const loadingContainer = document.getElementById('loadingContainer');
+        const mainContent = document.getElementById('mainContent');
+        const progressBar = document.getElementById('loadingProgress');
+        const statusItems = document.querySelectorAll('.status-item');
+        let progress = 0;
+
+        if (!loadingContainer || !mainContent || !progressBar) {
+            console.error('Required elements not found');
+            return;
+        }
+
+        // Show loading screen, hide main content
+        loadingContainer.style.display = 'flex';
+        mainContent.style.display = 'none';
+
+        // Update progress and status items
+        const interval = setInterval(() => {
+            progress += 1;
+            if (progressBar) progressBar.style.width = `${progress}%`;
+
+            // Update status items based on progress
+            if (progress >= 30) statusItems[0]?.classList.add('completed');
+            if (progress >= 60) statusItems[1]?.classList.add('completed');
+            if (progress >= 90) statusItems[2]?.classList.add('completed');
+
+            if (progress >= 100) {
+                clearInterval(interval);
+                // Initialize main content after loading
+                setTimeout(() => {
+                    try {
+                        initializeMainContent();
+                        loadingContainer.style.display = 'none';
+                        mainContent.style.display = 'block';
+                    } catch (error) {
+                        console.error('Error initializing main content:', error);
+                    }
+                }, 500);
+            }
+        }, 30);
+    }
+
+    // Initialize everything when DOM is ready
+    document.addEventListener('DOMContentLoaded', () => {
+        initializeLoadingScreen();
+    });
 
     // Chart initialization functions
     function initializeCharts() {
@@ -129,50 +229,6 @@
         }
     }
 
-    // Loading screen initialization
-    function initializeLoadingScreen() {
-        console.log('Initializing loading screen');
-        const loadingContainer = document.getElementById('loadingContainer');
-        const mainContent = document.getElementById('mainContent');
-        const progressBar = document.getElementById('loadingProgress');
-        const statusItems = document.querySelectorAll('.status-item');
-        let progress = 0;
-
-        if (!loadingContainer || !mainContent || !progressBar) {
-            console.error('Required elements not found');
-            return;
-        }
-
-        // Show loading screen, hide main content
-        loadingContainer.style.display = 'flex';
-        mainContent.style.display = 'none';
-
-        // Update progress and status items
-        const interval = setInterval(() => {
-            progress += 1;
-            if (progressBar) progressBar.style.width = `${progress}%`;
-
-            // Update status items based on progress
-            if (progress >= 30) statusItems[0]?.classList.add('completed');
-            if (progress >= 60) statusItems[1]?.classList.add('completed');
-            if (progress >= 90) statusItems[2]?.classList.add('completed');
-
-            if (progress >= 100) {
-                clearInterval(interval);
-                // Initialize main content after loading
-                setTimeout(() => {
-                    try {
-                        initializeMainContent();
-                        loadingContainer.style.display = 'none';
-                        mainContent.style.display = 'block';
-                    } catch (error) {
-                        console.error('Error initializing main content:', error);
-                    }
-                }, 500);
-            }
-        }, 30);
-    }
-
     // Main content initialization
     function initializeMainContent() {
         try {
@@ -219,60 +275,4 @@
             }
         }, 2000);
     }
-
-    // Chart configuration defaults
-    const chartDefaults = {
-        responsive: true,
-        maintainAspectRatio: false,
-        animation: {
-            duration: 1000,
-            easing: 'easeInOutQuart'
-        },
-        plugins: {
-            legend: {
-                display: false
-            },
-            tooltip: {
-                enabled: true,
-                mode: 'index',
-                intersect: false,
-                backgroundColor: 'rgba(16, 20, 24, 0.95)',
-                titleColor: '#fff',
-                bodyColor: 'rgba(255, 255, 255, 0.8)',
-                borderColor: 'rgba(255, 255, 255, 0.1)',
-                borderWidth: 1,
-                padding: 12,
-                boxPadding: 6,
-                usePointStyle: true
-            }
-        },
-        scales: {
-            x: {
-                grid: {
-                    color: 'rgba(255, 255, 255, 0.05)',
-                    drawBorder: false
-                },
-                ticks: {
-                    color: 'rgba(255, 255, 255, 0.6)'
-                }
-            },
-            y: {
-                grid: {
-                    color: 'rgba(255, 255, 255, 0.05)',
-                    drawBorder: false
-                },
-                ticks: {
-                    color: 'rgba(255, 255, 255, 0.6)',
-                    callback: function(value) {
-                        return value.toLocaleString();
-                    }
-                }
-            }
-        }
-    };
-    
-    // Initialize everything when DOM is ready
-document.addEventListener('DOMContentLoaded', () => {
-    initializeLoadingScreen();
-});
 })();
