@@ -628,33 +628,39 @@ class AlertsManager {
     }
 
     updateStats() {
-        // Update active alerts
-        const activeAlertsEl = document.querySelector('.alerts-stats .cyber-card:nth-child(1) .stat-value');
-        if (activeAlertsEl) {
-            activeAlertsEl.textContent = this.stats.active;
+        // Cache DOM queries
+        if (!this._statsElements) {
+            this._statsElements = {
+                activeAlerts: document.querySelector('.alerts-stats .cyber-card:nth-child(1) .stat-value'),
+                highPriority: document.querySelector('.alerts-stats .cyber-card:nth-child(2) .stat-value'),
+                responseTime: document.querySelector('.alerts-stats .cyber-card:nth-child(3) .stat-value')
+            };
         }
 
-        // Update high priority alerts
-        const highPriorityEl = document.querySelector('.alerts-stats .cyber-card:nth-child(2) .stat-value');
-        if (highPriorityEl) {
-            highPriorityEl.textContent = this.stats.highPriority;
-        }
-
-        // Update response time
-        const responseTimeEl = document.querySelector('.alerts-stats .cyber-card:nth-child(3) .stat-value');
-        if (responseTimeEl) {
-            responseTimeEl.textContent = this.stats.responseTime + 's';
-        }
+        // Batch DOM updates
+        requestAnimationFrame(() => {
+            if (this._statsElements.activeAlerts) {
+                this._statsElements.activeAlerts.textContent = this.stats.active;
+            }
+            if (this._statsElements.highPriority) {
+                this._statsElements.highPriority.textContent = this.stats.highPriority;
+            }
+            if (this._statsElements.responseTime) {
+                this._statsElements.responseTime.textContent = this.stats.responseTime + 's';
+            }
+        });
     }
 
     addNewAlert(alert) {
         const alertsGrid = document.querySelector('.alerts-grid');
         if (!alertsGrid) return;
 
+        // Create element outside of DOM
         const alertCard = document.createElement('div');
         alertCard.className = `alert-card ${alert.priority}-priority new`;
         
-        alertCard.innerHTML = `
+        // Use template literal once
+        const html = `
             <div class="alert-header">
                 <div class="alert-type">
                     <i class="fas ${this.getPriorityIcon(alert.priority)}"></i>
@@ -679,20 +685,31 @@ class AlertsManager {
             </div>
         `;
 
-        // Add to the beginning of the grid
-        alertsGrid.insertBefore(alertCard, alertsGrid.firstChild);
+        // Set innerHTML once
+        alertCard.innerHTML = html;
 
-        // Remove animation class after animation completes
-        setTimeout(() => {
-            alertCard.classList.remove('new');
-        }, 1000);
+        // Use requestAnimationFrame for DOM updates
+        requestAnimationFrame(() => {
+            // Add to the beginning of the grid
+            alertsGrid.insertBefore(alertCard, alertsGrid.firstChild);
 
-        // Update stats
-        this.stats.active++;
-        if (alert.priority === 'high') {
-            this.stats.highPriority++;
-        }
-        this.updateStats();
+            // Limit number of alerts to prevent memory issues
+            while (alertsGrid.children.length > 20) {
+                alertsGrid.removeChild(alertsGrid.lastChild);
+            }
+
+            // Remove animation class after animation completes
+            setTimeout(() => {
+                alertCard.classList.remove('new');
+            }, 1000);
+
+            // Update stats
+            this.stats.active++;
+            if (alert.priority === 'high') {
+                this.stats.highPriority++;
+            }
+            this.updateStats();
+        });
     }
 
     getPriorityIcon(priority) {
@@ -714,6 +731,8 @@ class AlertsManager {
 
         const feedItem = document.createElement('div');
         feedItem.className = 'feed-item';
+        
+        // Set innerHTML once
         feedItem.innerHTML = `
             <div class="feed-time">Just now</div>
             <div class="feed-content">
@@ -722,32 +741,67 @@ class AlertsManager {
             </div>
         `;
 
-        // Add to the beginning of the feed
-        feedContainer.insertBefore(feedItem, feedContainer.firstChild);
+        // Use requestAnimationFrame for DOM updates
+        requestAnimationFrame(() => {
+            // Add to the beginning of the feed
+            feedContainer.insertBefore(feedItem, feedContainer.firstChild);
 
-        // Remove oldest item if more than 5
-        if (feedContainer.children.length > 5) {
-            feedContainer.removeChild(feedContainer.lastChild);
-        }
+            // Limit feed items
+            while (feedContainer.children.length > 5) {
+                feedContainer.removeChild(feedContainer.lastChild);
+            }
+        });
     }
 
     startRealTimeUpdates() {
-        // Simulate real-time updates
-        setInterval(() => {
-            // Random chance to add new alert
+        // Throttle update frequency and batch updates
+        let updatePending = false;
+        let lastUpdate = Date.now();
+        const UPDATE_INTERVAL = 5000; // 5 seconds
+        const THROTTLE_THRESHOLD = 100; // 100ms
+
+        const performUpdate = () => {
+            const now = Date.now();
+            if (now - lastUpdate < THROTTLE_THRESHOLD) {
+                return;
+            }
+
+            // Batch DOM updates
+            const updates = [];
+
+            // Queue updates instead of performing them immediately
             if (Math.random() < 0.3) {
-                this.addNewAlert(this.generateRandomAlert());
+                updates.push(() => this.addNewAlert(this.generateRandomAlert()));
             }
 
-            // Random chance to add feed item
             if (Math.random() < 0.4) {
-                this.addFeedItem(this.generateRandomFeedItem());
+                updates.push(() => this.addFeedItem(this.generateRandomFeedItem()));
             }
 
-            // Update response time randomly
+            // Update response time
             this.stats.responseTime = (Math.random() * 0.4 + 1).toFixed(1);
-            this.updateStats();
-        }, 5000);
+
+            // Use requestAnimationFrame for smooth updates
+            requestAnimationFrame(() => {
+                // Execute all queued updates
+                updates.forEach(update => update());
+                // Update stats once at the end
+                this.updateStats();
+                lastUpdate = now;
+                updatePending = false;
+            });
+        };
+
+        // Use more efficient interval handling
+        const intervalId = setInterval(() => {
+            if (!updatePending) {
+                updatePending = true;
+                performUpdate();
+            }
+        }, UPDATE_INTERVAL);
+
+        // Cleanup function
+        return () => clearInterval(intervalId);
     }
 
     generateRandomAlert() {
@@ -806,7 +860,172 @@ class AlertsManager {
     }
 }
 
-// Initialize Alerts Manager when DOM is loaded
+// Update charts with new data
+function updateCharts() {
+    try {
+        // Network Activity Chart
+        if (networkChart) {
+            const newData = networkChart.data.datasets[0].data.slice(1);
+            newData.push(Math.random() * 1000);
+            networkChart.data.datasets[0].data = newData;
+            networkChart.update('none'); // Use 'none' mode for better performance
+        }
+
+        // Volume Distribution Chart
+        if (volumeChart) {
+            volumeChart.data.datasets[0].data = volumeChart.data.datasets[0].data.map(
+                value => Math.max(5, Math.min(95, value + (Math.random() - 0.5) * 5))
+            );
+            volumeChart.update('none');
+        }
+
+        // Pattern Recognition Chart
+        if (patternRecognitionChart) {
+            // Update success rate dataset
+            patternRecognitionChart.data.datasets[0].data = patternRecognitionChart.data.datasets[0].data.map(
+                value => Math.max(70, Math.min(98, value + (Math.random() - 0.5) * 2))
+            );
+            // Update profit potential dataset
+            patternRecognitionChart.data.datasets[1].data = patternRecognitionChart.data.datasets[1].data.map(
+                value => Math.max(65, Math.min(95, value + (Math.random() - 0.5) * 2))
+            );
+            patternRecognitionChart.update('none');
+        }
+
+        // AI Accuracy Chart
+        if (aiAccuracyChart) {
+            const newAccuracyData = aiAccuracyChart.data.datasets[0].data.slice(1);
+            newAccuracyData.push(95 + Math.random() * 5);
+            aiAccuracyChart.data.datasets[0].data = newAccuracyData;
+            aiAccuracyChart.update('none');
+        }
+
+        // Strategy Performance Chart
+        if (strategyPerformanceChart) {
+            strategyPerformanceChart.data.datasets.forEach(dataset => {
+                dataset.data = dataset.data.map(
+                    value => Math.max(90, Math.min(100, value + (Math.random() - 0.5) * 2))
+                );
+            });
+            strategyPerformanceChart.update('none');
+        }
+    } catch (error) {
+        console.error('Error updating charts:', error);
+    }
+}
+
+// Update statistics
+function updateStats() {
+    try {
+        // Update overview stats
+        const stats = {
+            tvl: {
+                value: `$${(1.2 + Math.random() * 0.1).toFixed(1)}B`,
+                trend: `+${(Math.random() * 20).toFixed(1)}%`
+            },
+            searchers: {
+                value: (5000 + Math.floor(Math.random() * 500)).toString(),
+                trend: `+${(Math.random() * 15).toFixed(1)}%`
+            },
+            mev: {
+                value: `${(850 + Math.random() * 100).toFixed(1)} SOL`,
+                trend: `+${(Math.random() * 10).toFixed(1)}%`
+            },
+            health: {
+                value: `${(98 + Math.random()).toFixed(1)}%`,
+                trend: `+${(Math.random()).toFixed(1)}%`
+            }
+        };
+
+        // Update DOM elements
+        document.querySelectorAll('.cyber-card').forEach(card => {
+            const title = card.querySelector('h2')?.textContent.toLowerCase();
+            if (!title) return;
+
+            let stat;
+            if (title.includes('value')) stat = stats.tvl;
+            else if (title.includes('searchers')) stat = stats.searchers;
+            else if (title.includes('mev')) stat = stats.mev;
+            else if (title.includes('health')) stat = stats.health;
+
+            if (stat) {
+                const valueEl = card.querySelector('.stat-value');
+                const trendEl = card.querySelector('.stat-trend span');
+                if (valueEl) valueEl.textContent = stat.value;
+                if (trendEl) trendEl.textContent = stat.trend;
+            }
+        });
+
+        // Update MEV Activity stats
+        const activities = {
+            arbitrage: {
+                value: Math.floor(300 + Math.random() * 50),
+                progress: Math.floor(70 + Math.random() * 10)
+            },
+            sandwich: {
+                value: Math.floor(140 + Math.random() * 30),
+                progress: Math.floor(40 + Math.random() * 10)
+            },
+            liquidations: {
+                value: Math.floor(80 + Math.random() * 20),
+                progress: Math.floor(30 + Math.random() * 10)
+            }
+        };
+
+        // Update activity breakdown
+        document.querySelectorAll('.breakdown-grid .cyber-card').forEach(card => {
+            const title = card.querySelector('h2')?.textContent.toLowerCase();
+            if (!title) return;
+
+            let activity;
+            if (title.includes('arbitrage')) activity = activities.arbitrage;
+            else if (title.includes('sandwich')) activity = activities.sandwich;
+            else if (title.includes('liquidations')) activity = activities.liquidations;
+
+            if (activity) {
+                const valueEl = card.querySelector('.stat-value');
+                const progressEl = card.querySelector('.progress');
+                if (valueEl) valueEl.textContent = activity.value;
+                if (progressEl) progressEl.style.width = `${activity.progress}%`;
+            }
+        });
+
+    } catch (error) {
+        console.error('Error updating stats:', error);
+    }
+}
+
+// Start real-time updates
+function startRealTimeUpdates() {
+    // Update charts every 5 seconds
+    const chartInterval = setInterval(() => {
+        if (document.visibilityState === 'visible') {
+            updateCharts();
+        }
+    }, 5000);
+
+    // Update stats every 3 seconds
+    const statsInterval = setInterval(() => {
+        if (document.visibilityState === 'visible') {
+            updateStats();
+        }
+    }, 3000);
+
+    // Cleanup on page hide/unload
+    document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'hidden') {
+            clearInterval(chartInterval);
+            clearInterval(statsInterval);
+        }
+    });
+
+    // Initial updates
+    updateCharts();
+    updateStats();
+}
+
+// Initialize everything when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
     window.alertsManager = new AlertsManager();
+    startRealTimeUpdates();
 });
