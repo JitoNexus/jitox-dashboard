@@ -188,73 +188,72 @@ function initializeMainContent() {
 
 // Initialize loading sequence
 function initializeLoadingSequence() {
-    const elements = {
-        loadingContainer: document.getElementById('loadingContainer'),
-        mainContent: document.getElementById('mainContent'),
-        cyberParticles: document.getElementById('cyberParticles'),
-        loadingProgress: document.getElementById('loadingProgress'),
-        statusItems: document.querySelectorAll('.status-item')
-    };
+    try {
+        const elements = {
+            loadingContainer: document.getElementById('loadingContainer'),
+            mainContent: document.getElementById('mainContent'),
+            cyberParticles: document.getElementById('cyberParticles'),
+            loadingProgress: document.getElementById('loadingProgress'),
+            statusItems: document.querySelectorAll('.status-item')
+        };
 
-    // Check if all required elements exist
-    for (const [key, element] of Object.entries(elements)) {
-        if (!element || (element instanceof NodeList && element.length === 0)) {
-            console.error(`Required element "${key}" not found`);
-            return;
-        }
-    }
-
-    console.log('Initializing loading sequence...');
-
-    // Create particles
-    createParticles(elements.cyberParticles);
-
-    // Initialize progress
-    let currentProgress = 0;
-    elements.loadingProgress.style.width = '0%';
-    elements.statusItems.forEach(item => item.classList.remove('completed'));
-
-    const interval = setInterval(() => {
-        currentProgress += 1;
-        elements.loadingProgress.style.width = `${currentProgress}%`;
-
-        // Update status items
-        if (currentProgress >= 30) {
-            elements.statusItems[0]?.classList.add('completed');
-        }
-        if (currentProgress >= 60) {
-            elements.statusItems[1]?.classList.add('completed');
-        }
-        if (currentProgress >= 90) {
-            elements.statusItems[2]?.classList.add('completed');
+        // Check if all required elements exist
+        for (const [key, element] of Object.entries(elements)) {
+            if (!element || (element instanceof NodeList && element.length === 0)) {
+                console.error(`Required element "${key}" not found`);
+                return;
+            }
         }
 
-        if (currentProgress >= 100) {
-            clearInterval(interval);
-            setTimeout(() => {
-                // Hide loading screen and show main content
-                elements.loadingContainer.style.display = 'none';
-                elements.mainContent.style.display = 'block';
-                elements.mainContent.style.opacity = '1';
-                isInitialized = true;
-                console.log('Loading sequence completed');
-            }, 500);
-        }
-    }, 30);
-}
+        console.log('Initializing loading sequence...');
 
-// Create particles for the loading screen
-function createParticles(container) {
-    if (!container) return;
-    
-    container.innerHTML = '';
-    for (let i = 0; i < 20; i++) {
-        const particle = document.createElement('div');
-        particle.className = 'cyber-particle';
-        particle.style.left = `${Math.random() * 100}%`;
-        particle.style.top = `${Math.random() * 100}%`;
-        particle.style.animationDelay = `${Math.random() * 10}s`;
-        container.appendChild(particle);
+        // Create particles
+        if (elements.cyberParticles) {
+            elements.cyberParticles.innerHTML = '';
+            for (let i = 0; i < 20; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'cyber-particle';
+                particle.style.left = `${Math.random() * 100}%`;
+                particle.style.top = `${Math.random() * 100}%`;
+                particle.style.animationDelay = `${Math.random() * 10}s`;
+                elements.cyberParticles.appendChild(particle);
+            }
+        }
+
+        // Initialize progress
+        let currentProgress = 0;
+        elements.loadingProgress.style.width = '0%';
+        elements.statusItems.forEach(item => item.classList.remove('completed'));
+
+        const interval = setInterval(() => {
+            currentProgress += 1;
+            elements.loadingProgress.style.width = `${currentProgress}%`;
+
+            // Update status items
+            if (currentProgress >= 30) {
+                elements.statusItems[0]?.classList.add('completed');
+            }
+            if (currentProgress >= 60) {
+                elements.statusItems[1]?.classList.add('completed');
+            }
+            if (currentProgress >= 90) {
+                elements.statusItems[2]?.classList.add('completed');
+            }
+
+            if (currentProgress >= 100) {
+                clearInterval(interval);
+                setTimeout(() => {
+                    // Hide loading screen and show main content
+                    elements.loadingContainer.style.display = 'none';
+                    elements.mainContent.style.display = 'block';
+                    elements.mainContent.style.opacity = '1';
+                    isInitialized = true;
+                    console.log('Loading sequence completed');
+                }, 500);
+            }
+        }, 30);
+    } catch (error) {
+        console.error('Error in loading sequence:', error);
     }
 }
 
