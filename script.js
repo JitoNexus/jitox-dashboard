@@ -77,29 +77,49 @@ function waitForChart() {
     function initializeLoadingScreen() {
         console.log('Initializing loading screen');
         const loadingContainer = document.getElementById('loadingContainer');
-        const mainContent = document.getElementById('mainContent');
+        const mainContent = document.querySelector('.main-content');
         const progressBar = document.getElementById('loadingProgress');
         const statusItems = document.querySelectorAll('.status-item');
         let progress = 0;
 
-        if (!loadingContainer || !mainContent || !progressBar) {
-            console.error('Required elements not found');
+        if (!loadingContainer || !progressBar) {
+            console.error('Required elements not found:', {
+                loadingContainer: !!loadingContainer,
+                progressBar: !!progressBar
+            });
             return;
         }
 
-        // Show loading screen, hide main content
+        // Show loading screen
         loadingContainer.style.display = 'flex';
-        mainContent.style.display = 'none';
+        if (mainContent) {
+            mainContent.style.display = 'none';
+        }
+
+        // Create particles
+        const particlesContainer = document.getElementById('cyberParticles');
+        if (particlesContainer) {
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 2 + 's';
+                particlesContainer.appendChild(particle);
+            }
+        }
 
         // Update progress and status items
         const interval = setInterval(() => {
             progress += 1;
-            if (progressBar) progressBar.style.width = `${progress}%`;
+            if (progressBar) {
+                progressBar.style.width = `${progress}%`;
+            }
 
             // Update status items based on progress
-            if (progress >= 30) statusItems[0]?.classList.add('completed');
-            if (progress >= 60) statusItems[1]?.classList.add('completed');
-            if (progress >= 90) statusItems[2]?.classList.add('completed');
+            if (progress >= 30 && statusItems[0]) statusItems[0].classList.add('completed');
+            if (progress >= 60 && statusItems[1]) statusItems[1].classList.add('completed');
+            if (progress >= 90 && statusItems[2]) statusItems[2].classList.add('completed');
 
             if (progress >= 100) {
                 clearInterval(interval);
@@ -108,7 +128,9 @@ function waitForChart() {
                     try {
                         initializeMainContent();
                         loadingContainer.style.display = 'none';
-                        mainContent.style.display = 'block';
+                        if (mainContent) {
+                            mainContent.style.display = 'block';
+                        }
                     } catch (error) {
                         console.error('Error initializing main content:', error);
                     }
