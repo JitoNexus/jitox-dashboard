@@ -265,6 +265,18 @@ function initializeLoadingScreen() {
 function initialize() {
     if (isInitialized) return;
     
+    // Initialize disclaimer
+    const closeDisclaimerBtn = document.querySelector('.close-disclaimer');
+    if (closeDisclaimerBtn) {
+        closeDisclaimerBtn.addEventListener('click', () => {
+            const disclaimer = document.querySelector('.disclaimer-banner');
+            if (disclaimer) {
+                disclaimer.style.opacity = '0';
+                setTimeout(() => disclaimer.style.display = 'none', 500);
+            }
+        });
+    }
+    
     // Wait for a short moment to ensure DOM is fully loaded
     setTimeout(() => {
         initializeLoadingScreen();

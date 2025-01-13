@@ -2098,3 +2098,52 @@ body {
         align-items: flex-start;
     }
 }
+
+/* Disclaimer Banner */
+.disclaimer-banner {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: rgba(255, 165, 0, 0.1);
+    border: 1px solid rgba(255, 165, 0, 0.3);
+    padding: 1rem;
+    margin: 1rem;
+    border-radius: 8px;
+    color: #ffa500;
+    position: relative;
+}
+
+.disclaimer-banner i {
+    font-size: 1.5rem;
+}
+
+.disclaimer-banner p {
+    margin: 0;
+    flex: 1;
+    font-size: 0.9rem;
+}
+
+.close-disclaimer {
+    background: none;
+    border: none;
+    color: #ffa500;
+    cursor: pointer;
+    padding: 0.5rem;
+    opacity: 0.8;
+    transition: opacity 0.3s;
+}
+
+.close-disclaimer:hover {
+    opacity: 1;
+}
+
+/* Main Content Visibility Fix */
+.main-content {
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+}
+
+.main-content.visible {
+    opacity: 1;
+    display: block !important;
+}
