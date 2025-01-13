@@ -924,7 +924,7 @@ function startRealTimeUpdates() {
 
     const CHART_UPDATE_INTERVAL = 2000; // 2 seconds
     const STATS_UPDATE_INTERVAL = 1000; // 1 second
-    const AI_UPDATE_INTERVAL = 1000; // 1 second for AI strategies
+    const AI_UPDATE_INTERVAL = 500; // 0.5 seconds for more frequent AI updates
 
     function animate(timestamp) {
         // Update charts
@@ -945,7 +945,7 @@ function startRealTimeUpdates() {
             }
         }
 
-        // Update AI strategies
+        // Update AI strategies more frequently
         if (timestamp - lastAIUpdate >= AI_UPDATE_INTERVAL) {
             if (document.visibilityState === 'visible') {
                 updateAIStrategies();
@@ -1272,62 +1272,46 @@ function createAlertCard(priority) {
 // Add this function after the updateStats function
 function updateAIStrategies() {
     const strategies = {
-        'Arbitrage Bot': {
-            status: Math.random() > 0.1 ? 'Active' : 'Scanning',
-            profit: (Math.random() * 5 + 0.2).toFixed(2),
-            success: Math.floor(Math.random() * 10 + 90),
-            trades: Math.floor(Math.random() * 50 + 150)
+        'Cross-DEX Arbitrage': {
+            successRate: (98.5 + Math.random() * 1.2).toFixed(1),
+            avgReturn: (0.6 + Math.random() * 0.4).toFixed(1)
         },
-        'Sandwich Bot': {
-            status: Math.random() > 0.1 ? 'Active' : 'Scanning',
-            profit: (Math.random() * 4 + 0.1).toFixed(2),
-            success: Math.floor(Math.random() * 8 + 88),
-            trades: Math.floor(Math.random() * 40 + 100)
+        'Sandwich Trading': {
+            successRate: (97 + Math.random() * 1.5).toFixed(1),
+            avgReturn: (0.3 + Math.random() * 0.4).toFixed(1)
         },
-        'MEV Searcher': {
-            status: Math.random() > 0.1 ? 'Active' : 'Scanning',
-            profit: (Math.random() * 6 + 0.3).toFixed(2),
-            success: Math.floor(Math.random() * 12 + 85),
-            trades: Math.floor(Math.random() * 30 + 80)
+        'Flash Loan Arbitrage': {
+            successRate: (97.8 + Math.random() * 1.4).toFixed(1),
+            avgReturn: (1.0 + Math.random() * 0.4).toFixed(1)
         }
     };
 
-    // Update both in alerts section and AI dashboard
-    document.querySelectorAll('.ai-strategy-card, .strategy-card').forEach(card => {
-        const title = card.querySelector('h3, .strategy-name')?.textContent;
+    // Update AI dashboard strategies
+    document.querySelectorAll('.ai-strategy').forEach(strategy => {
+        const title = strategy.querySelector('.strategy-title')?.textContent;
         if (!title || !strategies[title]) return;
 
-        const strategy = strategies[title];
-        
-        // Update status
-        const statusEl = card.querySelector('.strategy-status, .status');
-        if (statusEl) {
-            statusEl.textContent = strategy.status;
-            statusEl.className = (statusEl.classList[0] || 'strategy-status') + ' ' + 
-                (strategy.status === 'Active' ? 'active' : 'scanning');
-        }
-        
-        // Update profit
-        const profitEl = card.querySelector('.strategy-profit, .profit');
-        if (profitEl) {
-            profitEl.textContent = `${strategy.profit} SOL/trade`;
-        }
+        const data = strategies[title];
         
         // Update success rate
-        const successEl = card.querySelector('.strategy-success, .success-rate');
-        if (successEl) {
-            successEl.textContent = `${strategy.success}% Success Rate`;
+        const successRateEl = strategy.querySelector('.success-rate');
+        if (successRateEl) {
+            successRateEl.textContent = `${data.successRate}%`;
+            // Add color based on value
+            successRateEl.style.color = parseFloat(data.successRate) >= 98 ? '#00ff00' : '#00dddd';
         }
         
-        // Update trades if element exists
-        const tradesEl = card.querySelector('.trades');
-        if (tradesEl) {
-            tradesEl.textContent = `${strategy.trades} trades`;
+        // Update average return
+        const avgReturnEl = strategy.querySelector('.avg-return');
+        if (avgReturnEl) {
+            avgReturnEl.textContent = `${data.avgReturn} SOL`;
+            // Add color based on value
+            avgReturnEl.style.color = parseFloat(data.avgReturn) >= 1.0 ? '#00ff00' : '#00dddd';
         }
         
         // Add pulse animation
-        card.style.animation = 'none';
-        card.offsetHeight; // Trigger reflow
-        card.style.animation = 'pulse 0.5s ease';
+        strategy.style.animation = 'none';
+        strategy.offsetHeight; // Trigger reflow
+        strategy.style.animation = 'pulse 0.5s ease';
     });
 }
