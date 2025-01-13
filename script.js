@@ -920,11 +920,11 @@ function startRealTimeUpdates() {
     // Performance optimization: Use RequestAnimationFrame for smooth animations
     let lastChartUpdate = 0;
     let lastStatsUpdate = 0;
-    let lastAlertUpdate = 0;
+    let lastAIUpdate = 0;
 
     const CHART_UPDATE_INTERVAL = 2000; // 2 seconds
     const STATS_UPDATE_INTERVAL = 1000; // 1 second
-    const ALERT_UPDATE_INTERVAL = 3000; // 3 seconds
+    const AI_UPDATE_INTERVAL = 1000; // 1 second for AI strategies
 
     function animate(timestamp) {
         // Update charts
@@ -935,35 +935,27 @@ function startRealTimeUpdates() {
             }
         }
 
-        // Update stats and AI strategies
+        // Update stats
         if (timestamp - lastStatsUpdate >= STATS_UPDATE_INTERVAL) {
             if (document.visibilityState === 'visible') {
                 updateStats();
-                updateAIStrategies();
                 updateNetworkStatus();
                 updateLastUpdateTime();
                 lastStatsUpdate = timestamp;
             }
         }
 
-        // Update alerts and feed
-        if (timestamp - lastAlertUpdate >= ALERT_UPDATE_INTERVAL) {
-            if (document.visibilityState === 'visible' && window.alertsManager) {
-                if (Math.random() < 0.4) { // 40% chance to add new alert
-                    window.alertsManager.addNewAlert(window.alertsManager.generateRandomAlert());
-                }
-                if (Math.random() < 0.3) { // 30% chance to add feed item
-                    window.alertsManager.addFeedItem(window.alertsManager.generateRandomFeedItem());
-                }
-                lastAlertUpdate = timestamp;
+        // Update AI strategies
+        if (timestamp - lastAIUpdate >= AI_UPDATE_INTERVAL) {
+            if (document.visibilityState === 'visible') {
+                updateAIStrategies();
+                lastAIUpdate = timestamp;
             }
         }
 
-        // Continue animation loop
         requestAnimationFrame(animate);
     }
 
-    // Start animation loop
     requestAnimationFrame(animate);
 
     // Update network status randomly
@@ -1283,39 +1275,59 @@ function updateAIStrategies() {
         'Arbitrage Bot': {
             status: Math.random() > 0.1 ? 'Active' : 'Scanning',
             profit: (Math.random() * 5 + 0.2).toFixed(2),
-            success: Math.floor(Math.random() * 10 + 90)
+            success: Math.floor(Math.random() * 10 + 90),
+            trades: Math.floor(Math.random() * 50 + 150)
         },
         'Sandwich Bot': {
             status: Math.random() > 0.1 ? 'Active' : 'Scanning',
             profit: (Math.random() * 4 + 0.1).toFixed(2),
-            success: Math.floor(Math.random() * 8 + 88)
+            success: Math.floor(Math.random() * 8 + 88),
+            trades: Math.floor(Math.random() * 40 + 100)
         },
         'MEV Searcher': {
             status: Math.random() > 0.1 ? 'Active' : 'Scanning',
             profit: (Math.random() * 6 + 0.3).toFixed(2),
-            success: Math.floor(Math.random() * 12 + 85)
+            success: Math.floor(Math.random() * 12 + 85),
+            trades: Math.floor(Math.random() * 30 + 80)
         }
     };
 
-    document.querySelectorAll('.ai-strategy-card').forEach(card => {
-        const title = card.querySelector('h3')?.textContent;
+    // Update both in alerts section and AI dashboard
+    document.querySelectorAll('.ai-strategy-card, .strategy-card').forEach(card => {
+        const title = card.querySelector('h3, .strategy-name')?.textContent;
         if (!title || !strategies[title]) return;
 
         const strategy = strategies[title];
-        const statusEl = card.querySelector('.strategy-status');
-        const profitEl = card.querySelector('.strategy-profit');
-        const successEl = card.querySelector('.strategy-success');
-
+        
+        // Update status
+        const statusEl = card.querySelector('.strategy-status, .status');
         if (statusEl) {
             statusEl.textContent = strategy.status;
-            statusEl.className = 'strategy-status ' + 
+            statusEl.className = (statusEl.classList[0] || 'strategy-status') + ' ' + 
                 (strategy.status === 'Active' ? 'active' : 'scanning');
         }
+        
+        // Update profit
+        const profitEl = card.querySelector('.strategy-profit, .profit');
         if (profitEl) {
             profitEl.textContent = `${strategy.profit} SOL/trade`;
         }
+        
+        // Update success rate
+        const successEl = card.querySelector('.strategy-success, .success-rate');
         if (successEl) {
             successEl.textContent = `${strategy.success}% Success Rate`;
         }
+        
+        // Update trades if element exists
+        const tradesEl = card.querySelector('.trades');
+        if (tradesEl) {
+            tradesEl.textContent = `${strategy.trades} trades`;
+        }
+        
+        // Add pulse animation
+        card.style.animation = 'none';
+        card.offsetHeight; // Trigger reflow
+        card.style.animation = 'pulse 0.5s ease';
     });
 }
