@@ -190,82 +190,85 @@ function initializeMainContent() {
 function initializeLoadingScreen() {
     console.log('Initializing loading screen');
     
-    const loadingContainer = document.getElementById('loadingContainer');
-    const mainContent = document.querySelector('.main-content');
-    
-    if (!loadingContainer || !mainContent) {
-        console.error('Loading screen elements not found');
-        return;
+    // Get required elements
+    const elements = {
+        loadingContainer: document.getElementById('loadingContainer'),
+        mainContent: document.querySelector('.main-content'),
+        particles: document.getElementById('cyberParticles'),
+        progress: document.getElementById('loadingProgress'),
+        statusItems: document.querySelectorAll('.status-item')
+    };
+
+    // Check if all required elements exist
+    for (const [key, element] of Object.entries(elements)) {
+        if (!element || (element instanceof NodeList && element.length === 0)) {
+            console.error(`Required element "${key}" not found`);
+            return;
+        }
     }
 
     // Ensure loading container is visible and main content is hidden
-    loadingContainer.style.display = 'flex';
-    mainContent.style.display = 'none';
+    elements.loadingContainer.style.display = 'flex';
+    elements.mainContent.style.display = 'none';
     document.body.style.overflow = 'hidden';
     
     // Create particles
-    const particlesContainer = document.getElementById('cyberParticles');
-    if (particlesContainer) {
-        particlesContainer.innerHTML = ''; // Clear existing particles
-        for (let i = 0; i < 20; i++) {
-            const particle = document.createElement('div');
-            particle.className = 'cyber-particle';
-            particle.style.left = `${Math.random() * 100}%`;
-            particle.style.top = `${Math.random() * 100}%`;
-            particle.style.animationDelay = `${Math.random() * 10}s`;
-            particlesContainer.appendChild(particle);
-        }
+    elements.particles.innerHTML = ''; // Clear existing particles
+    for (let i = 0; i < 20; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'cyber-particle';
+        particle.style.left = `${Math.random() * 100}%`;
+        particle.style.top = `${Math.random() * 100}%`;
+        particle.style.animationDelay = `${Math.random() * 10}s`;
+        elements.particles.appendChild(particle);
     }
     
     // Initialize progress
     let currentProgress = 0;
-    const progress = document.getElementById('loadingProgress');
-    const statusItems = document.querySelectorAll('.status-item');
+    elements.progress.style.width = '0%';
+    elements.statusItems.forEach(item => item.classList.remove('completed'));
     
-    if (progress) {
-        progress.style.width = '0%';
-        statusItems.forEach(item => item.classList.remove('completed'));
+    const interval = setInterval(() => {
+        currentProgress += 1;
+        elements.progress.style.width = `${currentProgress}%`;
         
-        const interval = setInterval(() => {
-            currentProgress += 1;
-            progress.style.width = `${currentProgress}%`;
-            
-            // Update status items
-            if (currentProgress >= 30 && statusItems[0]) {
-                statusItems[0].classList.add('completed');
-            }
-            if (currentProgress >= 60 && statusItems[1]) {
-                statusItems[1].classList.add('completed');
-            }
-            if (currentProgress >= 90 && statusItems[2]) {
-                statusItems[2].classList.add('completed');
-            }
-            
-            if (currentProgress >= 100) {
-                clearInterval(interval);
-                setTimeout(() => {
-                    loadingContainer.style.display = 'none';
-                    mainContent.style.display = 'block';
-                    document.body.style.overflow = 'auto';
-                    mainContent.classList.add('visible');
-                    
-                    // Initialize main content only if not already initialized
-                    if (!isInitialized) {
-                        initializeMainContent();
-                        isInitialized = true;
-                    }
-                }, 500);
-            }
-        }, 30);
-    } else {
-        console.error('Progress bar element not found');
-    }
+        // Update status items
+        if (currentProgress >= 30) {
+            elements.statusItems[0]?.classList.add('completed');
+        }
+        if (currentProgress >= 60) {
+            elements.statusItems[1]?.classList.add('completed');
+        }
+        if (currentProgress >= 90) {
+            elements.statusItems[2]?.classList.add('completed');
+        }
+        
+        if (currentProgress >= 100) {
+            clearInterval(interval);
+            setTimeout(() => {
+                elements.loadingContainer.style.display = 'none';
+                elements.mainContent.style.display = 'block';
+                document.body.style.overflow = 'auto';
+                elements.mainContent.classList.add('visible');
+                
+                // Initialize main content only if not already initialized
+                if (!isInitialized) {
+                    initializeMainContent();
+                    isInitialized = true;
+                }
+            }, 500);
+        }
+    }, 30);
 }
 
 // Initialize everything
 function initialize() {
     if (isInitialized) return;
-    initializeLoadingScreen();
+    
+    // Wait for a short moment to ensure DOM is fully loaded
+    setTimeout(() => {
+        initializeLoadingScreen();
+    }, 100);
 }
 
 // Single event listener for DOMContentLoaded
