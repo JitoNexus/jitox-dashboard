@@ -40,81 +40,108 @@ function initializeTelegramLogin() {
     // Clear any existing content
     telegramLoginDiv.innerHTML = '';
 
-    // Create Telegram Login button
-    const script = document.createElement('script');
-    script.async = true;
-    script.src = "https://telegram.org/js/telegram-widget.js?22";
-    script.setAttribute('data-telegram-login', 'jitoxai_bot');
-    script.setAttribute('data-size', 'large');
-    script.setAttribute('data-radius', '8');
-    script.setAttribute('data-request-access', 'write');
-    script.setAttribute('data-userpic', 'true');
-    script.setAttribute('data-onauth', 'onTelegramAuth(user)');
-    script.setAttribute('data-auth-type', 'popup');
-    
-    // Insert the widget
-    telegramLoginDiv.appendChild(script);
-    console.log('Telegram login widget initialized');
+    try {
+        // Create Telegram Login button
+        const script = document.createElement('script');
+        script.async = false; // Changed to false to ensure sequential loading
+        script.src = "https://telegram.org/js/telegram-widget.js?22";
+        script.setAttribute('data-telegram-login', 'jitoxai_bot');
+        script.setAttribute('data-size', 'large');
+        script.setAttribute('data-radius', '8');
+        script.setAttribute('data-request-access', 'write');
+        script.setAttribute('data-userpic', 'true');
+        script.setAttribute('data-onauth', 'window.onTelegramAuth(user)');
+        script.setAttribute('data-auth-type', 'popup');
+        
+        // Insert the widget
+        telegramLoginDiv.appendChild(script);
+        console.log('Telegram login widget initialized');
+    } catch (error) {
+        console.error('Error initializing Telegram login:', error);
+    }
 }
 
 // Handle Telegram Authentication - Global function
 window.onTelegramAuth = function(user) {
     console.log('Telegram auth callback received:', user);
     
-    // Validate the authentication data
-    if (!user || !user.id) {
-        console.error('Invalid authentication data received');
-        return;
-    }
-    
-    // Update UI elements
-    const loginStatus = document.getElementById('loginStatus');
-    const userName = document.getElementById('userName');
-    const userId = document.getElementById('userId');
-    const userInfo = document.getElementById('userInfo');
-    const telegramLogin = document.querySelector('.telegram-login');
-    
-    if (loginStatus) loginStatus.textContent = 'Connected';
-    if (userName) userName.textContent = user.username || 'Anonymous';
-    if (userId) userId.textContent = user.id;
-    
-    // Show user info and hide login button
-    if (userInfo) {
-        userInfo.style.display = 'block';
-        userInfo.classList.add('visible');
-    }
-    if (telegramLogin) telegramLogin.style.display = 'none';
-    
-    // Store user data
-    localStorage.setItem('telegramUser', JSON.stringify(user));
-    
-    // Update profile avatar if available
-    if (user.photo_url) {
-        const avatar = document.querySelector('.profile-avatar');
-        if (avatar) {
-            avatar.innerHTML = `<img src="${user.photo_url}" alt="Profile Photo">`;
+    try {
+        // Validate the authentication data
+        if (!user || !user.id) {
+            console.error('Invalid authentication data received');
+            return;
         }
+        
+        // Store user data first
+        localStorage.setItem('telegramUser', JSON.stringify(user));
+        console.log('User data stored in localStorage');
+        
+        // Update UI elements
+        const loginStatus = document.getElementById('loginStatus');
+        const userName = document.getElementById('userName');
+        const userId = document.getElementById('userId');
+        const userInfo = document.getElementById('userInfo');
+        const telegramLogin = document.querySelector('.telegram-login');
+        
+        if (loginStatus) loginStatus.textContent = 'Connected';
+        if (userName) userName.textContent = user.username || 'Anonymous';
+        if (userId) userId.textContent = user.id;
+        
+        // Show user info and hide login button
+        if (userInfo) {
+            userInfo.style.display = 'block';
+            userInfo.classList.add('visible');
+        }
+        if (telegramLogin) telegramLogin.style.display = 'none';
+        
+        // Update profile avatar if available
+        if (user.photo_url) {
+            const avatar = document.querySelector('.profile-avatar');
+            if (avatar) {
+                avatar.innerHTML = `<img src="${user.photo_url}" alt="Profile Photo">`;
+            }
+        }
+        
+        // Fetch wallet info if available
+        fetchUserWallet(user.id);
+        
+        console.log('Login successful, UI updated');
+    } catch (error) {
+        console.error('Error in Telegram auth callback:', error);
     }
-    
-    // Fetch wallet info if available
-    fetchUserWallet(user.id);
 };
 
 // Check for existing session on page load
 function checkExistingSession() {
     console.log('Checking for existing session...');
-    const savedUser = localStorage.getItem('telegramUser');
-    if (savedUser) {
-        try {
+    try {
+        const savedUser = localStorage.getItem('telegramUser');
+        if (savedUser) {
             const user = JSON.parse(savedUser);
             console.log('Found existing session:', user);
             window.onTelegramAuth(user);
-        } catch (error) {
-            console.error('Error parsing saved user data:', error);
-            localStorage.removeItem('telegramUser');
+        } else {
+            console.log('No existing session found');
+            // Show login button
+            const telegramLogin = document.querySelector('.telegram-login');
+            if (telegramLogin) telegramLogin.style.display = 'block';
         }
+    } catch (error) {
+        console.error('Error checking existing session:', error);
+        localStorage.removeItem('telegramUser');
     }
 }
+
+// Initialize everything when the window loads
+window.addEventListener('load', () => {
+    console.log('Window loaded, starting initialization...');
+    try {
+        initializeTelegramLogin();
+        checkExistingSession();
+    } catch (error) {
+        console.error('Error during initialization:', error);
+    }
+});
 
 // Fetch user's wallet information
 async function fetchUserWallet(userId) {
