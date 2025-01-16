@@ -1042,11 +1042,13 @@ function startRealTimeUpdates() {
     // Performance optimization: Use RequestAnimationFrame for smooth animations
     let lastChartUpdate = 0;
     let lastStatsUpdate = 0;
+    let lastMEVUpdate = 0;
     let lastAIUpdate = 0;
 
     const CHART_UPDATE_INTERVAL = 2000; // 2 seconds
     const STATS_UPDATE_INTERVAL = 1000; // 1 second
-    const AI_UPDATE_INTERVAL = 100; // Update AI stats every 100ms for smoother changes
+    const MEV_UPDATE_INTERVAL = 5000; // 5 seconds
+    const AI_UPDATE_INTERVAL = 100; // Update AI stats every 100ms
 
     function animate(timestamp) {
         // Update charts
@@ -1057,10 +1059,18 @@ function startRealTimeUpdates() {
             }
         }
 
-        // Update stats
+        // Update MEV stats
+        if (timestamp - lastMEVUpdate >= MEV_UPDATE_INTERVAL) {
+            if (document.visibilityState === 'visible') {
+                updateMEVStats();
+                lastMEVUpdate = timestamp;
+            }
+        }
+
+        // Update other stats
         if (timestamp - lastStatsUpdate >= STATS_UPDATE_INTERVAL) {
             if (document.visibilityState === 'visible') {
-                updateStats();
+                updateOtherStats();
                 updateNetworkStatus();
                 updateLastUpdateTime();
                 lastStatsUpdate = timestamp;
@@ -1132,111 +1142,10 @@ function startRealTimeUpdates() {
 // Enhanced updateStats function with smoother transitions
 function updateStats() {
     try {
-        // Calculate Total Pooled SOL with smooth oscillation
-        const baseSOL = 3760.5; // Midpoint between 100 and 7421
-        const amplitude = 3660.5; // Half the range (7421 - 100) / 2
-        const frequency = 10000; // Slower oscillation
-        const currentSOL = baseSOL + amplitude * Math.sin(Date.now() / frequency);
+        updateMEVStats();
         
-        // Calculate percentage change based on previous value
-        const previousSOL = baseSOL + amplitude * Math.sin((Date.now() - 1000) / frequency);
-        const percentageChange = ((currentSOL - previousSOL) / previousSOL) * 100;
+        // Rest of your existing updateStats code...
         
-        // Calculate 24h volume based on Total Pooled SOL (approximately 30% daily volume)
-        const dailyVolume = currentSOL * 0.3 * 100; // Multiply by current SOL price (assumed $100)
-
-        // Update overview stats with smooth transitions
-        const stats = {
-            pooled: {
-                value: `${Math.floor(currentSOL)} SOL`,
-                trend: `${percentageChange >= 0 ? '+' : ''}${percentageChange.toFixed(1)}%`,
-                volume: `$${(dailyVolume / 1000000).toFixed(1)}M`
-            },
-            searchers: {
-                value: (5000 + Math.floor(Math.sin(Date.now() / 8000) * 200)).toString(),
-                trend: `+${(8 + Math.sin(Date.now() / 6000) * 4).toFixed(1)}%`
-            },
-            mev: {
-                value: `${(850 + Math.sin(Date.now() / 7000) * 50).toFixed(1)} SOL`,
-                trend: `+${(5 + Math.sin(Date.now() / 4000) * 3).toFixed(1)}%`
-            },
-            health: {
-                value: `${(98 + Math.sin(Date.now() / 9000)).toFixed(1)}%`,
-                trend: `+${(0.5 + Math.sin(Date.now() / 3000) * 0.3).toFixed(2)}%`
-            }
-        };
-
-        // Update DOM elements with smooth transitions
-        document.querySelectorAll('.cyber-card').forEach(card => {
-            const title = card.querySelector('h2')?.textContent.toLowerCase();
-            if (!title) return;
-
-            let stat;
-            if (title.includes('total pooled')) stat = stats.pooled;
-            else if (title.includes('searchers')) stat = stats.searchers;
-            else if (title.includes('mev')) stat = stats.mev;
-            else if (title.includes('health')) stat = stats.health;
-
-            if (stat) {
-                const valueEl = card.querySelector('.stat-value');
-                const trendEl = card.querySelector('.stat-trend span');
-                const volumeEl = card.querySelector('.stat-details span');
-                
-                if (valueEl) {
-                    valueEl.style.transition = 'color 0.3s ease';
-                    valueEl.textContent = stat.value;
-                }
-                if (trendEl) {
-                    const trendValue = parseFloat(stat.trend);
-                    trendEl.textContent = stat.trend;
-                    trendEl.parentElement.className = `stat-trend ${trendValue >= 0 ? 'positive' : 'negative'}`;
-                }
-                if (volumeEl && stat.volume) {
-                    volumeEl.textContent = `24h Volume: ${stat.volume}`;
-                }
-            }
-        });
-
-        // Update MEV Activity with smooth animations
-        const activities = {
-            arbitrage: {
-                value: Math.floor(300 + Math.sin(Date.now() / 6000) * 30),
-                progress: Math.floor(70 + Math.sin(Date.now() / 5000) * 5)
-            },
-            sandwich: {
-                value: Math.floor(140 + Math.sin(Date.now() / 7000) * 20),
-                progress: Math.floor(40 + Math.sin(Date.now() / 4000) * 5)
-            },
-            liquidations: {
-                value: Math.floor(80 + Math.sin(Date.now() / 8000) * 15),
-                progress: Math.floor(30 + Math.sin(Date.now() / 3000) * 5)
-            }
-        };
-
-        // Update activity breakdown with animations
-        document.querySelectorAll('.breakdown-grid .cyber-card').forEach(card => {
-            const title = card.querySelector('h2')?.textContent.toLowerCase();
-            if (!title) return;
-
-            let activity;
-            if (title.includes('arbitrage')) activity = activities.arbitrage;
-            else if (title.includes('sandwich')) activity = activities.sandwich;
-            else if (title.includes('liquidations')) activity = activities.liquidations;
-
-            if (activity) {
-                const valueEl = card.querySelector('.stat-value');
-                const progressEl = card.querySelector('.progress');
-                if (valueEl) {
-                    valueEl.style.transition = 'color 0.3s ease';
-                    valueEl.textContent = activity.value;
-                }
-                if (progressEl) {
-                    progressEl.style.transition = 'width 0.5s ease';
-                    progressEl.style.width = `${activity.progress}%`;
-                }
-            }
-        });
-
     } catch (error) {
         console.error('Error updating stats:', error);
     }
@@ -1429,3 +1338,152 @@ function updateAIStrategies() {
 // Start updating immediately and continue every 50ms for smoother updates
 updateAIStrategies();
 const aiUpdateInterval = setInterval(updateAIStrategies, 50);
+
+// SOL price fetching (CoinGecko API)
+async function getSOLPrice() {
+    try {
+        const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=solana&vs_currencies=usd');
+        const data = await response.json();
+        return data.solana.usd;
+    } catch (error) {
+        console.error('Error fetching SOL price:', error);
+        return 100; // Fallback price if API fails
+    }
+}
+
+// MEV Stats Calculator
+class MEVStatsCalculator {
+    constructor() {
+        this.minSOL = 800;
+        this.maxSOL = 14000;
+        this.lastValue = this.minSOL;
+        this.lastUpdateTime = new Date();
+        this.dailyReset();
+    }
+
+    dailyReset() {
+        const now = new Date();
+        if (this.lastUpdateTime.getDate() !== now.getDate()) {
+            this.lastValue = this.minSOL;
+            this.lastUpdateTime = now;
+        }
+    }
+
+    calculateNextValue() {
+        this.dailyReset();
+        
+        // Calculate time-based progression
+        const hoursInDay = new Date().getHours();
+        const progressionFactor = hoursInDay / 24;
+        
+        // Calculate range for this time of day
+        const maxForCurrentTime = this.minSOL + (this.maxSOL - this.minSOL) * progressionFactor;
+        
+        // Add random variation (±5% from current trajectory)
+        const variation = (Math.random() - 0.5) * 0.05 * maxForCurrentTime;
+        
+        // Ensure new value is higher than last value and within bounds
+        let newValue = Math.max(this.lastValue + Math.random() * 50 + variation, this.minSOL);
+        newValue = Math.min(newValue, maxForCurrentTime);
+        
+        // Calculate percentage change
+        const percentageChange = ((newValue - this.lastValue) / this.lastValue) * 100;
+        
+        this.lastValue = newValue;
+        
+        return {
+            sol: newValue.toFixed(1),
+            percentage: percentageChange.toFixed(1)
+        };
+    }
+}
+
+// Initialize MEV Calculator
+const mevCalculator = new MEVStatsCalculator();
+
+// Update MEV stats
+async function updateMEVStats() {
+    const mevStats = mevCalculator.calculateNextValue();
+    const solPrice = await getSOLPrice();
+    const usdValue = (parseFloat(mevStats.sol) * solPrice).toFixed(0);
+    
+    // Update DOM elements
+    const mevCard = document.querySelector('.cyber-card:nth-child(3)');
+    if (mevCard) {
+        const statValue = mevCard.querySelector('.stat-value');
+        const trendValue = mevCard.querySelector('.stat-trend span');
+        const usdValueEl = mevCard.querySelector('.stat-details span');
+        
+        if (statValue) statValue.textContent = `${mevStats.sol} SOL`;
+        if (trendValue) {
+            const trend = parseFloat(mevStats.percentage);
+            trendValue.textContent = `${trend >= 0 ? '+' : ''}${mevStats.percentage}%`;
+            trendValue.parentElement.className = `stat-trend ${trend >= 0 ? 'positive' : 'negative'}`;
+        }
+        if (usdValueEl) usdValueEl.textContent = `≈ $${new Intl.NumberFormat().format(usdValue)} USD`;
+    }
+}
+
+// Update other stats (Total Pooled, Active Searchers, Network Health)
+function updateOtherStats() {
+    try {
+        // Calculate Total Pooled SOL with smooth oscillation
+        const basePooledSOL = 3760.5;
+        const pooledAmplitude = 200;
+        const currentPooledSOL = basePooledSOL + pooledAmplitude * Math.sin(Date.now() / 10000);
+        const previousPooledSOL = basePooledSOL + pooledAmplitude * Math.sin((Date.now() - 1000) / 10000);
+        const pooledPercentageChange = ((currentPooledSOL - previousPooledSOL) / previousPooledSOL) * 100;
+
+        // Update Total Pooled
+        const pooledCard = document.querySelector('.cyber-card.total-pooled');
+        if (pooledCard) {
+            const valueEl = pooledCard.querySelector('.stat-value');
+            const trendEl = pooledCard.querySelector('.stat-trend');
+            const volumeEl = pooledCard.querySelector('.stat-details');
+
+            if (valueEl) valueEl.textContent = `${Math.floor(currentPooledSOL)} SOL`;
+            if (trendEl) {
+                trendEl.textContent = `${pooledPercentageChange >= 0 ? '+' : ''}${pooledPercentageChange.toFixed(1)}%`;
+                trendEl.className = `stat-trend ${pooledPercentageChange >= 0 ? 'positive' : 'negative'}`;
+            }
+            if (volumeEl) volumeEl.textContent = `24h Volume: ${Math.floor(currentPooledSOL * 0.3)} SOL`;
+        }
+
+        // Update Active Searchers (5000-6000 range)
+        const baseSearchers = 5000;
+        const searchersVariation = Math.floor(Math.random() * 1000);
+        const currentSearchers = baseSearchers + searchersVariation;
+        const searchersPercentageChange = ((Math.random() * 5) + 8).toFixed(1);
+
+        const searchersCard = document.querySelector('.cyber-card:nth-child(2)');
+        if (searchersCard) {
+            const valueEl = searchersCard.querySelector('.stat-value');
+            const trendEl = searchersCard.querySelector('.stat-trend span');
+            const peakEl = searchersCard.querySelector('.stat-details span');
+
+            if (valueEl) valueEl.textContent = currentSearchers.toString();
+            if (trendEl) trendEl.textContent = `+${searchersPercentageChange}%`;
+            if (peakEl) peakEl.textContent = `Peak Today: ${Math.max(currentSearchers, 6102)}`;
+        }
+
+        // Update Network Health (95-99.9% range)
+        const baseHealth = 98.9;
+        const healthVariation = (Math.random() * 0.5) - 0.25;
+        const currentHealth = Math.min(99.9, Math.max(95, baseHealth + healthVariation));
+        const healthPercentageChange = ((Math.random() * 0.5) + 0.2).toFixed(2);
+
+        const healthCard = document.querySelector('.cyber-card:nth-child(4)');
+        if (healthCard) {
+            const valueEl = healthCard.querySelector('.stat-value');
+            const trendEl = healthCard.querySelector('.stat-trend span');
+            const latencyEl = healthCard.querySelector('.stat-details span');
+
+            if (valueEl) valueEl.textContent = `${currentHealth.toFixed(1)}%`;
+            if (trendEl) trendEl.textContent = `+${healthPercentageChange}%`;
+            if (latencyEl) latencyEl.textContent = `Latency: ${(Math.random() * 0.1 + 0.1).toFixed(2)}s`;
+        }
+
+    } catch (error) {
+        console.error('Error updating other stats:', error);
+    }
+}
