@@ -46,6 +46,7 @@ function initializeTelegramLogin() {
     script.setAttribute('data-userpic', 'true');
     script.setAttribute('data-onauth', 'handleTelegramAuth(user)');
     script.setAttribute('data-auth-url', 'https://jitonexus.github.io/jitox-dashboard/');
+    script.setAttribute('data-auth-type', 'popup');
     
     // Insert the widget
     telegramLoginDiv.appendChild(script);
