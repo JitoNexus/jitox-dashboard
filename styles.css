@@ -2882,3 +2882,117 @@ canvas {
     position: absolute;
     animation: float 10s infinite linear;
 }
+
+.telegram-login {
+    margin: 20px 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+.telegram-login iframe {
+    border: none !important;
+    border-radius: 8px !important;
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.2) !important;
+    transition: transform 0.3s ease, box-shadow 0.3s ease !important;
+}
+
+.telegram-login iframe:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.3) !important;
+}
+
+.logout-btn {
+    margin-top: 20px;
+    width: 100%;
+    padding: 12px;
+    background: rgba(255, 0, 0, 0.1);
+    border: 1px solid rgba(255, 0, 0, 0.3);
+    color: #ff4444;
+    transition: all 0.3s ease;
+}
+
+.logout-btn:hover {
+    background: rgba(255, 0, 0, 0.2);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(255, 0, 0, 0.2);
+}
+
+.logout-btn i {
+    margin-right: 8px;
+}
+
+#userInfo {
+    width: 100%;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.3s ease;
+}
+
+#userInfo.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.profile-info {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 100%;
+}
+
+/* Update existing styles */
+.info-item {
+    background: rgba(0, 255, 255, 0.05);
+    border: 1px solid rgba(0, 255, 255, 0.1);
+    padding: 12px 15px;
+    border-radius: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.3s ease;
+}
+
+.info-item:hover {
+    background: rgba(0, 255, 255, 0.08);
+    border-color: rgba(0, 255, 255, 0.2);
+    transform: translateX(5px);
+}
+
+.info-item .label {
+    color: rgba(0, 255, 255, 0.8);
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.info-item .value {
+    color: #fff;
+    font-size: 14px;
+    font-weight: 500;
+    max-width: 60%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: right;
+}
+
+/* Mobile Optimization */
+@media (max-width: 768px) {
+    .telegram-login {
+        margin: 15px 0;
+    }
+    
+    .info-item {
+        padding: 10px;
+    }
+    
+    .info-item .label,
+    .info-item .value {
+        font-size: 13px;
+    }
+    
+    .logout-btn {
+        padding: 10px;
+        font-size: 14px;
+    }
+}

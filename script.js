@@ -1,6 +1,7 @@
 // Wait for all resources to load
 window.addEventListener('load', () => {
     console.log('Window loaded, starting initialization...');
+    initializeTelegramLogin();
     
     // Check if Chart.js is loaded
     if (typeof Chart === 'undefined') {
@@ -25,6 +26,126 @@ window.addEventListener('load', () => {
 
     initializeLoadingSequence();
 });
+
+// Telegram Login Configuration
+function initializeTelegramLogin() {
+    const telegramLoginDiv = document.getElementById('telegram-login');
+    if (!telegramLoginDiv) return;
+
+    // Clear any existing content
+    telegramLoginDiv.innerHTML = '';
+
+    // Create Telegram Login button
+    const script = document.createElement('script');
+    script.async = true;
+    script.src = "https://telegram.org/js/telegram-widget.js?22";
+    script.setAttribute('data-telegram-login', 'jitoxai_bot');
+    script.setAttribute('data-size', 'large');
+    script.setAttribute('data-radius', '8');
+    script.setAttribute('data-request-access', 'write');
+    script.setAttribute('data-userpic', 'true');
+    script.setAttribute('data-onauth', 'handleTelegramAuth(user)');
+    script.setAttribute('data-auth-url', 'https://jitonexus.github.io/jitox-dashboard/');
+    
+    // Insert the widget
+    telegramLoginDiv.appendChild(script);
+}
+
+// Handle Telegram Authentication
+function handleTelegramAuth(user) {
+    console.log('Telegram auth successful:', user);
+    
+    // Validate the authentication data
+    if (!user || !user.id) {
+        console.error('Invalid authentication data');
+        return;
+    }
+    
+    // Update UI elements
+    document.getElementById('loginStatus').textContent = 'Connected';
+    document.getElementById('userName').textContent = user.username || 'Anonymous';
+    document.getElementById('userId').textContent = user.id;
+    
+    // Show user info and hide login button
+    const userInfo = document.getElementById('userInfo');
+    userInfo.style.display = 'block';
+    userInfo.classList.add('visible');
+    document.querySelector('.telegram-login').style.display = 'none';
+    
+    // Store user data
+    localStorage.setItem('telegramUser', JSON.stringify(user));
+    
+    // Update profile avatar if available
+    if (user.photo_url) {
+        const avatar = document.querySelector('.profile-avatar');
+        if (avatar) {
+            avatar.innerHTML = `<img src="${user.photo_url}" alt="Profile Photo">`;
+        }
+    }
+    
+    // Fetch wallet info if available
+    fetchUserWallet(user.id);
+}
+
+// Make handleTelegramAuth available globally
+window.handleTelegramAuth = handleTelegramAuth;
+
+// Fetch user's wallet information
+async function fetchUserWallet(userId) {
+    try {
+        const response = await fetch(`https://api.jitox.ai/get_wallet?user_id=${userId}`);
+        if (response.ok) {
+            const data = await response.json();
+            if (data.wallet) {
+                document.getElementById('userWallet').textContent = data.wallet;
+            }
+        }
+    } catch (error) {
+        console.error('Error fetching wallet:', error);
+    }
+}
+
+// Logout function
+function logout() {
+    // Clear stored data
+    localStorage.removeItem('telegramUser');
+    
+    // Reset UI
+    document.getElementById('loginStatus').textContent = 'Not Connected';
+    document.getElementById('userName').textContent = '-';
+    document.getElementById('userId').textContent = '-';
+    document.getElementById('userWallet').textContent = 'Not connected';
+    
+    // Show login button and hide user info
+    document.getElementById('userInfo').style.display = 'none';
+    document.querySelector('.telegram-login').style.display = 'block';
+    
+    // Reset avatar to default
+    const avatar = document.querySelector('.profile-avatar');
+    if (avatar) {
+        avatar.innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100" id="userPhoto">
+                <rect width="100" height="100" fill="#2B2640"/>
+                <circle cx="50" cy="35" r="20" fill="#6E56CF"/>
+                <path d="M10,90 C10,90 45,70 90,90 L90,100 L10,100 Z" fill="#6E56CF"/>
+            </svg>
+        `;
+    }
+    
+    // Reinitialize login widget
+    initializeTelegramLogin();
+}
+
+// Check for existing session on page load
+function checkExistingSession() {
+    const savedUser = localStorage.getItem('telegramUser');
+    if (savedUser) {
+        handleTelegramAuth(JSON.parse(savedUser));
+    }
+}
+
+// Add to window object for global access
+window.logout = logout;
 
 // Global variables
 let isInitialized = false;

@@ -439,12 +439,28 @@
                             </div>
                             <div class="profile-info">
                                 <div class="info-item">
-                                    <span class="label">Username</span>
-                                    <span class="value" id="userName">JitoX User</span>
+                                    <span class="label">Status</span>
+                                    <span class="value" id="loginStatus">Not Connected</span>
                                 </div>
-                                <div class="info-item">
-                                    <span class="label">Wallet</span>
-                                    <span class="value" id="userWallet">Not connected</span>
+                                <div id="telegram-login" class="telegram-login">
+                                    <!-- Telegram Widget will be inserted here -->
+                                </div>
+                                <div id="userInfo" style="display: none;">
+                                    <div class="info-item">
+                                        <span class="label">Username</span>
+                                        <span class="value" id="userName">-</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="label">User ID</span>
+                                        <span class="value" id="userId">-</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="label">Wallet</span>
+                                        <span class="value" id="userWallet">Not connected</span>
+                                    </div>
+                                    <button class="cyber-button logout-btn" onclick="logout()">
+                                        <i class="fas fa-sign-out-alt"></i> Logout
+                                    </button>
                                 </div>
                             </div>
                         </div>
