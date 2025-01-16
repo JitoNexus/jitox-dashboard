@@ -2996,3 +2996,127 @@ canvas {
         font-size: 14px;
     }
 }
+
+/* Profile Section Styles */
+.profile-section {
+    padding: 20px;
+    background: var(--card-bg);
+    border-radius: 12px;
+    border: 1px solid var(--neon-cyan);
+    margin: 20px;
+}
+
+.profile-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+.profile-avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 2px solid var(--neon-cyan);
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.2);
+}
+
+.profile-avatar img,
+.profile-avatar svg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.profile-info {
+    width: 100%;
+    max-width: 300px;
+}
+
+.info-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    border-bottom: 1px solid rgba(0, 255, 255, 0.1);
+}
+
+.info-item .label {
+    color: var(--neon-cyan);
+    font-size: 14px;
+}
+
+.info-item .value {
+    color: #fff;
+    font-size: 14px;
+}
+
+.telegram-login {
+    margin: 20px 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+.telegram-login iframe {
+    border: none !important;
+    border-radius: 8px !important;
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.2) !important;
+    transition: transform 0.3s ease, box-shadow 0.3s ease !important;
+}
+
+.telegram-login iframe:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.3) !important;
+}
+
+.logout-btn {
+    width: 100%;
+    padding: 12px;
+    margin-top: 20px;
+    background: rgba(255, 0, 0, 0.1);
+    border: 1px solid rgba(255, 0, 0, 0.3);
+    border-radius: 8px;
+    color: #ff4444;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+}
+
+.logout-btn:hover {
+    background: rgba(255, 0, 0, 0.2);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(255, 0, 0, 0.2);
+}
+
+/* Mobile Optimization */
+@media (max-width: 768px) {
+    .profile-section {
+        margin: 10px;
+        padding: 15px;
+    }
+    
+    .profile-avatar {
+        width: 80px;
+        height: 80px;
+    }
+    
+    .info-item {
+        padding: 10px;
+    }
+    
+    .info-item .label,
+    .info-item .value {
+        font-size: 13px;
+    }
+    
+    .logout-btn {
+        padding: 10px;
+        font-size: 14px;
+    }
+}

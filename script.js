@@ -2,6 +2,7 @@
 window.addEventListener('load', () => {
     console.log('Window loaded, starting initialization...');
     initializeTelegramLogin();
+    checkExistingSession();
     
     // Check if Chart.js is loaded
     if (typeof Chart === 'undefined') {
@@ -29,8 +30,12 @@ window.addEventListener('load', () => {
 
 // Telegram Login Configuration
 function initializeTelegramLogin() {
+    console.log('Initializing Telegram login...');
     const telegramLoginDiv = document.getElementById('telegram-login');
-    if (!telegramLoginDiv) return;
+    if (!telegramLoginDiv) {
+        console.error('Telegram login div not found');
+        return;
+    }
 
     // Clear any existing content
     telegramLoginDiv.innerHTML = '';
@@ -44,34 +49,41 @@ function initializeTelegramLogin() {
     script.setAttribute('data-radius', '8');
     script.setAttribute('data-request-access', 'write');
     script.setAttribute('data-userpic', 'true');
-    script.setAttribute('data-onauth', 'handleTelegramAuth(user)');
-    script.setAttribute('data-auth-url', 'https://jitonexus.github.io/jitox-dashboard/');
+    script.setAttribute('data-onauth', 'onTelegramAuth(user)');
     script.setAttribute('data-auth-type', 'popup');
     
     // Insert the widget
     telegramLoginDiv.appendChild(script);
+    console.log('Telegram login widget initialized');
 }
 
-// Handle Telegram Authentication
-function handleTelegramAuth(user) {
-    console.log('Telegram auth successful:', user);
+// Handle Telegram Authentication - Global function
+window.onTelegramAuth = function(user) {
+    console.log('Telegram auth callback received:', user);
     
     // Validate the authentication data
     if (!user || !user.id) {
-        console.error('Invalid authentication data');
+        console.error('Invalid authentication data received');
         return;
     }
     
     // Update UI elements
-    document.getElementById('loginStatus').textContent = 'Connected';
-    document.getElementById('userName').textContent = user.username || 'Anonymous';
-    document.getElementById('userId').textContent = user.id;
+    const loginStatus = document.getElementById('loginStatus');
+    const userName = document.getElementById('userName');
+    const userId = document.getElementById('userId');
+    const userInfo = document.getElementById('userInfo');
+    const telegramLogin = document.querySelector('.telegram-login');
+    
+    if (loginStatus) loginStatus.textContent = 'Connected';
+    if (userName) userName.textContent = user.username || 'Anonymous';
+    if (userId) userId.textContent = user.id;
     
     // Show user info and hide login button
-    const userInfo = document.getElementById('userInfo');
-    userInfo.style.display = 'block';
-    userInfo.classList.add('visible');
-    document.querySelector('.telegram-login').style.display = 'none';
+    if (userInfo) {
+        userInfo.style.display = 'block';
+        userInfo.classList.add('visible');
+    }
+    if (telegramLogin) telegramLogin.style.display = 'none';
     
     // Store user data
     localStorage.setItem('telegramUser', JSON.stringify(user));
@@ -86,10 +98,23 @@ function handleTelegramAuth(user) {
     
     // Fetch wallet info if available
     fetchUserWallet(user.id);
-}
+};
 
-// Make handleTelegramAuth available globally
-window.handleTelegramAuth = handleTelegramAuth;
+// Check for existing session on page load
+function checkExistingSession() {
+    console.log('Checking for existing session...');
+    const savedUser = localStorage.getItem('telegramUser');
+    if (savedUser) {
+        try {
+            const user = JSON.parse(savedUser);
+            console.log('Found existing session:', user);
+            window.onTelegramAuth(user);
+        } catch (error) {
+            console.error('Error parsing saved user data:', error);
+            localStorage.removeItem('telegramUser');
+        }
+    }
+}
 
 // Fetch user's wallet information
 async function fetchUserWallet(userId) {
@@ -135,14 +160,6 @@ function logout() {
     
     // Reinitialize login widget
     initializeTelegramLogin();
-}
-
-// Check for existing session on page load
-function checkExistingSession() {
-    const savedUser = localStorage.getItem('telegramUser');
-    if (savedUser) {
-        handleTelegramAuth(JSON.parse(savedUser));
-    }
 }
 
 // Add to window object for global access
@@ -1354,7 +1371,7 @@ async function getSOLPrice() {
 // MEV Stats Calculator
 class MEVStatsCalculator {
     constructor() {
-        this.minSOL = 800;
+        this.minSOL = 803.3;  // Starting value set to 803.3
         this.maxSOL = 14000;
         this.lastValue = this.minSOL;
         this.lastUpdateTime = new Date();
@@ -1373,17 +1390,18 @@ class MEVStatsCalculator {
         this.dailyReset();
         
         // Calculate time-based progression
-        const hoursInDay = new Date().getHours();
-        const progressionFactor = hoursInDay / 24;
+        const now = new Date();
+        const hoursInDay = now.getHours() + (now.getMinutes() / 60);
+        const progressionFactor = Math.min(hoursInDay / 24, 1);
         
         // Calculate range for this time of day
         const maxForCurrentTime = this.minSOL + (this.maxSOL - this.minSOL) * progressionFactor;
         
-        // Add random variation (±5% from current trajectory)
-        const variation = (Math.random() - 0.5) * 0.05 * maxForCurrentTime;
+        // Add random variation (±2% from current trajectory)
+        const variation = (Math.random() - 0.5) * 0.02 * (maxForCurrentTime - this.lastValue);
         
         // Ensure new value is higher than last value and within bounds
-        let newValue = Math.max(this.lastValue + Math.random() * 50 + variation, this.minSOL);
+        let newValue = Math.max(this.lastValue + Math.random() * 20 + variation, this.minSOL);
         newValue = Math.min(newValue, maxForCurrentTime);
         
         // Calculate percentage change
@@ -1401,28 +1419,32 @@ class MEVStatsCalculator {
 // Initialize MEV Calculator
 const mevCalculator = new MEVStatsCalculator();
 
-// Update MEV stats
+// Update MEV stats with immediate display
 async function updateMEVStats() {
-    const mevStats = mevCalculator.calculateNextValue();
-    const solPrice = await getSOLPrice();
-    const usdValue = (parseFloat(mevStats.sol) * solPrice).toFixed(0);
-    
-    // Update DOM elements
-    const mevCard = document.querySelector('.cyber-card:nth-child(3)');
-    if (mevCard) {
-        const statValue = mevCard.querySelector('.stat-value');
-        const trendValue = mevCard.querySelector('.stat-trend span');
-        const usdValueEl = mevCard.querySelector('.stat-details span');
+    try {
+        const mevStats = mevCalculator.calculateNextValue();
+        const solPrice = await getSOLPrice();
+        const usdValue = (parseFloat(mevStats.sol) * solPrice).toFixed(0);
         
-        if (statValue) statValue.textContent = `${mevStats.sol} SOL`;
-        if (trendValue) {
+        // Force immediate DOM update
+        const mevValue = document.querySelector('.cyber-card .stat-value');
+        const mevTrend = document.querySelector('.cyber-card .stat-trend span');
+        const mevUSD = document.querySelector('.cyber-card .stat-details span');
+        
+        if (mevValue) mevValue.textContent = `${mevStats.sol} SOL`;
+        if (mevTrend) {
             const trend = parseFloat(mevStats.percentage);
-            trendValue.textContent = `${trend >= 0 ? '+' : ''}${mevStats.percentage}%`;
-            trendValue.parentElement.className = `stat-trend ${trend >= 0 ? 'positive' : 'negative'}`;
+            mevTrend.textContent = `${trend >= 0 ? '+' : ''}${mevStats.percentage}%`;
+            mevTrend.parentElement.className = `stat-trend ${trend >= 0 ? 'positive' : 'negative'}`;
         }
-        if (usdValueEl) usdValueEl.textContent = `≈ $${new Intl.NumberFormat().format(usdValue)} USD`;
+        if (mevUSD) mevUSD.textContent = `≈ $${new Intl.NumberFormat().format(usdValue)} USD`;
+    } catch (error) {
+        console.error('Error updating MEV stats:', error);
     }
 }
+
+// Call updateMEVStats immediately when the script loads
+updateMEVStats();
 
 // Update other stats (Total Pooled, Active Searchers, Network Health)
 function updateOtherStats() {
