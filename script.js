@@ -221,10 +221,10 @@ function initializeCharts() {
         if (volumeCtx) {
             if (volumeChart) volumeChart.destroy();
             volumeChart = new Chart(volumeCtx, {
-                type: 'bar',
-                data: {
-                    labels: ['DEX', 'Lending', 'NFT', 'Options', 'Other'],
-                    datasets: [{
+            type: 'bar',
+            data: {
+                labels: ['DEX', 'Lending', 'NFT', 'Options', 'Other'],
+                datasets: [{
                         data: [40, 20, 15, 15, 10],
                         backgroundColor: '#ff00ff',
                         borderRadius: 4
@@ -583,13 +583,13 @@ class AlertsManager {
     initializeEventListeners() {
         // Filter buttons
         document.querySelectorAll('.filter-group .cyber-button').forEach(button => {
-            button.addEventListener('click', () => {
+        button.addEventListener('click', () => {
                 this.filterAlerts(button.dataset.filter);
                 // Update active state
                 document.querySelectorAll('.filter-group .cyber-button').forEach(btn => {
                     btn.classList.remove('active');
                 });
-                button.classList.add('active');
+            button.classList.add('active');
             });
         });
 
@@ -871,7 +871,7 @@ function updateCharts() {
             networkChart.data.datasets[0].data = newData;
             networkChart.update('none'); // Use 'none' mode for better performance
         }
-
+        
         // Volume Distribution Chart
         if (volumeChart) {
             volumeChart.data.datasets[0].data = volumeChart.data.datasets[0].data.map(
@@ -879,7 +879,7 @@ function updateCharts() {
             );
             volumeChart.update('none');
         }
-
+        
         // Pattern Recognition Chart
         if (patternRecognitionChart) {
             // Update success rate dataset
