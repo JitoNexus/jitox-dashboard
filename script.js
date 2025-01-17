@@ -425,17 +425,17 @@ function initializeCharts() {
         if (networkCtx) {
             if (networkChart) networkChart.destroy();
             networkChart = new Chart(networkCtx, {
-                type: 'line',
-                data: {
+            type: 'line',
+            data: {
                     labels: Array.from({length: 24}, (_, i) => `${i}:00`),
-                    datasets: [{
+                datasets: [{
                         data: Array.from({length: 24}, () => Math.random() * 1000),
                         borderColor: '#00ffff',
                         backgroundColor: 'rgba(0, 255, 255, 0.1)',
-                        fill: true,
-                        tension: 0.4
-                    }]
-                },
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
                 options: {
                     ...chartConfig,
                     animation: {
@@ -513,9 +513,9 @@ function initializeCharts() {
                         {
                             label: 'Sandwich',
                             data: Array.from({length: 7}, () => 90 + Math.random() * 8),
-                            borderColor: '#ff00ff',
+                        borderColor: '#ff00ff',
                             backgroundColor: 'rgba(255, 0, 255, 0.1)',
-                            fill: true,
+                        fill: true,
                             tension: 0.4
                         }
                     ]
@@ -749,8 +749,8 @@ function completeLoading(loadingContainer, mainContent) {
         console.log('Completing loading sequence...');
 
         // First, initialize the main content components while loading screen is still visible
-        initializeCharts();
-        initializeTabs();
+                initializeCharts();
+                initializeTabs();
 
         // Add visible class to main content (this will be used for the transition)
         mainContent.classList.add('visible');
@@ -1234,7 +1234,7 @@ function startRealTimeUpdates() {
     setInterval(() => {
         document.querySelectorAll('.stat-value').forEach(stat => {
             stat.style.animation = 'pulse 0.5s ease';
-            setTimeout(() => {
+        setTimeout(() => {
                 stat.style.animation = '';
             }, 500);
         });
