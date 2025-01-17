@@ -3211,3 +3211,124 @@ canvas {
         transform: translate(-50%, -50%);
     }
 }
+
+/* Modal Styles */
+.cyber-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(5px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+    animation: modalFadeIn 0.3s ease;
+}
+
+.cyber-modal .modal-content {
+    background: var(--card-bg);
+    border: 1px solid var(--neon-cyan);
+    border-radius: 12px;
+    padding: 25px;
+    max-width: 400px;
+    width: 90%;
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
+    position: relative;
+    animation: modalSlideIn 0.3s ease;
+}
+
+.cyber-modal h2 {
+    color: var(--neon-cyan);
+    font-size: 24px;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.cyber-modal p {
+    color: #fff;
+    margin-bottom: 20px;
+    line-height: 1.5;
+}
+
+.cyber-modal ol {
+    color: #fff;
+    margin: 0 0 20px 20px;
+    line-height: 1.6;
+}
+
+.cyber-modal code {
+    background: rgba(0, 255, 255, 0.1);
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: var(--neon-cyan);
+    font-family: monospace;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.cyber-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 14px;
+    background: transparent;
+    border: 1px solid var(--neon-cyan);
+    color: var(--neon-cyan);
+}
+
+.cyber-button.primary {
+    background: var(--neon-cyan);
+    border: none;
+    color: var(--deep-blue);
+}
+
+.cyber-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 255, 255, 0.2);
+}
+
+/* Animations */
+@keyframes modalFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes modalSlideIn {
+    from {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Mobile Adjustments */
+@media (max-width: 768px) {
+    .cyber-modal .modal-content {
+        width: 85%;
+        padding: 20px;
+    }
+
+    .modal-actions {
+        flex-direction: column-reverse;
+    }
+
+    .cyber-button {
+        width: 100%;
+        justify-content: center;
+    }
+}

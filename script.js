@@ -1617,3 +1617,107 @@ document.addEventListener('click', (event) => {
 
 // Add to window object for global access
 window.toggleProfile = toggleProfile;
+
+// Check wallet and deposit status
+function checkWalletAndDeposit() {
+    const wallet = document.getElementById('userWallet').textContent;
+    hasWallet = !wallet.includes('Use /get_wallet') && wallet !== 'Not connected';
+    // In a real implementation, you would check the deposit status from your backend
+    hasDeposited = localStorage.getItem('hasDeposited') === 'true';
+    return { hasWallet, hasDeposited };
+}
+
+// Function to show wallet connection modal
+function promptWalletConnection() {
+    const { hasWallet } = checkWalletAndDeposit();
+    
+    const modal = document.createElement('div');
+    modal.className = 'cyber-modal';
+    modal.innerHTML = `
+        <div class="modal-content">
+            <h2>Premium Features</h2>
+            <p>To access premium features, please complete these steps:</p>
+            <ol>
+                ${!hasWallet ? `
+                <li>
+                    <div class="step-header">
+                        <i class="fas fa-wallet"></i>
+                        <span>Connect Wallet</span>
+                    </div>
+                    <div class="step-content">
+                        Use the command <code>/get_wallet</code> in <a href="https://t.me/jitoxai_bot" target="_blank" class="bot-link">@jitoxai_bot</a>
+                    </div>
+                </li>` : ''}
+                <li>
+                    <div class="step-header">
+                        <i class="fas fa-coins"></i>
+                        <span>Make Deposit</span>
+                    </div>
+                    <div class="step-content">
+                        Deposit 2 SOL to activate premium features
+                        ${hasWallet ? `<div class="wallet-address">Your wallet: ${document.getElementById('userWallet').textContent}</div>` : ''}
+                    </div>
+                </li>
+            </ol>
+            <div class="modal-actions">
+                <button class="cyber-button secondary" onclick="this.closest('.cyber-modal').remove()">
+                    <i class="fas fa-times"></i>
+                    Close
+                </button>
+                <button class="cyber-button primary" onclick="window.open('https://t.me/jitoxai_bot', '_blank')">
+                    <i class="fab fa-telegram"></i>
+                    Open @jitoxai_bot
+                </button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+}
+
+// Add event listeners for alert buttons
+document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('click', (event) => {
+        const button = event.target.closest('.alert-actions .cyber-button');
+        if (button) {
+            event.preventDefault();
+            event.stopPropagation();
+            
+            const { hasWallet, hasDeposited } = checkWalletAndDeposit();
+            if (!hasWallet || !hasDeposited) {
+                promptWalletConnection();
+            } else {
+                // Handle the action if wallet is connected and deposit is made
+                const action = button.textContent.trim().toLowerCase();
+                console.log(`Executing ${action} action...`);
+                // Add your action handling here
+            }
+        }
+    });
+});
+
+// Copy wallet address function
+function copyWallet(wallet) {
+    navigator.clipboard.writeText(wallet).then(() => {
+        const notification = document.createElement('div');
+        notification.className = 'cyber-notification success';
+        notification.innerHTML = `
+            <div class="notification-content">
+                <div class="notification-header">
+                    <i class="fas fa-check-circle"></i>
+                    <span>Wallet Address Copied!</span>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(notification);
+        setTimeout(() => {
+            notification.classList.add('fade-out');
+            setTimeout(() => notification.remove(), 300);
+        }, 2000);
+    }).catch(err => {
+        console.error('Failed to copy wallet:', err);
+    });
+}
+
+// Make functions globally accessible
+window.promptWalletConnection = promptWalletConnection;
+window.copyWallet = copyWallet;
