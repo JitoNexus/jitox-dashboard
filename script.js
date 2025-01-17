@@ -146,21 +146,11 @@ window.addEventListener('load', () => {
 // Fetch user's wallet information
 async function fetchUserWallet(userId) {
     try {
-        console.log('Fetching wallet for user:', userId);
         const response = await fetch(`https://api.jitox.ai/get_wallet?user_id=${userId}`);
         const walletElement = document.getElementById('userWallet');
         
-        if (!walletElement) {
-            console.error('Wallet element not found');
-            return;
-        }
-
-        console.log('API Response:', response);
-        
         if (response.ok) {
             const data = await response.json();
-            console.log('Wallet data:', data);
-            
             if (data.wallet) {
                 // Display the wallet with proper formatting
                 const shortWallet = `${data.wallet.slice(0, 4)}...${data.wallet.slice(-4)}`;
@@ -169,28 +159,27 @@ async function fetchUserWallet(userId) {
                         ${shortWallet} <i class="fas fa-copy"></i>
                     </span>`;
             } else {
-                // No wallet found, show instructions with bot username
+                // No wallet found, show instructions
                 walletElement.innerHTML = `
                     <span style="color: #ff9800">
-                        Use /get_wallet in @jitoxai_bot
+                        Use /get_wallet in bot to connect
                     </span>`;
             }
         } else {
-            console.error('API error:', response.status, response.statusText);
-            // API error, show instructions with bot username
+            // API error, show instructions
             walletElement.innerHTML = `
                 <span style="color: #ff9800">
-                    Use /get_wallet in @jitoxai_bot
+                    Use /get_wallet in bot to connect
                 </span>`;
         }
     } catch (error) {
         console.error('Error fetching wallet:', error);
-        // Network error, show instructions with bot username
+        // Network error, show instructions
         const walletElement = document.getElementById('userWallet');
         if (walletElement) {
             walletElement.innerHTML = `
                 <span style="color: #ff9800">
-                    Use /get_wallet in @jitoxai_bot
+                    Use /get_wallet in bot to connect
                 </span>`;
         }
     }
@@ -1514,18 +1503,12 @@ async function updateMEVStats() {
     try {
         const mevStats = mevCalculator.calculateNextValue();
         const solPrice = await getSOLPrice();
-        const usdValue = (parseFloat(mevStats.sol) * solPrice).toLocaleString('en-US', {
-            style: 'decimal',
-            maximumFractionDigits: 0
-        });
+        const usdValue = (parseFloat(mevStats.sol) * solPrice).toFixed(0);
         
         // Force immediate DOM update
-        const mevCard = document.querySelector('.cyber-card:nth-child(3)');
-        if (!mevCard) return;
-
-        const mevValue = mevCard.querySelector('.stat-value');
-        const mevTrend = mevCard.querySelector('.stat-trend span');
-        const mevUSD = mevCard.querySelector('.stat-details span');
+        const mevValue = document.querySelector('.cyber-card .stat-value');
+        const mevTrend = document.querySelector('.cyber-card .stat-trend span');
+        const mevUSD = document.querySelector('.cyber-card .stat-details span');
         
         if (mevValue) mevValue.textContent = `${mevStats.sol} SOL`;
         if (mevTrend) {
@@ -1533,7 +1516,7 @@ async function updateMEVStats() {
             mevTrend.textContent = `${trend >= 0 ? '+' : ''}${mevStats.percentage}%`;
             mevTrend.parentElement.className = `stat-trend ${trend >= 0 ? 'positive' : 'negative'}`;
         }
-        if (mevUSD) mevUSD.textContent = `≈ $${usdValue} USD`;
+        if (mevUSD) mevUSD.textContent = `≈ $${new Intl.NumberFormat().format(usdValue)} USD`;
     } catch (error) {
         console.error('Error updating MEV stats:', error);
     }
@@ -1634,241 +1617,3 @@ document.addEventListener('click', (event) => {
 
 // Add to window object for global access
 window.toggleProfile = toggleProfile;
-
-// Tab switching
-document.querySelectorAll('.cyber-nav button').forEach(button => {
-    button.addEventListener('click', () => {
-        // Remove active class from all buttons
-        document.querySelectorAll('.cyber-nav button').forEach(btn => {
-            btn.classList.remove('active');
-        });
-
-        // Add active class to clicked button
-        button.classList.add('active');
-
-        // Hide all sections
-        document.querySelectorAll('.content-section').forEach(section => {
-            section.style.display = 'none';
-        });
-
-        // Show selected section
-        const tabName = button.getAttribute('data-tab');
-        document.querySelector(`.${tabName}-section`).style.display = 'block';
-    });
-});
-
-// Sync profile data
-function syncProfileData() {
-    const loginStatus = document.getElementById('loginStatus').textContent;
-    const userName = document.getElementById('userName').textContent;
-    const userId = document.getElementById('userId').textContent;
-    const userWallet = document.getElementById('userWallet').textContent;
-
-    // Update profile section
-    document.getElementById('profileLoginStatus').textContent = loginStatus;
-    document.getElementById('profileUserName').textContent = userName;
-    document.getElementById('profileUserId').textContent = userId;
-    document.getElementById('profileUserWallet').textContent = userWallet;
-    
-    // Update last login
-    const now = new Date();
-    document.getElementById('lastLogin').textContent = now.toLocaleString();
-}
-
-// Call syncProfileData when user info is updated
-const observer = new MutationObserver((mutations) => {
-    mutations.forEach((mutation) => {
-        if (mutation.type === 'characterData' || mutation.type === 'childList') {
-            syncProfileData();
-        }
-    });
-});
-
-const userInfo = document.getElementById('userInfo');
-if (userInfo) {
-    observer.observe(userInfo, { 
-        childList: true, 
-        characterData: true, 
-        subtree: true 
-    });
-}
-
-// Initial sync
-syncProfileData();
-
-// Wallet and Feature Access Management
-let hasWallet = false;
-let hasDeposited = false;
-
-function checkWalletAndDeposit() {
-    const wallet = document.getElementById('userWallet').textContent;
-    hasWallet = wallet !== 'Not connected';
-    // In a real implementation, you would check the deposit status from your backend
-    // For now, we'll simulate it
-    hasDeposited = localStorage.getItem('hasDeposited') === 'true';
-    return { hasWallet, hasDeposited };
-}
-
-function promptWalletConnection() {
-    const modal = document.createElement('div');
-    modal.className = 'cyber-modal';
-    modal.innerHTML = `
-        <div class="modal-content">
-            <h2>Premium Features</h2>
-            <p>To access premium features, please complete these steps:</p>
-            <ol>
-                ${!hasWallet ? `
-                <li>
-                    <div class="step-header">
-                        <i class="fas fa-wallet"></i>
-                        <span>Connect Wallet</span>
-                    </div>
-                    <div class="step-content">
-                        Use the command <code>/get_wallet</code> in <a href="https://t.me/jitoxai_bot" target="_blank" class="bot-link">@jitoxai_bot</a>
-                    </div>
-                </li>` : ''}
-                <li>
-                    <div class="step-header">
-                        <i class="fas fa-coins"></i>
-                        <span>Make Deposit</span>
-                    </div>
-                    <div class="step-content">
-                        Deposit 2 SOL to activate premium features
-                        ${hasWallet ? `<div class="wallet-address">Your wallet: ${document.getElementById('userWallet').textContent}</div>` : ''}
-                    </div>
-                </li>
-            </ol>
-            <div class="modal-actions">
-                <button class="cyber-button secondary" onclick="this.closest('.cyber-modal').remove()">
-                    <i class="fas fa-times"></i>
-                    Close
-                </button>
-                <button class="cyber-button primary" onclick="window.open('https://t.me/jitoxai_bot', '_blank')">
-                    <i class="fab fa-telegram"></i>
-                    Open @jitoxai_bot
-                </button>
-            </div>
-        </div>
-    `;
-    document.body.appendChild(modal);
-
-    // Add event listener for the Telegram bot response
-    window.addEventListener('message', function(event) {
-        if (event.origin !== window.origin) return;
-        
-        const data = event.data;
-        if (data && data.type === 'wallet_address') {
-            modal.remove();
-            updateWalletStatus(data.address);
-        }
-    });
-}
-
-// Add event listeners to alert action buttons
-document.addEventListener('click', (event) => {
-    if (event.target.matches('.alert-actions .cyber-button')) {
-        const { hasWallet, hasDeposited } = checkWalletAndDeposit();
-        if (!hasWallet || !hasDeposited) {
-            event.preventDefault();
-            promptWalletConnection();
-        }
-    }
-});
-
-// Function to update wallet status
-function updateWalletStatus(walletAddress) {
-    if (!walletAddress) return;
-    
-    // Clean up the wallet address in case it comes with "Wallet" prefix
-    walletAddress = walletAddress.replace('Wallet:', '').trim();
-    
-    // Validate if it looks like a Solana address (base58, ~32-44 chars)
-    if (walletAddress.length < 32 || walletAddress.length > 44) {
-        console.error('Invalid wallet address format');
-        return;
-    }
-
-    const walletElements = ['userWallet', 'profileUserWallet'];
-    walletElements.forEach(id => {
-        const element = document.getElementById(id);
-        if (element) {
-            element.textContent = walletAddress;
-        }
-    });
-    
-    // Update wallet status in localStorage
-    localStorage.setItem('userWallet', walletAddress);
-    hasWallet = true;
-
-    // Show a success notification
-    const notification = document.createElement('div');
-    notification.className = 'cyber-notification success';
-    notification.innerHTML = `
-        <div class="notification-content">
-            <div class="notification-header">
-                <i class="fas fa-check-circle"></i>
-                <span>Wallet Connected</span>
-            </div>
-            <div class="notification-details">
-                <div class="wallet-preview">${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}</div>
-                <div class="deposit-status">Deposit Required: 2 SOL</div>
-            </div>
-            <button class="deposit-btn">
-                <i class="fas fa-coins"></i>
-                Make Deposit
-            </button>
-        </div>
-    `;
-
-    // Add click handler for the deposit button
-    const depositBtn = notification.querySelector('.deposit-btn');
-    depositBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        promptWalletConnection();
-    });
-
-    // Add click handler for the notification itself
-    notification.addEventListener('click', () => {
-        const profileTab = document.querySelector('.cyber-nav button[data-tab="user"]');
-        if (profileTab) {
-            profileTab.click();
-        }
-    });
-
-    document.body.appendChild(notification);
-    
-    // Auto-remove after 5 seconds
-    const removeTimeout = setTimeout(() => {
-        notification.classList.add('fade-out');
-        setTimeout(() => notification.remove(), 300);
-    }, 5000);
-
-    // Clear timeout if user interacts with notification
-    notification.addEventListener('mouseenter', () => clearTimeout(removeTimeout));
-}
-
-// Function to check if we have a stored wallet
-function checkStoredWallet() {
-    const storedWallet = localStorage.getItem('userWallet');
-    if (storedWallet) {
-        updateWalletStatus(storedWallet);
-    }
-}
-
-// Listen for messages from Telegram
-window.addEventListener('message', function(event) {
-    // Verify the origin
-    if (event.origin !== window.origin) return;
-    
-    const data = event.data;
-    if (data && data.type === 'wallet_address') {
-        updateWalletStatus(data.address);
-    }
-});
-
-// Check for stored wallet on page load
-document.addEventListener('DOMContentLoaded', checkStoredWallet);
-
-// Add to window object for global access
-window.updateWalletStatus = updateWalletStatus;
-window.promptWalletConnection = promptWalletConnection;
