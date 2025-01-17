@@ -1514,12 +1514,18 @@ async function updateMEVStats() {
     try {
         const mevStats = mevCalculator.calculateNextValue();
         const solPrice = await getSOLPrice();
-        const usdValue = (parseFloat(mevStats.sol) * solPrice).toFixed(0);
+        const usdValue = (parseFloat(mevStats.sol) * solPrice).toLocaleString('en-US', {
+            style: 'decimal',
+            maximumFractionDigits: 0
+        });
         
         // Force immediate DOM update
-        const mevValue = document.querySelector('.cyber-card .stat-value');
-        const mevTrend = document.querySelector('.cyber-card .stat-trend span');
-        const mevUSD = document.querySelector('.cyber-card .stat-details span');
+        const mevCard = document.querySelector('.cyber-card:nth-child(3)');
+        if (!mevCard) return;
+
+        const mevValue = mevCard.querySelector('.stat-value');
+        const mevTrend = mevCard.querySelector('.stat-trend span');
+        const mevUSD = mevCard.querySelector('.stat-details span');
         
         if (mevValue) mevValue.textContent = `${mevStats.sol} SOL`;
         if (mevTrend) {
@@ -1527,7 +1533,7 @@ async function updateMEVStats() {
             mevTrend.textContent = `${trend >= 0 ? '+' : ''}${mevStats.percentage}%`;
             mevTrend.parentElement.className = `stat-trend ${trend >= 0 ? 'positive' : 'negative'}`;
         }
-        if (mevUSD) mevUSD.textContent = `≈ $${new Intl.NumberFormat().format(usdValue)} USD`;
+        if (mevUSD) mevUSD.textContent = `≈ $${usdValue} USD`;
     } catch (error) {
         console.error('Error updating MEV stats:', error);
     }
@@ -1628,3 +1634,64 @@ document.addEventListener('click', (event) => {
 
 // Add to window object for global access
 window.toggleProfile = toggleProfile;
+
+// Tab switching
+document.querySelectorAll('.cyber-nav button').forEach(button => {
+    button.addEventListener('click', () => {
+        // Remove active class from all buttons
+        document.querySelectorAll('.cyber-nav button').forEach(btn => {
+            btn.classList.remove('active');
+        });
+
+        // Add active class to clicked button
+        button.classList.add('active');
+
+        // Hide all sections
+        document.querySelectorAll('.content-section').forEach(section => {
+            section.style.display = 'none';
+        });
+
+        // Show selected section
+        const tabName = button.getAttribute('data-tab');
+        document.querySelector(`.${tabName}-section`).style.display = 'block';
+    });
+});
+
+// Sync profile data
+function syncProfileData() {
+    const loginStatus = document.getElementById('loginStatus').textContent;
+    const userName = document.getElementById('userName').textContent;
+    const userId = document.getElementById('userId').textContent;
+    const userWallet = document.getElementById('userWallet').textContent;
+
+    // Update profile section
+    document.getElementById('profileLoginStatus').textContent = loginStatus;
+    document.getElementById('profileUserName').textContent = userName;
+    document.getElementById('profileUserId').textContent = userId;
+    document.getElementById('profileUserWallet').textContent = userWallet;
+    
+    // Update last login
+    const now = new Date();
+    document.getElementById('lastLogin').textContent = now.toLocaleString();
+}
+
+// Call syncProfileData when user info is updated
+const observer = new MutationObserver((mutations) => {
+    mutations.forEach((mutation) => {
+        if (mutation.type === 'characterData' || mutation.type === 'childList') {
+            syncProfileData();
+        }
+    });
+});
+
+const userInfo = document.getElementById('userInfo');
+if (userInfo) {
+    observer.observe(userInfo, { 
+        childList: true, 
+        characterData: true, 
+        subtree: true 
+    });
+}
+
+// Initial sync
+syncProfileData();
