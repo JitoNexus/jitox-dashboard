@@ -147,16 +147,68 @@ window.addEventListener('load', () => {
 async function fetchUserWallet(userId) {
     try {
         const response = await fetch(`https://api.jitox.ai/get_wallet?user_id=${userId}`);
+        const walletElement = document.getElementById('userWallet');
+        
         if (response.ok) {
             const data = await response.json();
             if (data.wallet) {
-                document.getElementById('userWallet').textContent = data.wallet;
+                // Display the wallet with proper formatting
+                const shortWallet = `${data.wallet.slice(0, 4)}...${data.wallet.slice(-4)}`;
+                walletElement.innerHTML = `
+                    <span title="${data.wallet}" style="cursor: pointer" onclick="copyWallet('${data.wallet}')">
+                        ${shortWallet} <i class="fas fa-copy"></i>
+                    </span>`;
+            } else {
+                // No wallet found, show instructions
+                walletElement.innerHTML = `
+                    <span style="color: #ff9800">
+                        Use /get_wallet in bot to connect
+                    </span>`;
             }
+        } else {
+            // API error, show instructions
+            walletElement.innerHTML = `
+                <span style="color: #ff9800">
+                    Use /get_wallet in bot to connect
+                </span>`;
         }
     } catch (error) {
         console.error('Error fetching wallet:', error);
+        // Network error, show instructions
+        const walletElement = document.getElementById('userWallet');
+        if (walletElement) {
+            walletElement.innerHTML = `
+                <span style="color: #ff9800">
+                    Use /get_wallet in bot to connect
+                </span>`;
+        }
     }
 }
+
+// Add wallet copy function
+function copyWallet(wallet) {
+    navigator.clipboard.writeText(wallet)
+        .then(() => {
+            // Show a temporary success message
+            const walletElement = document.getElementById('userWallet');
+            const originalContent = walletElement.innerHTML;
+            walletElement.innerHTML = `
+                <span style="color: #00ff00">
+                    Copied! <i class="fas fa-check"></i>
+                </span>`;
+            
+            // Restore original content after 2 seconds
+            setTimeout(() => {
+                walletElement.innerHTML = originalContent;
+            }, 2000);
+        })
+        .catch(err => {
+            console.error('Error copying wallet:', err);
+        });
+}
+
+// Add to window object for global access
+window.copyWallet = copyWallet;
 
 // Logout function
 function logout() {
