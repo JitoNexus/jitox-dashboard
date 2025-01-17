@@ -1724,7 +1724,7 @@ function promptWalletConnection() {
                         <span>Connect Wallet</span>
                     </div>
                     <div class="step-content">
-                        Use the command <code>/get_wallet</code> in our Telegram bot
+                        Use the command <code>/get_wallet</code> in <a href="https://t.me/jitoxai_bot" target="_blank" class="bot-link">@jitoxai_bot</a>
                     </div>
                 </li>` : ''}
                 <li>
@@ -1745,7 +1745,7 @@ function promptWalletConnection() {
                 </button>
                 <button class="cyber-button primary" onclick="window.open('https://t.me/jitoxai_bot', '_blank')">
                     <i class="fab fa-telegram"></i>
-                    Open Telegram Bot
+                    Open @jitoxai_bot
                 </button>
             </div>
         </div>

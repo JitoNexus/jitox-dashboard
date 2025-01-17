@@ -3385,6 +3385,18 @@ canvas {
     font-size: 14px;
 }
 
+.bot-link {
+    color: var(--neon-cyan);
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.bot-link:hover {
+    color: var(--neon-pink);
+    text-shadow: 0 0 8px rgba(255, 0, 255, 0.5);
+}
+
 .wallet-address {
     margin-top: 8px;
     padding: 8px;
@@ -3393,56 +3405,4 @@ canvas {
     font-family: monospace;
     font-size: 13px;
     color: var(--neon-cyan);
-}
-
-.modal-actions {
-    display: flex;
-    justify-content: center;
-    gap: 15px;
-}
-
-.cyber-button {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 20px;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-size: 14px;
-}
-
-.cyber-button.primary {
-    background: var(--neon-cyan);
-    border: none;
-    color: var(--deep-blue);
-}
-
-.cyber-button.secondary {
-    background: transparent;
-    border: 1px solid var(--neon-cyan);
-    color: var(--neon-cyan);
-}
-
-.cyber-button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(0, 255, 255, 0.2);
-}
-
-/* Mobile Adjustments */
-@media (max-width: 768px) {
-    .cyber-notification {
-        width: 90%;
-        right: 5%;
-        min-width: auto;
-    }
-
-    .modal-actions {
-        flex-direction: column-reverse;
-    }
-
-    .cyber-button {
-        width: 100%;
-        justify-content: center;
-    }
 }
