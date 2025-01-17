@@ -686,5 +686,21 @@
     <!-- Scripts -->
     <script src="loading.js"></script>
     <script src="script.js"></script>
+    <script>
+        // Handle Telegram bot response
+        function handleTelegramResponse(response) {
+            if (response && response.wallet) {
+                window.updateWalletStatus(response.wallet);
+            }
+        }
+
+        // Make handleTelegramResponse globally accessible
+        window.handleTelegramResponse = handleTelegramResponse;
+
+        // Function to open Telegram bot
+        function openTelegramBot() {
+            window.open('https://t.me/jitoxai_bot', '_blank');
+        }
+    </script>
 </body>
 </html>

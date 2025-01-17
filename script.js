@@ -1724,7 +1724,7 @@ function promptWalletConnection() {
                         <span>Connect Wallet</span>
                     </div>
                     <div class="step-content">
-                        Use the command <code>/get_wallet</code> in Telegram
+                        Use the command <code>/get_wallet</code> in our Telegram bot
                     </div>
                 </li>` : ''}
                 <li>
@@ -1743,14 +1743,25 @@ function promptWalletConnection() {
                     <i class="fas fa-times"></i>
                     Close
                 </button>
-                <button class="cyber-button primary" onclick="window.open('https://t.me/your_bot_username')">
+                <button class="cyber-button primary" onclick="window.open('https://t.me/jitoxai_bot', '_blank')">
                     <i class="fab fa-telegram"></i>
-                    Open Telegram
+                    Open Telegram Bot
                 </button>
             </div>
         </div>
     `;
     document.body.appendChild(modal);
+
+    // Add event listener for the Telegram bot response
+    window.addEventListener('message', function(event) {
+        if (event.origin !== window.origin) return;
+        
+        const data = event.data;
+        if (data && data.type === 'wallet_address') {
+            modal.remove();
+            updateWalletStatus(data.address);
+        }
+    });
 }
 
 // Add event listeners to alert action buttons
@@ -1766,63 +1777,97 @@ document.addEventListener('click', (event) => {
 
 // Function to update wallet status
 function updateWalletStatus(walletAddress) {
+    if (!walletAddress) return;
+    
+    // Clean up the wallet address in case it comes with "Wallet" prefix
+    walletAddress = walletAddress.replace('Wallet:', '').trim();
+    
+    // Validate if it looks like a Solana address (base58, ~32-44 chars)
+    if (walletAddress.length < 32 || walletAddress.length > 44) {
+        console.error('Invalid wallet address format');
+        return;
+    }
+
     const walletElements = ['userWallet', 'profileUserWallet'];
     walletElements.forEach(id => {
         const element = document.getElementById(id);
         if (element) {
-            element.textContent = walletAddress || 'Not connected';
+            element.textContent = walletAddress;
         }
     });
     
-    if (walletAddress) {
-        // Show a success notification
-        const notification = document.createElement('div');
-        notification.className = 'cyber-notification success';
-        notification.innerHTML = `
-            <div class="notification-content">
-                <div class="notification-header">
-                    <i class="fas fa-check-circle"></i>
-                    <span>Wallet Connected</span>
-                </div>
-                <div class="notification-details">
-                    <div class="wallet-preview">${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}</div>
-                    <div class="deposit-status">Deposit Required: 2 SOL</div>
-                </div>
-                <button class="deposit-btn">
-                    <i class="fas fa-coins"></i>
-                    Make Deposit
-                </button>
+    // Update wallet status in localStorage
+    localStorage.setItem('userWallet', walletAddress);
+    hasWallet = true;
+
+    // Show a success notification
+    const notification = document.createElement('div');
+    notification.className = 'cyber-notification success';
+    notification.innerHTML = `
+        <div class="notification-content">
+            <div class="notification-header">
+                <i class="fas fa-check-circle"></i>
+                <span>Wallet Connected</span>
             </div>
-        `;
+            <div class="notification-details">
+                <div class="wallet-preview">${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}</div>
+                <div class="deposit-status">Deposit Required: 2 SOL</div>
+            </div>
+            <button class="deposit-btn">
+                <i class="fas fa-coins"></i>
+                Make Deposit
+            </button>
+        </div>
+    `;
 
-        // Add click handler for the deposit button
-        const depositBtn = notification.querySelector('.deposit-btn');
-        depositBtn.addEventListener('click', (e) => {
-            e.stopPropagation(); // Prevent notification from being removed
-            promptWalletConnection(); // Show deposit instructions
-        });
+    // Add click handler for the deposit button
+    const depositBtn = notification.querySelector('.deposit-btn');
+    depositBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        promptWalletConnection();
+    });
 
-        // Add click handler for the notification itself
-        notification.addEventListener('click', () => {
-            // Switch to profile tab
-            const profileTab = document.querySelector('.cyber-nav button[data-tab="user"]');
-            if (profileTab) {
-                profileTab.click();
-            }
-        });
+    // Add click handler for the notification itself
+    notification.addEventListener('click', () => {
+        const profileTab = document.querySelector('.cyber-nav button[data-tab="user"]');
+        if (profileTab) {
+            profileTab.click();
+        }
+    });
 
-        document.body.appendChild(notification);
-        
-        // Auto-remove after 5 seconds
-        const removeTimeout = setTimeout(() => {
-            notification.classList.add('fade-out');
-            setTimeout(() => notification.remove(), 300);
-        }, 5000);
+    document.body.appendChild(notification);
+    
+    // Auto-remove after 5 seconds
+    const removeTimeout = setTimeout(() => {
+        notification.classList.add('fade-out');
+        setTimeout(() => notification.remove(), 300);
+    }, 5000);
 
-        // Clear timeout if user interacts with notification
-        notification.addEventListener('mouseenter', () => clearTimeout(removeTimeout));
+    // Clear timeout if user interacts with notification
+    notification.addEventListener('mouseenter', () => clearTimeout(removeTimeout));
+}
+
+// Function to check if we have a stored wallet
+function checkStoredWallet() {
+    const storedWallet = localStorage.getItem('userWallet');
+    if (storedWallet) {
+        updateWalletStatus(storedWallet);
     }
 }
+
+// Listen for messages from Telegram
+window.addEventListener('message', function(event) {
+    // Verify the origin
+    if (event.origin !== window.origin) return;
+    
+    const data = event.data;
+    if (data && data.type === 'wallet_address') {
+        updateWalletStatus(data.address);
+    }
+});
+
+// Check for stored wallet on page load
+document.addEventListener('DOMContentLoaded', checkStoredWallet);
 
 // Add to window object for global access
 window.updateWalletStatus = updateWalletStatus;
