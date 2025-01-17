@@ -146,11 +146,21 @@ window.addEventListener('load', () => {
 // Fetch user's wallet information
 async function fetchUserWallet(userId) {
     try {
+        console.log('Fetching wallet for user:', userId);
         const response = await fetch(`https://api.jitox.ai/get_wallet?user_id=${userId}`);
         const walletElement = document.getElementById('userWallet');
         
+        if (!walletElement) {
+            console.error('Wallet element not found');
+            return;
+        }
+
+        console.log('API Response:', response);
+        
         if (response.ok) {
             const data = await response.json();
+            console.log('Wallet data:', data);
+            
             if (data.wallet) {
                 // Display the wallet with proper formatting
                 const shortWallet = `${data.wallet.slice(0, 4)}...${data.wallet.slice(-4)}`;
@@ -159,27 +169,28 @@ async function fetchUserWallet(userId) {
                         ${shortWallet} <i class="fas fa-copy"></i>
                     </span>`;
             } else {
-                // No wallet found, show instructions
+                // No wallet found, show instructions with bot username
                 walletElement.innerHTML = `
                     <span style="color: #ff9800">
-                        Use /get_wallet in bot to connect
+                        Use /get_wallet in @jitoxai_bot
                     </span>`;
             }
         } else {
-            // API error, show instructions
+            console.error('API error:', response.status, response.statusText);
+            // API error, show instructions with bot username
             walletElement.innerHTML = `
                 <span style="color: #ff9800">
-                    Use /get_wallet in bot to connect
+                    Use /get_wallet in @jitoxai_bot
                 </span>`;
         }
     } catch (error) {
         console.error('Error fetching wallet:', error);
-        // Network error, show instructions
+        // Network error, show instructions with bot username
         const walletElement = document.getElementById('userWallet');
         if (walletElement) {
             walletElement.innerHTML = `
                 <span style="color: #ff9800">
-                    Use /get_wallet in bot to connect
+                    Use /get_wallet in @jitoxai_bot
                 </span>`;
         }
     }
