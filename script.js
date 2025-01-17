@@ -1695,3 +1695,72 @@ if (userInfo) {
 
 // Initial sync
 syncProfileData();
+
+// Wallet and Feature Access Management
+let hasWallet = false;
+let hasDeposited = false;
+
+function checkWalletAndDeposit() {
+    const wallet = document.getElementById('userWallet').textContent;
+    hasWallet = wallet !== 'Not connected';
+    // In a real implementation, you would check the deposit status from your backend
+    // For now, we'll simulate it
+    hasDeposited = localStorage.getItem('hasDeposited') === 'true';
+    return { hasWallet, hasDeposited };
+}
+
+function promptWalletConnection() {
+    const modal = document.createElement('div');
+    modal.className = 'cyber-modal';
+    modal.innerHTML = `
+        <div class="modal-content">
+            <h2>Wallet Required</h2>
+            <p>To use this feature, you need to:</p>
+            <ol>
+                <li>Connect your wallet using the command <code>/get_wallet</code> in Telegram</li>
+                <li>Deposit 2 SOL to activate premium features</li>
+            </ol>
+            <div class="modal-actions">
+                <button class="cyber-button" onclick="this.closest('.cyber-modal').remove()">Close</button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+}
+
+// Add event listeners to alert action buttons
+document.addEventListener('click', (event) => {
+    if (event.target.matches('.alert-actions .cyber-button')) {
+        const { hasWallet, hasDeposited } = checkWalletAndDeposit();
+        if (!hasWallet || !hasDeposited) {
+            event.preventDefault();
+            promptWalletConnection();
+        }
+    }
+});
+
+// Function to update wallet status
+function updateWalletStatus(walletAddress) {
+    const walletElements = ['userWallet', 'profileUserWallet'];
+    walletElements.forEach(id => {
+        const element = document.getElementById(id);
+        if (element) {
+            element.textContent = walletAddress || 'Not connected';
+        }
+    });
+    
+    if (walletAddress) {
+        // Show a success notification
+        const notification = document.createElement('div');
+        notification.className = 'cyber-notification success';
+        notification.innerHTML = `
+            <i class="fas fa-check-circle"></i>
+            <span>Wallet connected successfully!</span>
+        `;
+        document.body.appendChild(notification);
+        setTimeout(() => notification.remove(), 3000);
+    }
+}
+
+// Add to window object for global access
+window.updateWalletStatus = updateWalletStatus;
