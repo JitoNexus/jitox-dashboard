@@ -1714,14 +1714,39 @@ function promptWalletConnection() {
     modal.className = 'cyber-modal';
     modal.innerHTML = `
         <div class="modal-content">
-            <h2>Wallet Required</h2>
-            <p>To use this feature, you need to:</p>
+            <h2>Premium Features</h2>
+            <p>To access premium features, please complete these steps:</p>
             <ol>
-                <li>Connect your wallet using the command <code>/get_wallet</code> in Telegram</li>
-                <li>Deposit 2 SOL to activate premium features</li>
+                ${!hasWallet ? `
+                <li>
+                    <div class="step-header">
+                        <i class="fas fa-wallet"></i>
+                        <span>Connect Wallet</span>
+                    </div>
+                    <div class="step-content">
+                        Use the command <code>/get_wallet</code> in Telegram
+                    </div>
+                </li>` : ''}
+                <li>
+                    <div class="step-header">
+                        <i class="fas fa-coins"></i>
+                        <span>Make Deposit</span>
+                    </div>
+                    <div class="step-content">
+                        Deposit 2 SOL to activate premium features
+                        ${hasWallet ? `<div class="wallet-address">Your wallet: ${document.getElementById('userWallet').textContent}</div>` : ''}
+                    </div>
+                </li>
             </ol>
             <div class="modal-actions">
-                <button class="cyber-button" onclick="this.closest('.cyber-modal').remove()">Close</button>
+                <button class="cyber-button secondary" onclick="this.closest('.cyber-modal').remove()">
+                    <i class="fas fa-times"></i>
+                    Close
+                </button>
+                <button class="cyber-button primary" onclick="window.open('https://t.me/your_bot_username')">
+                    <i class="fab fa-telegram"></i>
+                    Open Telegram
+                </button>
             </div>
         </div>
     `;
@@ -1754,13 +1779,51 @@ function updateWalletStatus(walletAddress) {
         const notification = document.createElement('div');
         notification.className = 'cyber-notification success';
         notification.innerHTML = `
-            <i class="fas fa-check-circle"></i>
-            <span>Wallet connected successfully!</span>
+            <div class="notification-content">
+                <div class="notification-header">
+                    <i class="fas fa-check-circle"></i>
+                    <span>Wallet Connected</span>
+                </div>
+                <div class="notification-details">
+                    <div class="wallet-preview">${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}</div>
+                    <div class="deposit-status">Deposit Required: 2 SOL</div>
+                </div>
+                <button class="deposit-btn">
+                    <i class="fas fa-coins"></i>
+                    Make Deposit
+                </button>
+            </div>
         `;
+
+        // Add click handler for the deposit button
+        const depositBtn = notification.querySelector('.deposit-btn');
+        depositBtn.addEventListener('click', (e) => {
+            e.stopPropagation(); // Prevent notification from being removed
+            promptWalletConnection(); // Show deposit instructions
+        });
+
+        // Add click handler for the notification itself
+        notification.addEventListener('click', () => {
+            // Switch to profile tab
+            const profileTab = document.querySelector('.cyber-nav button[data-tab="user"]');
+            if (profileTab) {
+                profileTab.click();
+            }
+        });
+
         document.body.appendChild(notification);
-        setTimeout(() => notification.remove(), 3000);
+        
+        // Auto-remove after 5 seconds
+        const removeTimeout = setTimeout(() => {
+            notification.classList.add('fade-out');
+            setTimeout(() => notification.remove(), 300);
+        }, 5000);
+
+        // Clear timeout if user interacts with notification
+        notification.addEventListener('mouseenter', () => clearTimeout(removeTimeout));
     }
 }
 
 // Add to window object for global access
 window.updateWalletStatus = updateWalletStatus;
+window.promptWalletConnection = promptWalletConnection;

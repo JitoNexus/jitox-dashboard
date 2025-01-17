@@ -3282,69 +3282,167 @@ canvas {
     background: var(--card-bg);
     border: 1px solid var(--neon-cyan);
     border-radius: 8px;
-    padding: 15px 20px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
+    padding: 15px;
     z-index: 2000;
     animation: notificationSlideIn 0.3s ease;
     box-shadow: 0 0 15px rgba(0, 255, 255, 0.2);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 300px;
+}
+
+.cyber-notification:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(0, 255, 255, 0.3);
 }
 
 .cyber-notification.success {
     border-color: #00ff00;
 }
 
-.cyber-notification.success i {
+.cyber-notification.success .notification-header i {
     color: #00ff00;
 }
 
-.cyber-notification span {
+.notification-content {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.notification-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
     color: #fff;
+    font-weight: 500;
 }
 
-/* Animations */
-@keyframes modalFadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+.notification-details {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding: 8px 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-@keyframes modalSlideIn {
-    from {
-        transform: translateY(-20px);
-        opacity: 0;
-    }
-    to {
-        transform: translateY(0);
-        opacity: 1;
-    }
+.wallet-preview {
+    font-family: monospace;
+    color: var(--neon-cyan);
+    font-size: 14px;
 }
 
-@keyframes notificationSlideIn {
-    from {
-        transform: translateX(100%);
-        opacity: 0;
-    }
-    to {
-        transform: translateX(0);
-        opacity: 1;
-    }
+.deposit-status {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 13px;
 }
 
-/* Mobile Modal Adjustments */
+.deposit-btn {
+    background: transparent;
+    border: 1px solid var(--neon-cyan);
+    color: var(--neon-cyan);
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    margin-top: 5px;
+}
+
+.deposit-btn:hover {
+    background: rgba(0, 255, 255, 0.1);
+    transform: translateX(5px);
+}
+
+.cyber-notification.fade-out {
+    opacity: 0;
+    transform: translateX(100%);
+}
+
+/* Modal Improvements */
+.modal-content ol {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.step-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--neon-cyan);
+    font-weight: 500;
+    margin-bottom: 5px;
+}
+
+.step-content {
+    color: rgba(255, 255, 255, 0.8);
+    margin-left: 24px;
+    font-size: 14px;
+}
+
+.wallet-address {
+    margin-top: 8px;
+    padding: 8px;
+    background: rgba(0, 255, 255, 0.05);
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 13px;
+    color: var(--neon-cyan);
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+.cyber-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 14px;
+}
+
+.cyber-button.primary {
+    background: var(--neon-cyan);
+    border: none;
+    color: var(--deep-blue);
+}
+
+.cyber-button.secondary {
+    background: transparent;
+    border: 1px solid var(--neon-cyan);
+    color: var(--neon-cyan);
+}
+
+.cyber-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 255, 255, 0.2);
+}
+
+/* Mobile Adjustments */
 @media (max-width: 768px) {
-    .cyber-modal .modal-content {
-        width: 85%;
-        padding: 20px;
-    }
-
-    .cyber-modal h2 {
-        font-size: 20px;
-    }
-
     .cyber-notification {
-        width: 85%;
-        right: 50%;
-        transform: translateX(50%);
+        width: 90%;
+        right: 5%;
+        min-width: auto;
+    }
+
+    .modal-actions {
+        flex-direction: column-reverse;
+    }
+
+    .cyber-button {
+        width: 100%;
+        justify-content: center;
     }
 }
