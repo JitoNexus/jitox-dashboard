@@ -1536,3 +1536,32 @@ function updateOtherStats() {
         console.error('Error updating other stats:', error);
     }
 }
+
+// Profile Dropdown Toggle
+function toggleProfile() {
+    const dropdown = document.getElementById('profileDropdown');
+    if (dropdown) {
+        dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+        setTimeout(() => {
+            dropdown.classList.toggle('visible');
+        }, 10);
+    }
+}
+
+// Close profile dropdown when clicking outside
+document.addEventListener('click', (event) => {
+    const dropdown = document.getElementById('profileDropdown');
+    const trigger = document.querySelector('.profile-trigger');
+    
+    if (dropdown && trigger) {
+        if (!dropdown.contains(event.target) && !trigger.contains(event.target)) {
+            dropdown.classList.remove('visible');
+            setTimeout(() => {
+                dropdown.style.display = 'none';
+            }, 300);
+        }
+    }
+});
+
+// Add to window object for global access
+window.toggleProfile = toggleProfile;
