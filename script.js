@@ -83,9 +83,21 @@ window.onTelegramAuth = function(user) {
         const userInfo = document.getElementById('userInfo');
         const telegramLogin = document.querySelector('.telegram-login');
         
+        // Update dropdown elements
         if (loginStatus) loginStatus.textContent = 'Connected';
         if (userName) userName.textContent = user.username || 'Anonymous';
         if (userId) userId.textContent = user.id;
+        
+        // Update profile section elements
+        const profileLoginStatus = document.getElementById('profileLoginStatus');
+        const profileUserName = document.getElementById('profileUserName');
+        const profileUserId = document.getElementById('profileUserId');
+        const profileJoinDate = document.getElementById('profileJoinDate');
+        
+        if (profileLoginStatus) profileLoginStatus.textContent = 'Connected';
+        if (profileUserName) profileUserName.textContent = user.username || 'Anonymous';
+        if (profileUserId) profileUserId.textContent = user.id;
+        if (profileJoinDate) profileJoinDate.textContent = new Date().toLocaleDateString();
         
         // Show user info and hide login button
         if (userInfo) {
@@ -96,10 +108,10 @@ window.onTelegramAuth = function(user) {
         
         // Update profile avatar if available
         if (user.photo_url) {
-            const avatar = document.querySelector('.profile-avatar');
-            if (avatar) {
-                avatar.innerHTML = `<img src="${user.photo_url}" alt="Profile Photo">`;
-            }
+            const avatars = document.querySelectorAll('.profile-avatar img');
+            avatars.forEach(avatar => {
+                avatar.src = user.photo_url;
+            });
         }
         
         // Fetch wallet info if available
@@ -148,40 +160,52 @@ async function fetchUserWallet(userId) {
     try {
         const response = await fetch(`https://api.jitox.ai/get_wallet?user_id=${userId}`);
         const walletElement = document.getElementById('userWallet');
+        const profileWalletElement = document.getElementById('profileUserWallet');
         
         if (response.ok) {
             const data = await response.json();
             if (data.wallet) {
                 // Display the wallet with proper formatting
                 const shortWallet = `${data.wallet.slice(0, 4)}...${data.wallet.slice(-4)}`;
-                walletElement.innerHTML = `
+                const walletHtml = `
                     <span title="${data.wallet}" style="cursor: pointer" onclick="copyWallet('${data.wallet}')">
                         ${shortWallet} <i class="fas fa-copy"></i>
                     </span>`;
+                
+                if (walletElement) walletElement.innerHTML = walletHtml;
+                if (profileWalletElement) profileWalletElement.innerHTML = walletHtml;
             } else {
                 // No wallet found, show instructions
-                walletElement.innerHTML = `
+                const instructionHtml = `
                     <span style="color: #ff9800">
                         Use /get_wallet in bot to connect
                     </span>`;
+                
+                if (walletElement) walletElement.innerHTML = instructionHtml;
+                if (profileWalletElement) profileWalletElement.innerHTML = instructionHtml;
             }
         } else {
             // API error, show instructions
-            walletElement.innerHTML = `
+            const instructionHtml = `
                 <span style="color: #ff9800">
                     Use /get_wallet in bot to connect
                 </span>`;
+            
+            if (walletElement) walletElement.innerHTML = instructionHtml;
+            if (profileWalletElement) profileWalletElement.innerHTML = instructionHtml;
         }
     } catch (error) {
         console.error('Error fetching wallet:', error);
         // Network error, show instructions
+        const instructionHtml = `
+            <span style="color: #ff9800">
+                Use /get_wallet in bot to connect
+            </span>`;
+        
         const walletElement = document.getElementById('userWallet');
-        if (walletElement) {
-            walletElement.innerHTML = `
-                <span style="color: #ff9800">
-                    Use /get_wallet in bot to connect
-                </span>`;
-        }
+        const profileWalletElement = document.getElementById('profileUserWallet');
+        if (walletElement) walletElement.innerHTML = instructionHtml;
+        if (profileWalletElement) profileWalletElement.innerHTML = instructionHtml;
     }
 }
 
@@ -215,27 +239,35 @@ function logout() {
     // Clear stored data
     localStorage.removeItem('telegramUser');
     
-    // Reset UI
+    // Reset dropdown UI
     document.getElementById('loginStatus').textContent = 'Not Connected';
     document.getElementById('userName').textContent = '-';
     document.getElementById('userId').textContent = '-';
     document.getElementById('userWallet').textContent = 'Not connected';
     
+    // Reset profile section UI
+    document.getElementById('profileLoginStatus').textContent = 'Not Connected';
+    document.getElementById('profileUserName').textContent = '-';
+    document.getElementById('profileUserId').textContent = '-';
+    document.getElementById('profileUserWallet').textContent = 'Not connected';
+    document.getElementById('profileJoinDate').textContent = '-';
+    
     // Show login button and hide user info
     document.getElementById('userInfo').style.display = 'none';
     document.querySelector('.telegram-login').style.display = 'block';
     
-    // Reset avatar to default
-    const avatar = document.querySelector('.profile-avatar');
-    if (avatar) {
-        avatar.innerHTML = `
-            <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100" id="userPhoto">
-                <rect width="100" height="100" fill="#2B2640"/>
-                <circle cx="50" cy="35" r="20" fill="#6E56CF"/>
-                <path d="M10,90 C10,90 45,70 90,90 L90,100 L10,100 Z" fill="#6E56CF"/>
-            </svg>
-        `;
-    }
+    // Reset avatars to default
+    const defaultSvg = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100">
+            <rect width="100" height="100" fill="#2B2640"/>
+            <circle cx="50" cy="35" r="20" fill="#6E56CF"/>
+            <path d="M10,90 C10,90 45,70 90,90 L90,100 L10,100 Z" fill="#6E56CF"/>
+        </svg>
+    `;
+    
+    document.querySelectorAll('.profile-avatar').forEach(avatar => {
+        avatar.innerHTML = defaultSvg;
+    });
     
     // Reinitialize login widget
     initializeTelegramLogin();
@@ -1617,107 +1649,3 @@ document.addEventListener('click', (event) => {
 
 // Add to window object for global access
 window.toggleProfile = toggleProfile;
-
-// Check wallet and deposit status
-function checkWalletAndDeposit() {
-    const wallet = document.getElementById('userWallet').textContent;
-    hasWallet = !wallet.includes('Use /get_wallet') && wallet !== 'Not connected';
-    // In a real implementation, you would check the deposit status from your backend
-    hasDeposited = localStorage.getItem('hasDeposited') === 'true';
-    return { hasWallet, hasDeposited };
-}
-
-// Function to show wallet connection modal
-function promptWalletConnection() {
-    const { hasWallet } = checkWalletAndDeposit();
-    
-    const modal = document.createElement('div');
-    modal.className = 'cyber-modal';
-    modal.innerHTML = `
-        <div class="modal-content">
-            <h2>Premium Features</h2>
-            <p>To access premium features, please complete these steps:</p>
-            <ol>
-                ${!hasWallet ? `
-                <li>
-                    <div class="step-header">
-                        <i class="fas fa-wallet"></i>
-                        <span>Connect Wallet</span>
-                    </div>
-                    <div class="step-content">
-                        Use the command <code>/get_wallet</code> in <a href="https://t.me/jitoxai_bot" target="_blank" class="bot-link">@jitoxai_bot</a>
-                    </div>
-                </li>` : ''}
-                <li>
-                    <div class="step-header">
-                        <i class="fas fa-coins"></i>
-                        <span>Make Deposit</span>
-                    </div>
-                    <div class="step-content">
-                        Deposit 2 SOL to activate premium features
-                        ${hasWallet ? `<div class="wallet-address">Your wallet: ${document.getElementById('userWallet').textContent}</div>` : ''}
-                    </div>
-                </li>
-            </ol>
-            <div class="modal-actions">
-                <button class="cyber-button secondary" onclick="this.closest('.cyber-modal').remove()">
-                    <i class="fas fa-times"></i>
-                    Close
-                </button>
-                <button class="cyber-button primary" onclick="window.open('https://t.me/jitoxai_bot', '_blank')">
-                    <i class="fab fa-telegram"></i>
-                    Open @jitoxai_bot
-                </button>
-            </div>
-        </div>
-    `;
-    document.body.appendChild(modal);
-}
-
-// Add event listeners for alert buttons
-document.addEventListener('DOMContentLoaded', () => {
-    document.addEventListener('click', (event) => {
-        const button = event.target.closest('.alert-actions .cyber-button');
-        if (button) {
-            event.preventDefault();
-            event.stopPropagation();
-            
-            const { hasWallet, hasDeposited } = checkWalletAndDeposit();
-            if (!hasWallet || !hasDeposited) {
-                promptWalletConnection();
-            } else {
-                // Handle the action if wallet is connected and deposit is made
-                const action = button.textContent.trim().toLowerCase();
-                console.log(`Executing ${action} action...`);
-                // Add your action handling here
-            }
-        }
-    });
-});
-
-// Copy wallet address function
-function copyWallet(wallet) {
-    navigator.clipboard.writeText(wallet).then(() => {
-        const notification = document.createElement('div');
-        notification.className = 'cyber-notification success';
-        notification.innerHTML = `
-            <div class="notification-content">
-                <div class="notification-header">
-                    <i class="fas fa-check-circle"></i>
-                    <span>Wallet Address Copied!</span>
-                </div>
-            </div>
-        `;
-        document.body.appendChild(notification);
-        setTimeout(() => {
-            notification.classList.add('fade-out');
-            setTimeout(() => notification.remove(), 300);
-        }, 2000);
-    }).catch(err => {
-        console.error('Failed to copy wallet:', err);
-    });
-}
-
-// Make functions globally accessible
-window.promptWalletConnection = promptWalletConnection;
-window.copyWallet = copyWallet;
