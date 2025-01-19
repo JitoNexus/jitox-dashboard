@@ -1059,14 +1059,23 @@ class AlertsManager {
         const priority = priorities[Math.floor(Math.random() * priorities.length)];
         const profit = generateRandomProfit(); // Get random profit between 0.2 and 14 SOL
         
+        // Generate random wallet address
+        const walletChars = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
+        const randomWallet = Array(40).fill(0).map(() => walletChars[Math.floor(Math.random() * walletChars.length)]).join('');
+        const shortWallet = `${randomWallet.slice(0, 4)}...${randomWallet.slice(-4)}`;
+        
+        // List of DEXes
+        const dexes = ['Jupiter', 'Orca', 'Raydium', 'Serum', 'Mango Markets'];
+        const randomDex = dexes[Math.floor(Math.random() * dexes.length)];
+        
         const alerts = [
             {
                 priority: 'high',
                 title: 'Large Transaction Detected',
-                description: 'Unusual transaction volume detected on Jupiter. Potential MEV opportunity identified.',
+                description: `Unusual transaction volume detected on ${randomDex}. ${generateLargeSOLAmount().toLocaleString()} SOL movement in progress.`,
                 details: [
-                    { icon: 'fa-coins', text: `Profit: ${profit} SOL` },
-                    { icon: 'fa-clock', text: `Execution Time: ${Math.floor(Math.random() * 200 + 100)}ms` }
+                    { icon: 'fa-wallet', text: `Wallet: ${shortWallet}` },
+                    { icon: 'fa-exchange-alt', text: `DEX: ${randomDex}` }
                 ],
                 primaryAction: 'Track',
                 secondaryAction: 'Analyze'
@@ -1649,3 +1658,12 @@ document.addEventListener('click', (event) => {
 
 // Add to window object for global access
 window.toggleProfile = toggleProfile;
+
+// Generate random large SOL amount for alerts
+function generateLargeSOLAmount() {
+    // Generate amount between 10,000 and 200,000 SOL
+    const baseAmount = Math.floor(Math.random() * (200000 - 10000) + 10000);
+    // Add some decimals for more realism
+    const decimals = Math.floor(Math.random() * 100);
+    return baseAmount + (decimals / 100);
+}
