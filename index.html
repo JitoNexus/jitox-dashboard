@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JitoX Terminal - MEV Command Center</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body>
+    <!-- INITIALIZATION SEQUENCE -->
+    <div id="initSequence" class="init-sequence">
+        <div class="init-background">
+            <div class="cyber-grid"></div>
+            <div class="digital-rain"></div>
+        </div>
+        
+        <div class="init-content">
+            <div class="jitox-logo">
+                <div class="logo-hexagon">
+                    <div class="logo-inner">
+                        <span class="logo-text">JITO</span>
+                        <span class="logo-x">X</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="init-status">
+                <div class="status-line" data-status="connection">
+                    <span class="status-indicator">[OK]</span>
+                    <span class="status-text">Establishing secure connection to Solana RPC...</span>
+                </div>
+                <div class="status-line" data-status="encryption">
+                    <span class="status-indicator">[OK]</span>
+                    <span class="status-text">Encrypting data stream...</span>
+                </div>
+                <div class="status-line" data-status="auth">
+                    <span class="status-indicator">[OK]</span>
+                    <span class="status-text">Authenticating Operator credentials...</span>
+                </div>
+                <div class="status-line" data-status="engine">
+                    <span class="status-indicator">[OK]</span>
+                    <span class="status-text">Initializing JitoX MEV Engine...</span>
+                </div>
+            </div>
+            
+            <div class="init-welcome">
+                <h1>Welcome, Operator.</h1>
+                <p>Terminal is online.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN TERMINAL INTERFACE -->
+    <div id="mainTerminal" class="main-terminal hidden">
+        <!-- HEADER -->
+        <header class="terminal-header">
+            <div class="header-left">
+                <div class="operator-info">
+                    <span class="operator-label">OPERATOR:</span>
+                    <span id="operatorName" class="operator-name">LOADING...</span>
+                    <span class="operator-separator">//</span>
+                    <span class="operator-label">ID:</span>
+                    <span id="operatorId" class="operator-id">LOADING...</span>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="terminal-status">
+                    <div class="status-indicator active"></div>
+                    <span class="status-text">ONLINE</span>
+                </div>
+                <div class="last-update">
+                    <span class="update-label">LAST SYNC:</span>
+                    <span id="lastUpdate" class="update-time">--:--:--</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- ARMORY STATE (PRE-DEPOSIT) -->
+        <div id="armoryState" class="terminal-state armory-state">
+            <div class="armory-content">
+                <div class="armory-header">
+                    <h2 class="armory-title">THE ARMORY</h2>
+                    <p class="armory-subtitle">Deploy your capital to unlock the full JitoX arsenal</p>
+                </div>
+
+                <!-- WALLET CARD -->
+                <div class="wallet-card">
+                    <div class="card-header">
+                        <h3>YOUR JITOX TRADING WALLET</h3>
+                        <div class="wallet-status" id="walletStatus">
+                            <i class="fas fa-circle status-dot"></i>
+                            <span>Generating...</span>
+                        </div>
+                    </div>
+                    <div class="wallet-content">
+                        <div id="walletAddress" class="wallet-address">
+                            <span class="address-text">Use /get_wallet in the bot to generate your unique address</span>
+                        </div>
+                        <button id="copyAddressBtn" class="copy-btn hidden" onclick="copyWalletAddress()">
+                            <i class="fas fa-copy"></i>
+                            COPY ADDRESS
+                        </button>
+                    </div>
+                </div>
+
+                <!-- DEPLOYMENT TIERS -->
+                <div class="tiers-section">
+                    <h3 class="tiers-title">DEPLOYMENT TIERS</h3>
+                    <div class="tiers-grid">
+                        <div class="tier-card scout">
+                            <div class="tier-header">
+                                <div class="tier-icon">
+                                    <i class="fas fa-eye"></i>
+                                </div>
+                                <h4>TIER 1: SCOUT</h4>
+                            </div>
+                            <div class="tier-content">
+                                <div class="tier-deposit">1-4.99 SOL</div>
+                                <div class="tier-description">
+                                    Basic arbitrage and sandwich operations. Entry-level MEV extraction.
+                                </div>
+                                <div class="tier-features">
+                                    <span class="feature">• Arbitrage Detection</span>
+                                    <span class="feature">• Basic Sandwich</span>
+                                    <span class="feature">• Standard Priority</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tier-card operator">
+                            <div class="tier-header">
+                                <div class="tier-icon">
+                                    <i class="fas fa-crosshairs"></i>
+                                </div>
+                                <h4>TIER 2: OPERATOR</h4>
+                            </div>
+                            <div class="tier-content">
+                                <div class="tier-deposit">5-14.99 SOL</div>
+                                <div class="tier-description">
+                                    Unlocks advanced sandwich patterns and priority transaction routing.
+                                </div>
+                                <div class="tier-features">
+                                    <span class="feature">• Advanced Sandwich</span>
+                                    <span class="feature">• Priority Routing</span>
+                                    <span class="feature">• Pattern Recognition</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tier-card predator">
+                            <div class="tier-header">
+                                <div class="tier-icon">
+                                    <i class="fas fa-skull"></i>
+                                </div>
+                                <h4>TIER 3: PREDATOR</h4>
+                            </div>
+                            <div class="tier-content">
+                                <div class="tier-deposit">15+ SOL</div>
+                                <div class="tier-description">
+                                    Activates all strategies, including flash loan arbitrage and liquidation hunting.
+                                </div>
+                                <div class="tier-features">
+                                    <span class="feature">• Flash Loan Arbitrage</span>
+                                    <span class="feature">• Liquidation Hunting</span>
+                                    <span class="feature">• Highest Priority</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CALL TO ACTION -->
+                <div class="cta-section">
+                    <div class="cta-message">
+                        <h3>DEPOSIT SOL TO YOUR TRADING WALLET TO UNLOCK THE FULL JITOX COMMAND CENTER</h3>
+                        <p>THE ENGINE IS STANDING BY</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- WAR ROOM STATE (POST-DEPOSIT) -->
+        <div id="warRoomState" class="terminal-state war-room-state hidden">
+            <div class="war-room-content">
+                <!-- KEY METRICS -->
+                <div class="metrics-grid">
+                    <div class="metric-card total-pooled">
+                        <div class="metric-header">
+                            <h3>TOTAL POOLED SOL</h3>
+                            <div class="metric-trend positive">
+                                <i class="fas fa-arrow-up"></i>
+                                <span id="pooledTrend">+15.3%</span>
+                            </div>
+                        </div>
+                        <div class="metric-value" id="totalPooled">3,760.5</div>
+                        <div class="metric-details">24h Volume: <span id="pooledVolume">1,128 SOL</span></div>
+                    </div>
+
+                    <div class="metric-card mev-extracted">
+                        <div class="metric-header">
+                            <h3>MEV EXTRACTED (24H)</h3>
+                            <div class="metric-trend positive">
+                                <i class="fas fa-arrow-up"></i>
+                                <span id="mevTrend">+8.3%</span>
+                            </div>
+                        </div>
+                        <div class="metric-value" id="mevExtracted">892.5</div>
+                        <div class="metric-details">≈ $<span id="mevUSD">89,250</span> USD</div>
+                    </div>
+
+                    <div class="metric-card active-strategies">
+                        <div class="metric-header">
+                            <h3>ACTIVE STRATEGIES</h3>
+                            <div class="metric-trend positive">
+                                <i class="fas fa-arrow-up"></i>
+                                <span id="strategiesTrend">+3</span>
+                            </div>
+                        </div>
+                        <div class="metric-value" id="activeStrategies">12</div>
+                        <div class="metric-details">Peak Today: <span id="peakStrategies">15</span></div>
+                    </div>
+
+                    <div class="metric-card success-rate">
+                        <div class="metric-header">
+                            <h3>SUCCESS RATE</h3>
+                            <div class="metric-trend positive">
+                                <i class="fas fa-arrow-up"></i>
+                                <span id="successTrend">+2.3%</span>
+                            </div>
+                        </div>
+                        <div class="metric-value" id="successRate">98.5%</div>
+                        <div class="metric-details">Response Time: <span id="responseTime">0.05s</span></div>
+                    </div>
+                </div>
+
+                <!-- TRADING BALANCE & PNL -->
+                <div class="balance-section">
+                    <div class="balance-card">
+                        <div class="balance-header">
+                            <h3>TRADING BALANCE</h3>
+                            <div class="balance-actions">
+                                <button class="action-btn deposit" onclick="showDepositModal()">
+                                    <i class="fas fa-plus"></i>
+                                    DEPOSIT
+                                </button>
+                                <button class="action-btn withdraw" onclick="showWithdrawModal()">
+                                    <i class="fas fa-minus"></i>
+                                    WITHDRAW
+                                </button>
+                            </div>
+                        </div>
+                        <div class="balance-content">
+                            <div class="balance-amount" id="tradingBalance">0.00 SOL</div>
+                            <div class="balance-usd" id="tradingBalanceUSD">$0.00 USD</div>
+                        </div>
+                    </div>
+
+                    <div class="pnl-card">
+                        <div class="pnl-header">
+                            <h3>TOTAL PNL</h3>
+                            <div class="pnl-period">
+                                <select id="pnlPeriod">
+                                    <option value="24h">24H</option>
+                                    <option value="7d">7D</option>
+                                    <option value="30d">30D</option>
+                                    <option value="all">ALL TIME</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="pnl-content">
+                            <div class="pnl-amount positive" id="totalPNL">+0.00 SOL</div>
+                            <div class="pnl-percentage positive" id="pnlPercentage">+0.00%</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- LIVE PROFIT FEED -->
+                <div class="profit-feed">
+                    <div class="feed-header">
+                        <h3>LIVE PROFIT FEED</h3>
+                        <div class="feed-status">
+                            <div class="status-dot active"></div>
+                            <span>LIVE</span>
+                        </div>
+                    </div>
+                    <div class="feed-content" id="profitFeed">
+                        <!-- Dynamic profit feed items will be inserted here -->
+                    </div>
+                </div>
+
+                <!-- CHARTS SECTION -->
+                <div class="charts-section">
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3>STRATEGY PERFORMANCE</h3>
+                            <div class="chart-controls">
+                                <button class="chart-btn active" data-period="24h">24H</button>
+                                <button class="chart-btn" data-period="7d">7D</button>
+                                <button class="chart-btn" data-period="30d">30D</button>
+                            </div>
+                        </div>
+                        <div class="chart-content">
+                            <canvas id="strategyChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3>PATTERN RECOGNITION</h3>
+                            <div class="chart-legend">
+                                <div class="legend-item">
+                                    <span class="legend-color success"></span>
+                                    <span>Success Rate</span>
+                                </div>
+                                <div class="legend-item">
+                                    <span class="legend-color profit"></span>
+                                    <span>Profit Potential</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="chart-content">
+                            <canvas id="patternChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RECENT OPERATIONS -->
+                <div class="operations-section">
+                    <div class="operations-header">
+                        <h3>RECENT OPERATIONS</h3>
+                        <div class="operations-filter">
+                            <select id="operationsFilter">
+                                <option value="all">ALL</option>
+                                <option value="arbitrage">ARBITRAGE</option>
+                                <option value="sandwich">SANDWICH</option>
+                                <option value="liquidation">LIQUIDATION</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="operations-list" id="operationsList">
+                        <!-- Dynamic operations will be inserted here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- DEVELOPMENT TOGGLE (REMOVE IN PRODUCTION) -->
+        <div class="dev-controls">
+            <button id="toggleState" class="dev-btn" onclick="toggleTerminalState()">
+                <i class="fas fa-toggle-on"></i>
+                TOGGLE STATE
+            </button>
+        </div>
+    </div>
+
+    <!-- SCRIPTS -->
+    <script src="api.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
