@@ -35,39 +35,89 @@ class JitoXTerminal {
             // Initialize Telegram Mini App
             await this.initializeTelegram();
             
-            // Wait for initialization sequence to complete
+            // Wait for predator demonstration to complete
             setTimeout(() => {
                 this.showMainTerminal();
                 this.initializeUI();
-            }, 4000);
+            }, 6000);
             
-        } catch (error) {
+    } catch (error) {
             console.error('[TERMINAL] Initialization failed:', error);
             this.showError('Initialization failed. Please refresh the page.');
         }
     }
 
     /**
-     * Start the initialization sequence
+     * Start the predator demonstration sequence
      */
     async startInitializationSequence() {
-        const statusLines = document.querySelectorAll('.status-line');
+        console.log('[TERMINAL] Starting predator demonstration...');
         
-        // Animate status lines
-        statusLines.forEach((line, index) => {
-            setTimeout(() => {
-                line.style.opacity = '1';
-                line.style.transform = 'translateX(0)';
-            }, 500 + (index * 500));
-        });
-        
-        // Show welcome message
+        // Wait for coins to drift in and get absorbed
         setTimeout(() => {
-            const welcome = document.querySelector('.init-welcome');
-            if (welcome) {
-                welcome.style.opacity = '1';
+            this.triggerShockwave();
+        }, 2000);
+        
+        // Start profit counter animation
+        setTimeout(() => {
+            this.animateProfitCounter();
+        }, 2500);
+        
+        // Complete sequence and transition
+        setTimeout(() => {
+            this.completePredatorDemo();
+        }, 5000);
+    }
+
+    /**
+     * Trigger the shockwave effect
+     */
+    triggerShockwave() {
+        const shockwave = document.getElementById('shockwave');
+        if (shockwave) {
+            shockwave.style.animation = 'shockwave-expand 0.8s ease-out forwards';
+        }
+        
+        // Make coins disappear when shockwave hits
+        const coins = document.querySelectorAll('.sol-coin');
+        coins.forEach((coin, index) => {
+            setTimeout(() => {
+                coin.style.opacity = '0';
+                coin.style.transform = 'scale(0) translate(0, -50px)';
+            }, 200 + (index * 100));
+        });
+    }
+
+    /**
+     * Animate the profit counter
+     */
+    animateProfitCounter() {
+        const profitAmount = document.querySelector('.profit-amount');
+        if (!profitAmount) return;
+        
+        const coins = document.querySelectorAll('.sol-coin');
+        let totalProfit = 0;
+        let currentIndex = 0;
+        
+        const updateCounter = () => {
+            if (currentIndex < coins.length) {
+                const coinValue = parseFloat(coins[currentIndex].dataset.value) || 0;
+                totalProfit += coinValue;
+                profitAmount.textContent = `+${totalProfit.toFixed(2)} SOL`;
+                currentIndex++;
+                setTimeout(updateCounter, 200);
             }
-        }, 3000);
+        };
+        
+        updateCounter();
+    }
+
+    /**
+     * Complete the predator demonstration
+     */
+    completePredatorDemo() {
+        console.log('[TERMINAL] Predator demonstration complete');
+        // The transition will be handled by the main init sequence
     }
 
     /**
@@ -104,11 +154,11 @@ class JitoXTerminal {
                 if (user) {
                     this.user = user;
                     this.handleTelegramUser(user);
-                } else {
+            } else {
                     console.warn('[TERMINAL] No user data available from Telegram');
                     this.showError('Unable to authenticate with Telegram. Please open this app from the bot.');
-                }
-            } else {
+            }
+        } else {
                 console.warn('[TERMINAL] Telegram WebApp not available, using fallback');
                 this.showError('Telegram Mini App not detected. Please open this app from the bot.');
             }
@@ -152,7 +202,7 @@ class JitoXTerminal {
             console.error('[TERMINAL] No user data available for wallet polling');
             return;
         }
-        
+
         console.log('[TERMINAL] Starting wallet polling...');
         
         jitoxAPI.startWalletPolling(
@@ -209,8 +259,8 @@ class JitoXTerminal {
             } else {
                 console.warn('[TERMINAL] Balance check failed, using default state');
                 this.balance = 0;
-            }
-        } catch (error) {
+        }
+    } catch (error) {
             console.error('[TERMINAL] Balance check error:', error);
             this.balance = 0;
         }
@@ -259,40 +309,40 @@ class JitoXTerminal {
      */
     initializeCharts() {
         try {
-            // Strategy Performance Chart
+        // Strategy Performance Chart
             const strategyCtx = document.getElementById('strategyChart')?.getContext('2d');
-            if (strategyCtx) {
+        if (strategyCtx) {
                 this.charts.strategy = new Chart(strategyCtx, {
-                    type: 'line',
-                    data: {
+                type: 'line',
+                data: {
                         labels: Array.from({length: 24}, (_, i) => `${i}:00`),
-                        datasets: [
-                            {
-                                label: 'Arbitrage',
+                    datasets: [
+                        {
+                            label: 'Arbitrage',
                                 data: Array.from({length: 24}, () => 95 + Math.random() * 5),
-                                borderColor: '#00ffff',
-                                backgroundColor: 'rgba(0, 255, 255, 0.1)',
-                                fill: true,
-                                tension: 0.4
-                            },
-                            {
-                                label: 'Sandwich',
+                            borderColor: '#00ffff',
+                            backgroundColor: 'rgba(0, 255, 255, 0.1)',
+                            fill: true,
+                            tension: 0.4
+                        },
+                        {
+                            label: 'Sandwich',
                                 data: Array.from({length: 24}, () => 90 + Math.random() * 8),
-                                borderColor: '#ff00ff',
-                                backgroundColor: 'rgba(255, 0, 255, 0.1)',
-                                fill: true,
-                                tension: 0.4
-                            }
-                        ]
-                    },
-                    options: {
+                        borderColor: '#ff00ff',
+                            backgroundColor: 'rgba(255, 0, 255, 0.1)',
+                        fill: true,
+                            tension: 0.4
+                        }
+                    ]
+                },
+                options: {
                         responsive: true,
                         maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                display: true,
-                                position: 'top',
-                                labels: {
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top',
+                            labels: {
                                     color: '#ffffff',
                                     font: {
                                         family: 'JetBrains Mono'
@@ -321,105 +371,105 @@ class JitoXTerminal {
                                     font: {
                                         family: 'JetBrains Mono'
                                     }
-                                }
                             }
-                        },
-                        animation: {
-                            duration: 1000
                         }
+                    },
+                    animation: {
+                        duration: 1000
                     }
-                });
-            }
+                }
+            });
+        }
 
-            // Pattern Recognition Chart
+        // Pattern Recognition Chart
             const patternCtx = document.getElementById('patternChart')?.getContext('2d');
-            if (patternCtx) {
+        if (patternCtx) {
                 this.charts.pattern = new Chart(patternCtx, {
-                    type: 'radar',
-                    data: {
-                        labels: ['Market Making', 'Arbitrage', 'Liquidations', 'Flash Loans', 'Sandwich', 'Other'],
+                type: 'radar',
+                data: {
+                    labels: ['Market Making', 'Arbitrage', 'Liquidations', 'Flash Loans', 'Sandwich', 'Other'],
                         datasets: [
                             {
-                                label: 'Success Rate',
-                                data: [85, 95, 75, 80, 90, 70],
-                                borderColor: '#00ffff',
-                                backgroundColor: 'rgba(0, 255, 255, 0.2)',
-                                pointBackgroundColor: '#00ffff',
-                                pointBorderColor: '#fff',
-                                borderWidth: 2,
-                                pointRadius: 4,
-                                pointHoverRadius: 6
-                            },
-                            {
-                                label: 'Profit Potential',
-                                data: [75, 90, 85, 70, 85, 65],
-                                borderColor: '#ff00ff',
-                                backgroundColor: 'rgba(255, 0, 255, 0.2)',
-                                pointBackgroundColor: '#ff00ff',
-                                pointBorderColor: '#fff',
-                                borderWidth: 2,
-                                pointRadius: 4,
-                                pointHoverRadius: 6
+                        label: 'Success Rate',
+                        data: [85, 95, 75, 80, 90, 70],
+                        borderColor: '#00ffff',
+                        backgroundColor: 'rgba(0, 255, 255, 0.2)',
+                        pointBackgroundColor: '#00ffff',
+                        pointBorderColor: '#fff',
+                        borderWidth: 2,
+                        pointRadius: 4,
+                        pointHoverRadius: 6
+                    },
+                    {
+                        label: 'Profit Potential',
+                        data: [75, 90, 85, 70, 85, 65],
+                        borderColor: '#ff00ff',
+                        backgroundColor: 'rgba(255, 0, 255, 0.2)',
+                        pointBackgroundColor: '#ff00ff',
+                        pointBorderColor: '#fff',
+                        borderWidth: 2,
+                        pointRadius: 4,
+                        pointHoverRadius: 6
                             }
                         ]
-                    },
-                    options: {
+                },
+                options: {
                         responsive: true,
                         maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                display: true,
-                                position: 'top',
-                                labels: {
-                                    color: '#ffffff',
-                                    font: {
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top',
+                            labels: {
+                                color: '#ffffff',
+                                font: {
                                         family: 'JetBrains Mono'
                                     }
                                 }
-                            }
-                        },
-                        scales: {
-                            r: {
-                                min: 0,
-                                max: 100,
-                                beginAtZero: true,
-                                angleLines: {
-                                    color: 'rgba(255, 255, 255, 0.1)',
-                                    lineWidth: 1
-                                },
-                                grid: {
-                                    color: 'rgba(255, 255, 255, 0.1)',
-                                    circular: true
-                                },
-                                pointLabels: {
-                                    color: '#ffffff',
-                                    font: {
+                        }
+                    },
+                    scales: {
+                        r: {
+                            min: 0,
+                            max: 100,
+                            beginAtZero: true,
+                            angleLines: {
+                                color: 'rgba(255, 255, 255, 0.1)',
+                                lineWidth: 1
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)',
+                                circular: true
+                            },
+                            pointLabels: {
+                                color: '#ffffff',
+                                font: {
                                         family: 'JetBrains Mono',
-                                        size: 12,
-                                        weight: 'bold'
-                                    }
-                                },
-                                ticks: {
-                                    color: '#ffffff',
-                                    backdropColor: 'transparent',
-                                    stepSize: 20,
-                                    font: {
+                                    size: 12,
+                                    weight: 'bold'
+                                }
+                            },
+                            ticks: {
+                                color: '#ffffff',
+                                backdropColor: 'transparent',
+                                stepSize: 20,
+                                font: {
                                         family: 'JetBrains Mono',
-                                        size: 10
-                                    }
+                                    size: 10
                                 }
                             }
-                        },
-                        animation: {
-                            duration: 2000,
-                            easing: 'easeInOutQuart'
                         }
+                    },
+                    animation: {
+                        duration: 2000,
+                        easing: 'easeInOutQuart'
                     }
-                });
-            }
-            
+                }
+            });
+        }
+
             console.log('[TERMINAL] Charts initialized successfully');
-        } catch (error) {
+    } catch (error) {
             console.error('[TERMINAL] Chart initialization failed:', error);
         }
     }
@@ -617,9 +667,9 @@ class JitoXTerminal {
                     cursor: pointer;
                     margin-top: 20px;
                 ">RELOAD TERMINAL</button>
-            </div>
-        `;
-        
+        </div>
+    `;
+    
         document.body.appendChild(errorOverlay);
     }
 

@@ -10,14 +10,20 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
-    <!-- INITIALIZATION SEQUENCE -->
+    <!-- PREDATOR DEMONSTRATION SEQUENCE -->
     <div id="initSequence" class="init-sequence">
-        <div class="init-background">
-            <div class="cyber-grid"></div>
-            <div class="digital-rain"></div>
-        </div>
-        
-        <div class="init-content">
+        <div class="predator-demo">
+            <!-- THE HUNT: Solana coins floating in -->
+            <div class="solana-coins" id="solanaCoins">
+                <div class="sol-coin" data-value="0.21">Ⓢ</div>
+                <div class="sol-coin" data-value="0.24">Ⓢ</div>
+                <div class="sol-coin" data-value="0.18">Ⓢ</div>
+                <div class="sol-coin" data-value="0.31">Ⓢ</div>
+                <div class="sol-coin" data-value="0.27">Ⓢ</div>
+                <div class="sol-coin" data-value="0.22">Ⓢ</div>
+            </div>
+            
+            <!-- THE STRIKE: JitoX logo with shockwave -->
             <div class="jitox-logo">
                 <div class="logo-hexagon">
                     <div class="logo-inner">
@@ -25,30 +31,13 @@
                         <span class="logo-x">X</span>
                     </div>
                 </div>
+                <div class="shockwave" id="shockwave"></div>
             </div>
             
-            <div class="init-status">
-                <div class="status-line" data-status="connection">
-                    <span class="status-indicator">[OK]</span>
-                    <span class="status-text">Establishing secure connection to Solana RPC...</span>
-                </div>
-                <div class="status-line" data-status="encryption">
-                    <span class="status-indicator">[OK]</span>
-                    <span class="status-text">Encrypting data stream...</span>
-                </div>
-                <div class="status-line" data-status="auth">
-                    <span class="status-indicator">[OK]</span>
-                    <span class="status-text">Authenticating Operator credentials...</span>
-                </div>
-                <div class="status-line" data-status="engine">
-                    <span class="status-indicator">[OK]</span>
-                    <span class="status-text">Initializing JitoX MEV Engine...</span>
-                </div>
-            </div>
-            
-            <div class="init-welcome">
-                <h1>Welcome, Operator.</h1>
-                <p>Terminal is online.</p>
+            <!-- THE PROOF: Live profit counter -->
+            <div class="profit-counter" id="profitCounter">
+                <div class="profit-label">SIMULATED LIVE PROFIT:</div>
+                <div class="profit-amount">+0.00 SOL</div>
             </div>
         </div>
     </div>
@@ -70,33 +59,41 @@
 
         <!-- ARMORY STATE (PRE-DEPOSIT) -->
         <div id="armoryState" class="terminal-state armory-state">
-            <div class="armory-header"><h2>THE ARMORY</h2></div>
-            <div class="wallet-card">
-                <h3>YOUR JITOX TRADING WALLET</h3>
-                <div id="walletAddress">Use /get_wallet in the bot...</div>
+            <!-- THE OBJECTIVE -->
+            <div class="mission-objective">
+                <h2>YOUR MISSION: FUND THE TERMINAL.</h2>
+            </div>
+            
+            <!-- THE TARGET (WALLET) -->
+            <div class="wallet-hero">
+                <h3>JITOX TRADING WALLET</h3>
+                <div id="walletAddress" class="wallet-address">Use /get_wallet in the bot...</div>
                 <button id="copyAddressBtn" class="copy-btn hidden" onclick="copyWalletAddress()">COPY ADDRESS</button>
             </div>
-            <div class="tiers-section">
-                <h3>DEPLOYMENT TIERS</h3>
-                <div class="tiers-grid">
-                    <!-- JITO TIER -->
-                    <div class="tier-card jito">
-                        <h4>💎 JITO TIER (4 SOL Trading Balance)</h4>
-                        <p>Precision entry point. Foundational MEV extraction.</p>
-                    </div>
-                    <!-- NEXUS TIER -->
-                    <div class="tier-card nexus">
-                        <h4>⚔️ NEXUS TIER (5 SOL Trading Balance)</h4>
-                        <p>Unlocks aggressive, higher-yield strategies.</p>
-                    </div>
-                    <!-- HUNTER TIER -->
-                    <div class="tier-card hunter">
-                        <h4>🔥 HUNTER TIER (10 SOL Trading Balance)</h4>
-                        <p>Apex predator. Hunts the largest game on the network.</p>
-                    </div>
+            
+            <!-- THE ARSENAL (TIERS) -->
+            <div class="arsenal-tiers">
+                <div class="tier-card jito">
+                    <div class="tier-icon">💎</div>
+                    <div class="tier-title">JITO TIER</div>
+                    <div class="tier-amount">4 SOL</div>
+                </div>
+                <div class="tier-card nexus">
+                    <div class="tier-icon">⚔️</div>
+                    <div class="tier-title">NEXUS TIER</div>
+                    <div class="tier-amount">5 SOL</div>
+                </div>
+                <div class="tier-card hunter">
+                    <div class="tier-icon">🔥</div>
+                    <div class="tier-title">HUNTER TIER</div>
+                    <div class="tier-amount">10 SOL</div>
                 </div>
             </div>
-            <div class="cta-section"><h3>DEPOSIT SOL TO UNLOCK YOUR ARSENAL</h3></div>
+            
+            <!-- THE EXECUTION -->
+            <div class="execution-footer">
+                <h3>DEPOSIT NOW. THE ENGINE IS WAITING.</h3>
+            </div>
         </div>
 
         <!-- WAR ROOM STATE (POST-DEPOSIT) -->
