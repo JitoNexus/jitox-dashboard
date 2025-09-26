@@ -9,8 +9,7 @@ class JitoXTerminal {
         this.user = null;
         this.wallet = null;
         this.balance = 0;
-        this.isInitialized = false;
-        this.currentState = 'armory'; // 'armory' or 'warroom'
+        this.currentState = 'armory';
         this.charts = {};
         this.updateIntervals = {};
         this.solPrice = 100; // Fallback price
@@ -175,24 +174,14 @@ class JitoXTerminal {
         // Update wallet display
         const walletAddress = document.getElementById('walletAddress');
         const copyBtn = document.getElementById('copyAddressBtn');
-        const walletStatus = document.getElementById('walletStatus');
         
         if (walletAddress && this.wallet) {
             const formattedAddress = jitoxAPI.formatWalletAddress(this.wallet);
-            walletAddress.innerHTML = `
-                <span class="address-text" title="${this.wallet}">${formattedAddress}</span>
-            `;
+            walletAddress.textContent = formattedAddress;
         }
         
         if (copyBtn) {
             copyBtn.classList.remove('hidden');
-        }
-        
-        if (walletStatus) {
-            walletStatus.innerHTML = `
-                <i class="fas fa-circle status-dot" style="color: #00ff88;"></i>
-                <span>Connected</span>
-            `;
         }
         
         // Check if user has balance to determine state
@@ -204,14 +193,6 @@ class JitoXTerminal {
      */
     handleWalletError(error) {
         console.error('[TERMINAL] Wallet polling error:', error);
-        
-        const walletStatus = document.getElementById('walletStatus');
-        if (walletStatus) {
-            walletStatus.innerHTML = `
-                <i class="fas fa-circle status-dot" style="color: #ff4444;"></i>
-                <span>Error: ${error}</span>
-            `;
-        }
     }
 
     /**
@@ -225,17 +206,17 @@ class JitoXTerminal {
             
             if (result.success && result.data.balance !== undefined) {
                 this.balance = parseFloat(result.data.balance) || 0;
-                this.updateTerminalState();
             } else {
                 console.warn('[TERMINAL] Balance check failed, using default state');
                 this.balance = 0;
-                this.updateTerminalState();
             }
         } catch (error) {
             console.error('[TERMINAL] Balance check error:', error);
             this.balance = 0;
-            this.updateTerminalState();
         }
+        
+        // Update terminal state based on balance
+        this.updateTerminalState();
     }
 
     /**
@@ -268,8 +249,7 @@ class JitoXTerminal {
      */
     initializeWarRoom() {
         this.initializeCharts();
-        this.initializeProfitFeed();
-        this.initializeOperations();
+        this.initializeProfitTicker();
         this.updateBalanceDisplay();
         this.startWarRoomUpdates();
     }
@@ -445,85 +425,42 @@ class JitoXTerminal {
     }
 
     /**
-     * Initialize profit feed
+     * Initialize profit ticker
      */
-    initializeProfitFeed() {
-        const profitFeed = document.getElementById('profitFeed');
-        if (!profitFeed) return;
+    initializeProfitTicker() {
+        const profitTicker = document.getElementById('profitTicker');
+        if (!profitTicker) return;
         
-        // Add initial feed items
+        // Add initial ticker items
         for (let i = 0; i < 5; i++) {
-            this.addProfitFeedItem();
+            this.addProfitTickerItem();
         }
     }
 
     /**
-     * Add profit feed item
+     * Add profit ticker item
      */
-    addProfitFeedItem() {
-        const profitFeed = document.getElementById('profitFeed');
-        if (!profitFeed) return;
+    addProfitTickerItem() {
+        const profitTicker = document.getElementById('profitTicker');
+        if (!profitTicker) return;
         
         const operation = jitoxAPI.generateRandomOperation();
         const profit = jitoxAPI.generateRandomProfit();
         
-        const feedItem = document.createElement('div');
-        feedItem.className = 'feed-item';
-        feedItem.innerHTML = `
+        const tickerItem = document.createElement('div');
+        tickerItem.className = 'ticker-item';
+        tickerItem.innerHTML = `
             <div class="operation">${operation.type}: ${operation.dex}</div>
             <div class="profit">+${profit.toFixed(2)} SOL</div>
             <div class="time">${jitoxAPI.getTimeAgo(operation.time)}</div>
         `;
         
-        // Add to top of feed
-        profitFeed.insertBefore(feedItem, profitFeed.firstChild);
+        // Add to top of ticker
+        profitTicker.insertBefore(tickerItem, profitTicker.firstChild);
         
         // Remove old items if too many
-        while (profitFeed.children.length > 10) {
-            profitFeed.removeChild(profitFeed.lastChild);
-        }
-    }
-
-    /**
-     * Initialize operations list
-     */
-    initializeOperations() {
-        const operationsList = document.getElementById('operationsList');
-        if (!operationsList) return;
-        
-        // Add initial operations
-        for (let i = 0; i < 8; i++) {
-            this.addOperationItem();
-        }
-    }
-
-    /**
-     * Add operation item
-     */
-    addOperationItem() {
-        const operationsList = document.getElementById('operationsList');
-        if (!operationsList) return;
-        
-        const operation = jitoxAPI.generateRandomOperation();
-        const profit = jitoxAPI.generateRandomProfit();
-        
-        const operationItem = document.createElement('div');
-        operationItem.className = 'operation-item';
-        operationItem.innerHTML = `
-            <div class="operation-details">
-                <div class="operation-type">${operation.type}</div>
-                <div class="operation-info">${operation.dex} • ${operation.status}</div>
-            </div>
-            <div class="operation-profit">+${profit.toFixed(2)} SOL</div>
-            <div class="operation-time">${jitoxAPI.getTimeAgo(operation.time)}</div>
-        `;
-        
-        // Add to top of list
-        operationsList.insertBefore(operationItem, operationsList.firstChild);
-        
-        // Remove old items if too many
-        while (operationsList.children.length > 15) {
-            operationsList.removeChild(operationsList.lastChild);
+        while (profitTicker.children.length > 10) {
+            profitTicker.removeChild(profitTicker.lastChild);
         }
     }
 
@@ -551,12 +488,10 @@ class JitoXTerminal {
         
         if (totalPNL) {
             totalPNL.textContent = `+${jitoxAPI.formatSOLAmount(pnl)} SOL`;
-            totalPNL.className = 'pnl-amount positive';
         }
         
         if (pnlPercentage) {
             pnlPercentage.textContent = `+${pnlPercent.toFixed(2)}%`;
-            pnlPercentage.className = 'pnl-percentage positive';
         }
     }
 
@@ -582,20 +517,10 @@ class JitoXTerminal {
     startWarRoomUpdates() {
         if (this.currentState !== 'warroom') return;
         
-        // Update metrics every 5 seconds
-        this.updateIntervals.metrics = setInterval(() => {
-            this.updateMetrics();
-        }, 5000);
-        
-        // Add new profit feed items every 10 seconds
-        this.updateIntervals.profitFeed = setInterval(() => {
-            this.addProfitFeedItem();
+        // Add new profit ticker items every 10 seconds
+        this.updateIntervals.profitTicker = setInterval(() => {
+            this.addProfitTickerItem();
         }, 10000);
-        
-        // Add new operations every 15 seconds
-        this.updateIntervals.operations = setInterval(() => {
-            this.addOperationItem();
-        }, 15000);
         
         // Update charts every 20 seconds
         this.updateIntervals.charts = setInterval(() => {
@@ -603,47 +528,6 @@ class JitoXTerminal {
         }, 20000);
         
         console.log('[TERMINAL] War room updates started');
-    }
-
-    /**
-     * Update metrics
-     */
-    updateMetrics() {
-        // Update Total Pooled SOL
-        const totalPooled = document.getElementById('totalPooled');
-        if (totalPooled) {
-            const baseValue = 3760.5;
-            const variation = (Math.random() - 0.5) * 100;
-            const newValue = baseValue + variation;
-            totalPooled.textContent = jitoxAPI.formatSOLAmount(newValue, 1);
-        }
-        
-        // Update MEV Extracted
-        const mevExtracted = document.getElementById('mevExtracted');
-        if (mevExtracted) {
-            const baseValue = 892.5;
-            const variation = (Math.random() - 0.5) * 50;
-            const newValue = baseValue + variation;
-            mevExtracted.textContent = jitoxAPI.formatSOLAmount(newValue, 1);
-        }
-        
-        // Update Active Strategies
-        const activeStrategies = document.getElementById('activeStrategies');
-        if (activeStrategies) {
-            const baseValue = 12;
-            const variation = Math.floor((Math.random() - 0.5) * 4);
-            const newValue = Math.max(8, Math.min(16, baseValue + variation));
-            activeStrategies.textContent = newValue.toString();
-        }
-        
-        // Update Success Rate
-        const successRate = document.getElementById('successRate');
-        if (successRate) {
-            const baseValue = 98.5;
-            const variation = (Math.random() - 0.5) * 2;
-            const newValue = Math.max(95, Math.min(100, baseValue + variation));
-            successRate.textContent = `${jitoxAPI.formatSOLAmount(newValue, 1)}%`;
-        }
     }
 
     /**
@@ -692,91 +576,8 @@ class JitoXTerminal {
      * Initialize UI components
      */
     initializeUI() {
-        // Initialize chart controls
-        this.initializeChartControls();
-        
-        // Initialize operations filter
-        this.initializeOperationsFilter();
-        
-        // Initialize PNL period selector
-        this.initializePNLPeriodSelector();
-        
         // Mark as initialized
-        this.isInitialized = true;
-        
         console.log('[TERMINAL] UI initialization complete');
-    }
-
-    /**
-     * Initialize chart controls
-     */
-    initializeChartControls() {
-        const chartBtns = document.querySelectorAll('.chart-btn');
-        chartBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                // Remove active class from all buttons
-                chartBtns.forEach(b => b.classList.remove('active'));
-                // Add active class to clicked button
-                btn.classList.add('active');
-                
-                // Update chart data based on period
-                const period = btn.dataset.period;
-                this.updateChartPeriod(period);
-            });
-        });
-    }
-
-    /**
-     * Initialize operations filter
-     */
-    initializeOperationsFilter() {
-        const operationsFilter = document.getElementById('operationsFilter');
-        if (operationsFilter) {
-            operationsFilter.addEventListener('change', (e) => {
-                const filter = e.target.value;
-                this.filterOperations(filter);
-            });
-        }
-    }
-
-    /**
-     * Initialize PNL period selector
-     */
-    initializePNLPeriodSelector() {
-        const pnlPeriod = document.getElementById('pnlPeriod');
-        if (pnlPeriod) {
-            pnlPeriod.addEventListener('change', (e) => {
-                const period = e.target.value;
-                this.updatePNLPeriod(period);
-            });
-        }
-    }
-
-    /**
-     * Update chart period
-     */
-    updateChartPeriod(period) {
-        console.log(`[TERMINAL] Updating chart period to: ${period}`);
-        // In production, this would fetch new data from API
-        // For now, just log the change
-    }
-
-    /**
-     * Filter operations
-     */
-    filterOperations(filter) {
-        console.log(`[TERMINAL] Filtering operations by: ${filter}`);
-        // In production, this would filter the operations list
-        // For now, just log the change
-    }
-
-    /**
-     * Update PNL period
-     */
-    updatePNLPeriod(period) {
-        console.log(`[TERMINAL] Updating PNL period to: ${period}`);
-        // In production, this would fetch new PNL data from API
-        // For now, just log the change
     }
 
     /**
@@ -846,12 +647,12 @@ window.copyWalletAddress = function() {
                 // Show success feedback
                 const copyBtn = document.getElementById('copyAddressBtn');
                 if (copyBtn) {
-                    const originalText = copyBtn.innerHTML;
-                    copyBtn.innerHTML = '<i class="fas fa-check"></i> COPIED!';
+                    const originalText = copyBtn.textContent;
+                    copyBtn.textContent = 'COPIED!';
                     copyBtn.style.background = '#00ff88';
                     
                     setTimeout(() => {
-                        copyBtn.innerHTML = originalText;
+                        copyBtn.textContent = originalText;
                         copyBtn.style.background = '';
                     }, 2000);
                 }
@@ -860,27 +661,6 @@ window.copyWalletAddress = function() {
                 console.error('Failed to copy wallet address:', err);
             });
     }
-};
-
-window.toggleTerminalState = function() {
-    if (window.jitoxTerminal) {
-        // Toggle between armory and war room for development
-        if (window.jitoxTerminal.currentState === 'armory') {
-            window.jitoxTerminal.balance = 10; // Simulate balance
-            window.jitoxTerminal.updateTerminalState();
-        } else {
-            window.jitoxTerminal.balance = 0;
-            window.jitoxTerminal.updateTerminalState();
-        }
-    }
-};
-
-window.showDepositModal = function() {
-    alert('Deposit functionality will be implemented in production.');
-};
-
-window.showWithdrawModal = function() {
-    alert('Withdrawal functionality will be implemented in production.');
 };
 
 // Initialize terminal when DOM is loaded
